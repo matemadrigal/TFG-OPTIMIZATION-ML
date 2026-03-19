@@ -22,11 +22,12 @@ FECHA_FIN = date.today().strftime("%Y-%m-%d")
 
 # Series a descargar: código FRED → descripción
 SERIES = {
-    "BAMLH0A0HYM2":  "HY OAS spread",
+    "BAMLH0A0HYM2":   "HY OAS spread",
     "BAMLCC0A0CMTRIV": "Corp Bond Total Return",
-    "NFCI":           "Financial Conditions Index",
-    "RRPONTSYD":      "Reverse Repo",
-    "VIXCLS":         "VIX",
+    "NFCI":            "Financial Conditions Index",
+    "RRPONTSYD":       "Reverse Repo",
+    "STLFSI4":         "St. Louis Financial Stress Index (semanal)",
+    "VIXCLS":          "VIX",
 }
 
 # Rutas de salida

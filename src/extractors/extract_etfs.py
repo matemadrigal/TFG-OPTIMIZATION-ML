@@ -1,6 +1,6 @@
 """
-Extractor de datos históricos de ETFs desde Yahoo Finance.
-Descarga precios diarios de 10 ETFs y genera CSVs individuales y consolidado.
+Extractor de datos históricos de ETFs e índices desde Yahoo Finance.
+Descarga precios diarios de 10 ETFs + MOVE Index y genera CSVs.
 """
 
 import os
@@ -11,6 +11,10 @@ import yfinance as yf
 
 # ── Configuración ──────────────────────────────────────────────
 TICKERS = ["AGG", "EEM", "EFA", "GLD", "IWM", "LQD", "QQQ", "SPY", "TIP", "VNQ"]
+
+# Índices adicionales (no son ETFs del universo, se usan como features)
+INDICES_EXTRA = ["^MOVE"]  # MOVE Index (volatilidad implícita de bonos del Tesoro)
+
 FECHA_INICIO = "2007-01-01"
 FECHA_FIN = date.today().strftime("%Y-%m-%d")
 
@@ -76,6 +80,7 @@ def crear_consolidado(diccionario_precios, directorio):
 if __name__ == "__main__":
     print(f"Periodo de descarga: {FECHA_INICIO} → {FECHA_FIN}")
     print(f"ETFs a descargar: {', '.join(TICKERS)}")
+    print(f"Índices extra: {', '.join(INDICES_EXTRA)}")
 
     # Crear directorios si no existen
     os.makedirs(DIR_RAW, exist_ok=True)
@@ -88,8 +93,25 @@ if __name__ == "__main__":
         guardar_csv_individual(df, ticker, DIR_RAW)
         precios[ticker] = df
 
-    # Crear y guardar el CSV consolidado
+    # Crear y guardar el CSV consolidado de ETFs
     crear_consolidado(precios, DIR_INTERIM)
+
+    # Descargar índices extra (MOVE, etc.) como CSVs separados
+    for ticker in INDICES_EXTRA:
+        df = descargar_etf(ticker, FECHA_INICIO, FECHA_FIN)
+        # Nombre limpio para archivo: ^MOVE → MOVE
+        nombre = ticker.replace("^", "")
+        ruta = os.path.join(DIR_RAW, f"{nombre}_daily.csv")
+        df.to_csv(ruta)
+        print(f"  Guardado en: {ruta}")
+
+        # Guardar también en interim como serie de cierre
+        if len(df) > 0 and "Close" in df.columns:
+            serie = df[["Close"]].copy()
+            serie.columns = [nombre]
+            ruta_interim = os.path.join(DIR_INTERIM, f"{nombre}_daily.csv")
+            serie.to_csv(ruta_interim)
+            print(f"  Interim: {ruta_interim} ({len(serie)} filas)")
 
     print(f"\n{'='*50}")
     print("Extracción completada.")

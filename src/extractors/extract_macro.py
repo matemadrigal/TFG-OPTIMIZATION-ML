@@ -23,15 +23,18 @@ FECHA_FIN = date.today().strftime("%Y-%m-%d")
 # Series a descargar: código FRED → descripción
 SERIES = {
     "BAMLH0A0HYM2": "HY OAS spread",
+    "CCSA":          "Continued claims desempleo (semanal)",
     "CPILFESL":      "Core CPI",
     "DGS2":          "Treasury 2 años",
     "DGS10":         "Treasury 10 años",
     "ICSA":          "Initial claims desempleo",
     "PCEPILFE":      "Core PCE",
     "T5YIFR":        "5Y forward inflation",
+    "T10Y3M":        "Spread 10Y-3M Treasury (inversión = recesión)",
     "UMCSENT":       "Sentimiento consumidor UMich",
     "UNRATE":        "Tasa desempleo",
     "VIXCLS":        "VIX",
+    "WEI":           "Weekly Economic Index (actividad real semanal)",
 }
 
 # Rutas de salida
