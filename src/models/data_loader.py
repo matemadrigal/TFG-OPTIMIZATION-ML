@@ -34,27 +34,18 @@ def get_feature_groups(feature_cols):
         "liquidity": [],
         "sentiment": [],
         "news_nlp": [],
-        "market_structure": [],
     }
 
     # Columnas fijas por dimensión
-    macro_cols = {"spread_10y_2y", "cpi_change", "unrate_change", "umcsent_change",
-                  "wei_level", "wei_change", "icsa_change", "ccsa_change",
-                  "spread_10y_3m"}
-    risk_cols = {"vix_level", "vix_change", "hy_spread_change", "nfci_change",
-                 "stlfsi4_level", "stlfsi4_change", "move_level", "move_change"}
+    macro_cols = {"spread_10y_2y", "cpi_change", "unrate_change", "umcsent_change"}
+    risk_cols = {"vix_level", "vix_change", "hy_spread_change", "nfci_change"}
     liquidity_cols = {"fed_balance_change", "reverse_repo_change",
                       "bank_deposits_change", "tga_change"}
-    market_structure_cols = {"vix_term_structure", "spy_agg_corr_52w",
-                             "etf_return_dispersion"}
 
     for col in feature_cols:
         # NLP de noticias (news_sent_all, news_count_all, y *_news_sent, *_news_count)
         if col.startswith("news_") or col.endswith("_news_sent") or col.endswith("_news_count"):
             groups["news_nlp"].append(col)
-        # Market Structure (variables internas calculadas)
-        elif col in market_structure_cols:
-            groups["market_structure"].append(col)
         # Macro
         elif col in macro_cols:
             groups["macro"].append(col)
