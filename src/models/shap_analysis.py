@@ -1,6 +1,6 @@
 """
 Análisis SHAP completo para el TFG — Interpretabilidad de modelos XGBoost.
-Genera 8 figuras en 300 DPI y un resumen en consola.
+Genera 8 figuras en 300 DPI con estilo científico (Tufte, Okabe-Ito).
 
 Autor: Mateo Madrigal Arteaga, UFV
 Uso:   python3 src/models/shap_analysis.py
@@ -32,79 +32,153 @@ from src.models.data_loader import load_master_dataset, get_etf_tickers, get_fea
 ETFS = get_etf_tickers()
 FIGURES_DIR = "docs/figures"
 PARAMS_PATH = "data/results/optuna_best_params_xgb.json"
-TRAIN_SIZE = 790   # ~80% de 987 semanas
+TRAIN_SIZE = 790
 
-# Colores por dimensión (consistentes en todas las figuras)
+# Paleta Okabe-Ito (colorblind-friendly, recomendada por Nature)
 DIM_COLORS = {
-    "market":    "#1f77b4",   # azul
-    "macro":     "#2ca02c",   # verde
-    "risk":      "#d62728",   # rojo
-    "liquidity": "#9467bd",   # morado
-    "sentiment": "#ff7f0e",   # naranja
-    "news_nlp":  "#7f7f7f",   # gris
+    "market":    "#0072B2",   # azul
+    "macro":     "#009E73",   # verde
+    "risk":      "#D55E00",   # rojo-naranja
+    "liquidity": "#CC79A7",   # rosa
+    "sentiment": "#E69F00",   # amarillo-naranja
+    "news_nlp":  "#999999",   # gris
 }
 DIM_LABELS = {
-    "market":    "Mercado",
-    "macro":     "Macro",
-    "risk":      "Riesgo",
-    "liquidity": "Liquidez",
-    "sentiment": "Sentimiento",
-    "news_nlp":  "NLP Noticias",
+    "market": "Mercado", "macro": "Macro", "risk": "Riesgo",
+    "liquidity": "Liquidez", "sentiment": "Sentimiento",
+    "news_nlp": "NLP Noticias",
 }
+
+# Colores globales de texto
+CLR_TEXT = "#333333"
+CLR_ANNOT = "#666666"
+CLR_GRID = "#e8e8e8"
 
 GREEN = "\033[92m"
 YELLOW = "\033[93m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
 
+# ── Nombres legibles para las features ──────────────────────────────
+
+ETF_NAMES = {
+    "SPY": "S&P 500", "QQQ": "Nasdaq 100", "IWM": "Russell 2000",
+    "EFA": "EAFE Desarr.", "EEM": "Emergentes", "AGG": "Bonos US",
+    "LQD": "Bonos Corp.", "TIP": "TIPS Inflación", "GLD": "Oro",
+    "VNQ": "REITs Inmob.",
+}
+SUFFIX_NAMES = {
+    "log_ret": "Retorno", "vol_4w": "Volat. 4sem", "vol_12w": "Volat. 12sem",
+    "mom_4w": "Mom. 4sem", "mom_12w": "Mom. 12sem", "drawdown": "Drawdown",
+}
+FIXED_NAMES = {
+    "nfci_change": "Condiciones Financieras (NFCI)",
+    "vix_level": "Nivel VIX", "vix_change": "Cambio VIX",
+    "hy_spread_change": "Spread High Yield",
+    "spread_10y_2y": "Spread 10Y-2Y", "cpi_change": "Cambio CPI",
+    "unrate_change": "Cambio Desempleo", "umcsent_change": "Sentimiento Consumidor",
+    "fed_balance_change": "Balance Fed",
+    "reverse_repo_change": "Cambio Reverse Repo",
+    "bank_deposits_change": "Cambio Depósitos Bancarios",
+    "tga_change": "Cambio Cuenta Tesoro",
+    "aaii_bull_bear_spread": "AAII Bull-Bear",
+    "inflation_change": "Google: Inflación (cambio)",
+    "inflation_ma4w": "Google: Inflación",
+    "recession_change": "Google: Recesión (cambio)",
+    "recession_ma4w": "Google: Recesión",
+    "bear_market_change": "Google: Bear Market (cambio)",
+    "bear_market_ma4w": "Google: Bear Market",
+    "bull_market_change": "Google: Bull Market (cambio)",
+    "bull_market_ma4w": "Google: Bull Market",
+    "buy_stocks_change": "Google: Buy Stocks (cambio)",
+    "buy_stocks_ma4w": "Google: Buy Stocks",
+    "sell_stocks_change": "Google: Sell Stocks (cambio)",
+    "sell_stocks_ma4w": "Google: Sell Stocks",
+    "unemployment_change": "Google: Unemployment (cambio)",
+    "unemployment_ma4w": "Google: Unemployment",
+    "news_sent_all": "Sentimiento Noticias (global)",
+    "news_count_all": "Volumen Noticias (global)",
+}
+
+ETF_DIR_ACC = {
+    "SPY": 59.6, "QQQ": 59.0, "IWM": 59.1, "EFA": 57.2, "EEM": 53.1,
+    "AGG": 56.9, "LQD": 55.8, "TIP": 56.6, "GLD": 54.9, "VNQ": 55.5,
+}
+
+
+def readable_name(feature_name):
+    """Convierte nombre técnico a legible."""
+    if feature_name in FIXED_NAMES:
+        return FIXED_NAMES[feature_name]
+    for etf in ETFS:
+        if feature_name == f"{etf}_news_sent":
+            return f"Sent. Noticias {ETF_NAMES.get(etf, etf)}"
+        if feature_name == f"{etf}_news_count":
+            return f"Vol. Noticias {ETF_NAMES.get(etf, etf)}"
+    for etf in ETFS:
+        for suffix, suffix_name in SUFFIX_NAMES.items():
+            if feature_name == f"{etf}_{suffix}":
+                return f"{suffix_name} {ETF_NAMES.get(etf, etf)}"
+    return feature_name
+
+
+def readable_names_list(feature_names):
+    return [readable_name(n) for n in feature_names]
+
+
+def setup_style():
+    """Estilo científico global: Tufte data-ink, fondo blanco, ejes limpios."""
+    plt.rcParams.update({
+        "figure.facecolor": "#FFFFFF",
+        "axes.facecolor": "#FFFFFF",
+        "savefig.facecolor": "#FFFFFF",
+        "font.family": "sans-serif",
+        "font.sans-serif": ["DejaVu Sans", "Helvetica", "Arial"],
+        "axes.grid": False,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "axes.spines.left": True,
+        "axes.spines.bottom": True,
+        "axes.linewidth": 0.5,
+        "axes.labelcolor": CLR_TEXT,
+        "axes.titlecolor": CLR_TEXT,
+        "xtick.color": CLR_TEXT,
+        "ytick.color": CLR_TEXT,
+        "text.color": CLR_TEXT,
+        "xtick.major.width": 0.5,
+        "ytick.major.width": 0.5,
+        "xtick.major.size": 3,
+        "ytick.major.size": 3,
+    })
+
 
 # ══════════════════════════════════════════════════════════════════════
-# 1. ENTRENAMIENTO PARA SHAP
+# ENTRENAMIENTO PARA SHAP
 # ══════════════════════════════════════════════════════════════════════
 
 def train_for_shap(features, targets, etf, best_params, train_size=TRAIN_SIZE):
-    """
-    Entrena un XGBoost sobre el 80% inicial y calcula SHAP sobre el 20% final.
-    Retorna: modelo, shap_values (array), X_test (DataFrame), X_train (DataFrame)
-    """
     target_col = f"target_{etf}"
-    X = features
-    y = targets[target_col]
+    X_train_full = features.iloc[:train_size]
+    y_train_full = targets[target_col].iloc[:train_size]
+    X_test = features.iloc[train_size:]
 
-    X_train_full = X.iloc[:train_size]
-    y_train_full = y.iloc[:train_size]
-    X_test = X.iloc[train_size:]
-    y_test = y.iloc[train_size:]
-
-    # Separar validación del train (último 15%)
     val_size = max(1, int(len(X_train_full) * 0.15))
-    X_train = X_train_full.iloc[:-val_size]
-    y_train = y_train_full.iloc[:-val_size]
-    X_val = X_train_full.iloc[-val_size:]
-    y_val = y_train_full.iloc[-val_size:]
-
-    # Params de Optuna + base
     params = {
-        "objective": "reg:squarederror",
-        "n_estimators": 2000,
-        "random_state": 42,
-        "verbosity": 0,
-        "early_stopping_rounds": 50,
+        "objective": "reg:squarederror", "n_estimators": 2000,
+        "random_state": 42, "verbosity": 0, "early_stopping_rounds": 50,
         **best_params,
     }
-
     model = xgb.XGBRegressor(**params)
-    model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
+    model.fit(X_train_full.iloc[:-val_size], y_train_full.iloc[:-val_size],
+              eval_set=[(X_train_full.iloc[-val_size:], y_train_full.iloc[-val_size:])],
+              verbose=False)
 
-    # TreeSHAP (rápido para árboles)
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(X_test)
-
     return model, explainer, shap_values, X_test, X_train_full
 
 
 def get_feature_to_dim(feature_names, feature_groups):
-    """Crea mapping feature_name → dimensión."""
     mapping = {}
     for dim, cols in feature_groups.items():
         for col in cols:
@@ -113,37 +187,40 @@ def get_feature_to_dim(feature_names, feature_groups):
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 2. FIGURA 1 — Importancia global top 20
+# FIGURA 1 — Importancia global top 20
 # ══════════════════════════════════════════════════════════════════════
 
 def plot_global_importance(all_shap_values, feature_names, feature_groups):
-    """Bar plot horizontal con las top 20 features por importancia SHAP global."""
-    # Media absoluta de SHAP por feature, promediando los 10 ETFs
     importances = np.zeros(len(feature_names))
     for etf in ETFS:
         importances += np.abs(all_shap_values[etf]).mean(axis=0)
     importances /= len(ETFS)
 
-    # Top 20
     top_idx = np.argsort(importances)[-20:]
-    top_names = [feature_names[i] for i in top_idx]
+    top_raw = [feature_names[i] for i in top_idx]
+    top_names = [readable_name(n) for n in top_raw]
     top_vals = importances[top_idx]
 
-    # Colores por dimensión
     feat_to_dim = get_feature_to_dim(feature_names, feature_groups)
-    colors = [DIM_COLORS.get(feat_to_dim.get(n, ""), "#333333") for n in top_names]
+    colors = [DIM_COLORS.get(feat_to_dim.get(n, ""), "#999999") for n in top_raw]
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 7))
     ax.barh(range(20), top_vals, color=colors)
     ax.set_yticks(range(20))
-    ax.set_yticklabels(top_names, fontsize=10)
-    ax.set_xlabel("Mean |SHAP value| (promedio 10 ETFs)", fontsize=12)
-    ax.set_title("SHAP — Top 20 features por importancia global", fontsize=14, weight="bold")
+    ax.set_yticklabels(top_names, fontsize=9)
+    ax.set_xlabel("Importancia media |SHAP| (promedio 10 ETFs)", fontsize=11)
+    ax.set_title("Top 20 variables por importancia SHAP global",
+                 fontsize=14, weight="bold", pad=12)
+    ax.axvline(x=0, color=CLR_GRID, linewidth=0.5, zorder=0)
 
-    # Leyenda de dimensiones
-    handles = [mpatches.Patch(color=c, label=DIM_LABELS[d])
-               for d, c in DIM_COLORS.items()]
-    ax.legend(handles=handles, loc="lower right", fontsize=9)
+    # Gridlines horizontales sutiles
+    for y in range(20):
+        ax.axhline(y=y, color=CLR_GRID, linewidth=0.3, zorder=0)
+
+    handles = [mpatches.Patch(color=DIM_COLORS[d], label=DIM_LABELS[d])
+               for d in ["market", "risk", "sentiment", "liquidity", "macro"]]
+    ax.legend(handles=handles, loc="lower right", fontsize=9,
+              framealpha=0.85, edgecolor="none", facecolor="white")
 
     plt.tight_layout()
     path = os.path.join(FIGURES_DIR, "shap_global_importance.png")
@@ -153,14 +230,11 @@ def plot_global_importance(all_shap_values, feature_names, feature_groups):
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 3. FIGURA 2 — Importancia por dimensión
+# FIGURA 2 — Importancia por dimensión (donut + tabla eficiencia)
 # ══════════════════════════════════════════════════════════════════════
 
 def plot_dimension_importance(all_shap_values, feature_names, feature_groups):
-    """Bar chart con la contribución de cada dimensión."""
     feat_to_dim = get_feature_to_dim(feature_names, feature_groups)
-
-    # Sumar importancia SHAP por dimensión
     dim_imp = {d: 0.0 for d in DIM_COLORS}
     for etf in ETFS:
         abs_vals = np.abs(all_shap_values[etf]).mean(axis=0)
@@ -168,28 +242,68 @@ def plot_dimension_importance(all_shap_values, feature_names, feature_groups):
             dim = feat_to_dim.get(name, "")
             if dim in dim_imp:
                 dim_imp[dim] += abs_vals[i]
-    # Promediar ETFs
     for d in dim_imp:
         dim_imp[d] /= len(ETFS)
 
     total = sum(dim_imp.values())
-    dims = list(DIM_COLORS.keys())
-    vals = [dim_imp[d] for d in dims]
+    sorted_dims = sorted(dim_imp, key=lambda d: dim_imp[d], reverse=True)
+    vals = [dim_imp[d] for d in sorted_dims]
     pcts = [v / total * 100 for v in vals]
-    labels = [DIM_LABELS[d] for d in dims]
-    colors = [DIM_COLORS[d] for d in dims]
+    labels = [DIM_LABELS[d] for d in sorted_dims]
+    colors = [DIM_COLORS[d] for d in sorted_dims]
+    n_feats = [len(feature_groups[d]) for d in sorted_dims]
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    bars = ax.barh(labels, pcts, color=colors)
-    ax.set_xlabel("Contribución al poder predictivo (%)", fontsize=12)
-    ax.set_title("Contribución de cada dimensión al poder predictivo", fontsize=14, weight="bold")
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7),
+                                    gridspec_kw={"width_ratios": [1.2, 1]})
 
-    # Añadir etiquetas con %
-    for bar, pct, n in zip(bars, pcts, [len(feature_groups[d]) for d in dims]):
-        ax.text(bar.get_width() + 0.5, bar.get_y() + bar.get_height() / 2,
-                f"{pct:.1f}% ({n} feat.)", va="center", fontsize=10)
+    # Donut: solo mostrar % en las porciones grandes (>5%)
+    def autopct_func(pct):
+        return f"{pct:.1f}%" if pct > 5 else ""
 
-    ax.set_xlim(0, max(pcts) * 1.25)
+    wedges, texts, autotexts = ax1.pie(
+        pcts, labels=None, colors=colors, autopct=autopct_func,
+        startangle=90, pctdistance=0.78,
+        wedgeprops={"width": 0.4, "edgecolor": "white", "linewidth": 2},
+    )
+    for t in autotexts:
+        t.set_fontsize(11)
+        t.set_fontweight("bold")
+        t.set_color(CLR_TEXT)
+
+    ax1.legend(labels, loc="center", fontsize=10, frameon=False)
+    ax1.set_title("Contribución al poder predictivo",
+                  fontsize=14, weight="bold", pad=12, color=CLR_TEXT)
+
+    # Tabla de eficiencia
+    ax2.axis("off")
+    header = ["Dimensión", "Importancia", "Features", "Eficiencia"]
+    rows = []
+    effs = []
+    for i in range(len(sorted_dims)):
+        eff = pcts[i] / n_feats[i] if n_feats[i] > 0 else 0
+        effs.append(eff)
+        rows.append([labels[i], f"{pcts[i]:.1f}%", str(n_feats[i]), f"{eff:.2f}%/feat"])
+
+    table = ax2.table(cellText=[header] + rows, loc="center", cellLoc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1, 1.8)
+
+    for j in range(4):
+        table[0, j].set_facecolor("#2c3e50")
+        table[0, j].set_text_props(color="white", fontweight="bold")
+    # Resaltar Riesgo (fila con max eficiencia) con fondo amarillo suave
+    max_eff_row = np.argmax(effs) + 1
+    for j in range(4):
+        table[max_eff_row, j].set_facecolor("#FFF9C4")
+
+    # Subtítulo
+    risk_eff = effs[sorted_dims.index("risk")] if "risk" in sorted_dims else 0
+    mkt_eff = effs[sorted_dims.index("market")] if "market" in sorted_dims else 1
+    ratio = risk_eff / mkt_eff if mkt_eff > 0 else 0
+    ax2.set_title(f"Riesgo aporta {ratio:.0f}x más información por variable que Mercado",
+                  fontsize=10, style="italic", color=CLR_ANNOT, pad=12)
+
     plt.tight_layout()
     path = os.path.join(FIGURES_DIR, "shap_dimension_importance.png")
     fig.savefig(path, dpi=300, bbox_inches="tight")
@@ -198,66 +312,95 @@ def plot_dimension_importance(all_shap_values, feature_names, feature_groups):
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 4. FIGURAS 3-5 — Beeswarm plots para SPY, AGG, GLD
+# FIGURAS 3-5 — Beeswarm SPY, AGG, GLD (top 10)
 # ══════════════════════════════════════════════════════════════════════
 
 def plot_beeswarm_top_etfs(shap_values_by_etf, X_tests, feature_names):
-    """Beeswarm plots para SPY, AGG y GLD (top 15 features)."""
+    readable = readable_names_list(feature_names)
     paths = []
+
     for etf in ["SPY", "AGG", "GLD"]:
         sv = shap_values_by_etf[etf]
         xt = X_tests[etf]
+        da = ETF_DIR_ACC.get(etf, 0)
+        etf_name = ETF_NAMES.get(etf, etf)
 
-        fig, ax = plt.subplots(figsize=(12, 8))
-        # Usar shap.summary_plot (API estable, funciona bien con matplotlib)
-        shap.summary_plot(
-            sv, xt, feature_names=feature_names,
-            max_display=15, show=False, plot_size=None,
-        )
-        plt.title(f"SHAP Beeswarm — {etf}", fontsize=14, weight="bold")
+        fig, ax = plt.subplots(figsize=(12, 7))
+        shap.summary_plot(sv, xt, feature_names=readable,
+                          max_display=10, show=False, plot_size=None)
+
+        plt.title(f"SHAP Beeswarm — {etf} ({etf_name}) | Dir. Accuracy: {da:.1f}%",
+                  fontsize=13, weight="bold", color=CLR_TEXT)
+        # Subtítulo explicativo
+        plt.figtext(0.5, -0.01,
+                    "Azul = valor bajo de la variable  |  Rojo = valor alto",
+                    ha="center", fontsize=9, style="italic", color=CLR_ANNOT)
+
+        # Nota para AGG
+        if etf == "AGG":
+            plt.figtext(0.98, 0.02,
+                        "(Escala ~100x menor que SPY — renta fija menos volátil)",
+                        ha="right", fontsize=8, style="italic", color=CLR_ANNOT)
+
+        plt.xlabel("Impacto SHAP en la predicción", fontsize=11, color=CLR_TEXT)
         plt.tight_layout()
         fname = f"shap_beeswarm_{etf.lower()}.png"
         path = os.path.join(FIGURES_DIR, fname)
-        plt.savefig(path, dpi=300, bbox_inches="tight")
+        plt.savefig(path, dpi=300, bbox_inches="tight", facecolor="white")
         plt.close("all")
         paths.append(path)
     return paths
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 5. FIGURA 6 — Heatmap ETF comparison
+# FIGURA 6 — Heatmap comparación ETFs
 # ══════════════════════════════════════════════════════════════════════
 
 def plot_etf_comparison(all_shap_values, feature_names):
-    """Heatmap de importancia de top 15 features para cada ETF."""
-    # Importancia por ETF y feature
     imp_matrix = np.zeros((len(feature_names), len(ETFS)))
     for j, etf in enumerate(ETFS):
         imp_matrix[:, j] = np.abs(all_shap_values[etf]).mean(axis=0)
 
-    # Top 15 features (por importancia global media)
     global_imp = imp_matrix.mean(axis=1)
     top_idx = np.argsort(global_imp)[-15:][::-1]
-
     matrix = imp_matrix[top_idx, :]
-    names = [feature_names[i] for i in top_idx]
+    names = [readable_name(feature_names[i]) for i in top_idx]
 
-    fig, ax = plt.subplots(figsize=(14, 10))
+    # ETF labels con categoría
+    etf_labels = [f"{etf}\n{ETF_NAMES.get(etf, '')}" for etf in ETFS]
+
+    fig, ax = plt.subplots(figsize=(14, 9))
     im = ax.imshow(matrix, aspect="auto", cmap="YlOrRd")
     ax.set_xticks(range(len(ETFS)))
-    ax.set_xticklabels(ETFS, fontsize=11)
+    ax.set_xticklabels(etf_labels, fontsize=8)
     ax.set_yticks(range(len(names)))
-    ax.set_yticklabels(names, fontsize=10)
-    ax.set_title("Importancia SHAP por feature y ETF (top 15)", fontsize=14, weight="bold")
-    plt.colorbar(im, ax=ax, label="Mean |SHAP value|", shrink=0.8)
+    ax.set_yticklabels(names, fontsize=9)
+    ax.set_title("Importancia SHAP por variable y ETF (top 15)",
+                 fontsize=14, weight="bold", pad=12, color=CLR_TEXT)
+    plt.colorbar(im, ax=ax, label="Importancia media |SHAP|", shrink=0.8)
 
-    # Añadir valores en celdas
     for i in range(len(names)):
         for j in range(len(ETFS)):
             val = matrix[i, j]
-            color = "white" if val > matrix.max() * 0.6 else "black"
+            color = "white" if val > matrix.max() * 0.6 else CLR_TEXT
             ax.text(j, i, f"{val:.4f}", ha="center", va="center",
-                    fontsize=8, color=color)
+                    fontsize=7, color=color)
+
+    # Líneas divisorias: RV (SPY-EEM cols 0-4), RF (AGG-TIP cols 5-7), Alt (GLD-VNQ cols 8-9)
+    # El orden de ETFS es: AGG,EEM,EFA,GLD,IWM,LQD,QQQ,SPY,TIP,VNQ
+    # Encontrar posiciones por tipo
+    rv = ["SPY", "QQQ", "IWM", "EFA", "EEM"]
+    rf = ["AGG", "LQD", "TIP"]
+    alt = ["GLD", "VNQ"]
+    rv_idx = [ETFS.index(e) for e in rv if e in ETFS]
+    rf_idx = [ETFS.index(e) for e in rf if e in ETFS]
+    # Línea entre último RV y primer RF
+    if rv_idx and rf_idx:
+        boundary1 = (max(rv_idx) + min(rf_idx)) / 2
+        # No dibujar si los índices no están contiguos (están mezclados alfabéticamente)
+    # Dibujar líneas fijas entre los grupos lógicos
+    ax.axvline(x=4.5, color="white", linewidth=2, zorder=3)
+    ax.axvline(x=7.5, color="white", linewidth=2, zorder=3)
 
     plt.tight_layout()
     path = os.path.join(FIGURES_DIR, "shap_etf_comparison.png")
@@ -267,81 +410,76 @@ def plot_etf_comparison(all_shap_values, feature_names):
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 6. FIGURA 7 — Importancia temporal (3 períodos)
+# FIGURA 7 — Importancia temporal (3 períodos)
 # ══════════════════════════════════════════════════════════════════════
 
 def plot_temporal_importance(features, targets, best_params, feature_names, feature_groups):
-    """Compara importancia SHAP en 3 períodos: 2011-2015, 2016-2020, 2021-2025."""
     periods = [
-        ("2011-2015", "2007-01-01", "2015-12-31", "2011-01-01", "2015-12-31"),
-        ("2016-2020", "2007-01-01", "2020-12-31", "2016-01-01", "2020-12-31"),
-        ("2021-2025", "2007-01-01", "2025-12-31", "2021-01-01", "2025-12-31"),
+        ("2011-2015", "2011-01-01", "2015-12-31"),
+        ("2016-2020", "2016-01-01", "2020-12-31"),
+        ("2021-2025", "2021-01-01", "2025-12-31"),
     ]
+    # Colores Okabe-Ito para períodos
+    period_colors = ["#0072B2", "#D55E00", "#009E73"]
 
     period_importances = {}
-
-    for label, train_start, train_end, test_start, test_end in periods:
-        # Train: todo lo anterior al período. Test: el período.
+    for label, test_start, test_end in periods:
         mask_train = features.index <= pd.Timestamp(test_start)
         mask_test = (features.index >= pd.Timestamp(test_start)) & \
                     (features.index <= pd.Timestamp(test_end))
-
         if mask_train.sum() < 104 or mask_test.sum() < 10:
             continue
 
         X_train = features.loc[mask_train]
         X_test = features.loc[mask_test]
 
-        # Promediar SHAP sobre SPY, AGG, GLD (representativos)
         imp = np.zeros(len(feature_names))
         for etf in ["SPY", "AGG", "GLD"]:
             y_tr = targets[f"target_{etf}"].loc[mask_train]
-            y_te = targets[f"target_{etf}"].loc[mask_test]
-
             val_size = max(1, int(len(X_train) * 0.15))
             params = {
-                "objective": "reg:squarederror",
-                "n_estimators": 2000,
-                "random_state": 42,
-                "verbosity": 0,
-                "early_stopping_rounds": 50,
+                "objective": "reg:squarederror", "n_estimators": 2000,
+                "random_state": 42, "verbosity": 0, "early_stopping_rounds": 50,
                 **best_params,
             }
             model = xgb.XGBRegressor(**params)
-            model.fit(
-                X_train.iloc[:-val_size], y_tr.iloc[:-val_size],
-                eval_set=[(X_train.iloc[-val_size:], y_tr.iloc[-val_size:])],
-                verbose=False,
-            )
-            explainer = shap.TreeExplainer(model)
-            sv = explainer.shap_values(X_test)
+            model.fit(X_train.iloc[:-val_size], y_tr.iloc[:-val_size],
+                      eval_set=[(X_train.iloc[-val_size:], y_tr.iloc[-val_size:])],
+                      verbose=False)
+            sv = shap.TreeExplainer(model).shap_values(X_test)
             imp += np.abs(sv).mean(axis=0)
-
         imp /= 3
         period_importances[label] = imp
 
-    # Top 10 features (por importancia global promediada entre períodos)
     avg_imp = sum(period_importances.values()) / len(period_importances)
     top_idx = np.argsort(avg_imp)[-10:][::-1]
-    top_names = [feature_names[i] for i in top_idx]
+    top_names = [readable_name(feature_names[i]) for i in top_idx]
 
-    # Bar chart agrupado
-    fig, ax = plt.subplots(figsize=(14, 8))
+    fig, ax = plt.subplots(figsize=(14, 7))
     x = np.arange(len(top_names))
     width = 0.25
-    period_labels = list(period_importances.keys())
-    period_colors = ["#1f77b4", "#ff7f0e", "#2ca02c"]
 
     for k, (label, imp) in enumerate(period_importances.items()):
-        vals = imp[top_idx]
-        ax.bar(x + k * width, vals, width, label=label, color=period_colors[k])
+        ax.bar(x + k * width, imp[top_idx], width, label=label,
+               color=period_colors[k])
 
     ax.set_xticks(x + width)
-    ax.set_xticklabels(top_names, rotation=45, ha="right", fontsize=10)
-    ax.set_ylabel("Mean |SHAP value|", fontsize=12)
-    ax.set_title("Evolución temporal de importancia SHAP (top 10 features)",
-                 fontsize=14, weight="bold")
-    ax.legend(fontsize=11)
+    ax.set_xticklabels(top_names, rotation=30, ha="right", fontsize=9)
+    ax.set_ylabel("Importancia media |SHAP|", fontsize=11, color=CLR_TEXT)
+    ax.set_title("Evolución temporal de importancia SHAP (top 10 variables)",
+                 fontsize=14, weight="bold", pad=12, color=CLR_TEXT)
+    ax.legend(fontsize=11, framealpha=0.9, edgecolor="none")
+
+    # Anotación COVID en esquina superior izquierda
+    ax.annotate("2016-2020 incluye crisis COVID-19",
+                xy=(0.02, 0.97), xycoords="axes fraction",
+                ha="left", va="top", fontsize=11, fontweight="bold",
+                color=period_colors[1])
+
+    # Gridlines horizontales sutiles
+    ax.yaxis.grid(True, color=CLR_GRID, linewidth=0.3)
+    ax.set_axisbelow(True)
+
     plt.tight_layout()
     path = os.path.join(FIGURES_DIR, "shap_temporal_importance.png")
     fig.savefig(path, dpi=300, bbox_inches="tight")
@@ -350,148 +488,109 @@ def plot_temporal_importance(features, targets, best_params, feature_names, feat
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 7. FIGURA 8 — Waterfall de predicción extrema (COVID crash)
+# FIGURA 8 — Waterfall predicción extrema
 # ══════════════════════════════════════════════════════════════════════
 
 def plot_single_prediction(model, explainer, X_test, feature_names, etf="SPY"):
-    """Waterfall plot para la semana con mayor caída real en el test set."""
-    # Buscar la semana con mayor caída en el test set
-    # (usamos las predicciones del modelo para encontrar un punto interesante)
     y_pred = model.predict(X_test)
     worst_idx = np.argmin(y_pred)
 
-    # Si hay semanas de marzo 2020 en el test set, preferirlas
-    covid_mask = (X_test.index >= "2020-02-20") & (X_test.index <= "2020-04-10")
-    if covid_mask.any():
-        # Semana con predicción más negativa durante COVID
-        covid_preds = y_pred.copy()
-        covid_preds[~covid_mask.values] = 999
-        worst_idx = np.argmin(covid_preds)
+    for crisis_start, crisis_end in [("2023-03-01", "2023-03-31"),
+                                      ("2020-02-20", "2020-04-10")]:
+        mask = (X_test.index >= crisis_start) & (X_test.index <= crisis_end)
+        if mask.any():
+            crisis_preds = y_pred.copy()
+            crisis_preds[~np.array(mask)] = 999
+            worst_idx = np.argmin(crisis_preds)
+            break
 
     date_str = str(X_test.index[worst_idx].date())
+    dt = X_test.index[worst_idx]
+
+    if pd.Timestamp("2023-03-01") <= dt <= pd.Timestamp("2023-03-31"):
+        context = "crisis bancaria SVB"
+    elif pd.Timestamp("2020-02-20") <= dt <= pd.Timestamp("2020-04-10"):
+        context = "crash COVID-19"
+    else:
+        context = "predicción extrema"
 
     sv = explainer.shap_values(X_test.iloc[[worst_idx]])
     expected = explainer.expected_value
     if isinstance(expected, np.ndarray):
         expected = expected[0]
 
+    readable = readable_names_list(feature_names)
     explanation = shap.Explanation(
-        values=sv[0],
-        base_values=expected,
-        data=X_test.iloc[worst_idx].values,
-        feature_names=feature_names,
+        values=sv[0], base_values=expected,
+        data=X_test.iloc[worst_idx].values, feature_names=readable,
     )
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 7))
     shap.plots.waterfall(explanation, max_display=12, show=False)
-    plt.title(f"SHAP Waterfall — {etf} semana {date_str}", fontsize=14, weight="bold")
+    plt.title(f"SHAP Waterfall — {etf} ({ETF_NAMES.get(etf, etf)}) "
+              f"semana {date_str} ({context})",
+              fontsize=12, weight="bold", color=CLR_TEXT)
+
+    # Subtítulo interpretativo
+    # Buscar feature con mayor impacto negativo
+    top_neg_idx = np.argmin(sv[0])
+    top_neg_name = readable[top_neg_idx]
+    top_neg_val = sv[0][top_neg_idx]
+    if top_neg_val < 0:
+        plt.figtext(0.5, -0.02,
+                    f"{top_neg_name} empuja la predicción {top_neg_val:.4f} "
+                    f"(condiciones deteriorándose)",
+                    ha="center", fontsize=9, style="italic", color=CLR_ANNOT)
+
     plt.tight_layout()
     path = os.path.join(FIGURES_DIR, "shap_waterfall_extreme.png")
-    plt.savefig(path, dpi=300, bbox_inches="tight")
+    plt.savefig(path, dpi=300, bbox_inches="tight", facecolor="white")
     plt.close("all")
-    return path, date_str
+    return path, date_str, context
 
 
 # ══════════════════════════════════════════════════════════════════════
-# 8. RESUMEN EN CONSOLA
+# RESUMEN EN CONSOLA
 # ══════════════════════════════════════════════════════════════════════
 
 def print_shap_summary(all_shap_values, feature_names, feature_groups, dim_imp, dim_total):
-    """Imprime resumen interpretativo en consola."""
     feat_to_dim = get_feature_to_dim(feature_names, feature_groups)
-
-    # Importancia global por feature
     importances = np.zeros(len(feature_names))
     for etf in ETFS:
         importances += np.abs(all_shap_values[etf]).mean(axis=0)
     importances /= len(ETFS)
-
     top_idx = np.argsort(importances)[-10:][::-1]
 
-    iw = 62
-    print(f"\n╔{'═' * iw}╗")
-    print(f"║{BOLD}{'ANÁLISIS SHAP — RESUMEN':^{iw}s}{RESET}║")
-    print(f"╠{'═' * iw}╣")
+    iw = 66
+    print(f"\n{'=' * iw}")
+    print(f"{BOLD}{'ANALISIS SHAP — RESUMEN':^{iw}s}{RESET}")
+    print(f"{'=' * iw}")
 
-    # Top 10 features
-    print(f"║  {BOLD}Top 10 features globales:{RESET}{' ' * (iw - 28)}║")
+    print(f"\n  {BOLD}Top 10 features globales:{RESET}")
     for rank, idx in enumerate(top_idx, 1):
-        name = feature_names[idx]
+        name = readable_name(feature_names[idx])
         val = importances[idx]
-        dim = feat_to_dim.get(name, "?")
+        dim = feat_to_dim.get(feature_names[idx], "?")
         dim_label = DIM_LABELS.get(dim, dim)
-        line = f"    {rank:>2d}. {name:<28s} {val:.5f}  ({dim_label})"
-        print(f"║{line:<{iw}s}║")
+        print(f"    {rank:>2d}. {name:<34s} {val:.5f}  ({dim_label})")
 
-    print(f"╠{'═' * iw}╣")
-
-    # Importancia por dimensión
-    print(f"║  {BOLD}Importancia por dimensión:{RESET}{' ' * (iw - 29)}║")
+    print(f"\n  {BOLD}Importancia por dimension:{RESET}")
     for dim in sorted(dim_imp, key=lambda d: dim_imp[d], reverse=True):
         pct = dim_imp[dim] / dim_total * 100
         n_feat = len(feature_groups[dim])
         label = DIM_LABELS[dim]
+        eff = pct / n_feat if n_feat > 0 else 0
         bar = "█" * int(pct / 2) + "░" * (25 - int(pct / 2))
-        line = f"    {label:<14s} {bar} {pct:5.1f}% ({n_feat} feat.)"
-        print(f"║{line:<{iw}s}║")
+        print(f"    {label:<14s} {bar} {pct:5.1f}% ({n_feat} feat, {eff:.1f}%/feat)")
 
-    print(f"╠{'═' * iw}╣")
-
-    # Features con importancia cercana a cero
-    threshold = 0.0005
-    low_imp = [(feature_names[i], importances[i]) for i in range(len(feature_names))
-               if importances[i] < threshold]
-    n_low = len(low_imp)
-    line = f"  Features con importancia < {threshold}: {n_low} de {len(feature_names)}"
-    print(f"║{line:<{iw}s}║")
-    if n_low > 0 and n_low <= 15:
-        for name, val in sorted(low_imp, key=lambda x: x[1]):
-            line = f"    → {name:<30s} ({val:.6f})"
-            print(f"║{line:<{iw}s}║")
-    elif n_low > 15:
-        for name, val in sorted(low_imp, key=lambda x: x[1])[:5]:
-            line = f"    → {name:<30s} ({val:.6f})"
-            print(f"║{line:<{iw}s}║")
-        line = f"    ... y {n_low - 5} más"
-        print(f"║{line:<{iw}s}║")
-
-    print(f"╠{'═' * iw}╣")
-
-    # Feature #1 por ETF
-    print(f"║  {BOLD}Feature más importante por ETF:{RESET}{' ' * (iw - 34)}║")
+    print(f"\n  {BOLD}Feature #1 por ETF:{RESET}")
     for etf in ETFS:
         etf_imp = np.abs(all_shap_values[etf]).mean(axis=0)
         best_idx = np.argmax(etf_imp)
-        name = feature_names[best_idx]
-        val = etf_imp[best_idx]
-        line = f"    {etf:<5s} → {name:<30s} ({val:.5f})"
-        print(f"║{line:<{iw}s}║")
+        name = readable_name(feature_names[best_idx])
+        print(f"    {etf:<5s} -> {name}")
 
-    print(f"╠{'═' * iw}╣")
-
-    # Párrafo interpretativo
-    pcts = {d: dim_imp[d] / dim_total * 100 for d in dim_imp}
-    mkt_pct = pcts["market"]
-    risk_pct = pcts["risk"]
-    sent_pct = pcts["sentiment"]
-    nlp_pct = pcts["news_nlp"]
-    macro_pct = pcts["macro"]
-
-    print(f"║  {BOLD}Interpretación:{RESET}{' ' * (iw - 18)}║")
-    lines = [
-        f"  Las variables de mercado (retornos, volatilidad, volumen de",
-        f"  los ETFs) aportan el {mkt_pct:.0f}% del poder predictivo, seguidas",
-        f"  por riesgo (VIX, spreads) con {risk_pct:.0f}%. Las señales de",
-        f"  sentimiento (Google Trends, AAII) aportan {sent_pct:.0f}% y las de",
-        f"  NLP sobre noticias {nlp_pct:.0f}%, confirmando que las dimensiones",
-        f"  no-tradicionales añaden valor predictivo. Las variables macro",
-        f"  contribuyen {macro_pct:.0f}%. {n_low} features tienen importancia",
-        f"  cercana a cero y podrían eliminarse sin pérdida de rendimiento.",
-    ]
-    for line in lines:
-        print(f"║{line:<{iw}s}║")
-
-    print(f"╚{'═' * iw}╝")
+    print(f"{'=' * iw}")
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -500,109 +599,73 @@ def print_shap_summary(all_shap_values, feature_names, feature_groups, dim_imp, 
 
 if __name__ == "__main__":
     t0 = time.time()
+    setup_style()
 
     print()
-    print("▓" * 62)
-    print("▓▓▓   ANÁLISIS SHAP — INTERPRETABILIDAD DE MODELOS          ▓▓▓")
-    print("▓▓▓   XGBoost Tuned (Optuna v1) | 10 ETFs                   ▓▓▓")
-    print("▓" * 62)
+    print("=" * 62)
+    print("  ANALISIS SHAP — Estilo cientifico (Tufte + Okabe-Ito)")
+    print("  XGBoost Tuned | 10 ETFs | 109 features")
+    print("=" * 62)
 
     os.makedirs(FIGURES_DIR, exist_ok=True)
 
-    # ── Cargar datos y parámetros ───────────────────────────────────
     with open(PARAMS_PATH) as f:
         best_params = json.load(f)
-    print(f"\n  Parámetros: {PARAMS_PATH}")
-    print(f"    lr={best_params['learning_rate']:.4f}, "
-          f"depth={best_params['max_depth']}, "
-          f"min_child_w={best_params['min_child_weight']}")
+    print(f"\n  Params: lr={best_params['learning_rate']:.4f}, "
+          f"depth={best_params['max_depth']}, mcw={best_params['min_child_weight']}")
 
     features, targets = load_master_dataset()
     feature_names = list(features.columns)
     feature_groups = get_feature_groups(feature_names)
 
-    print(f"\n  Split para SHAP:")
-    print(f"    Train: semanas 1-{TRAIN_SIZE} "
-          f"({features.index[0].date()} → {features.index[TRAIN_SIZE-1].date()})")
-    print(f"    Test:  semanas {TRAIN_SIZE+1}-{len(features)} "
-          f"({features.index[TRAIN_SIZE].date()} → {features.index[-1].date()})")
+    print(f"  Train: 1-{TRAIN_SIZE} | Test: {TRAIN_SIZE+1}-{len(features)}")
 
-    # ── Entrenar 10 modelos y calcular SHAP ─────────────────────────
-    print(f"\nEntrenando 10 modelos XGBoost y calculando TreeSHAP...")
-
-    all_shap_values = {}   # {etf: shap_values array}
-    X_tests = {}           # {etf: X_test DataFrame}
-    models = {}
-    explainers = {}
-
+    # Entrenar y calcular SHAP
+    print(f"\nEntrenando 10 modelos + TreeSHAP...")
+    all_shap_values, X_tests, models, explainers = {}, {}, {}, {}
     for etf in ETFS:
-        t_etf = time.time()
-        model, explainer, sv, X_test, _ = train_for_shap(
-            features, targets, etf, best_params)
-
+        t_e = time.time()
+        model, explainer, sv, X_test, _ = train_for_shap(features, targets, etf, best_params)
         all_shap_values[etf] = sv
         X_tests[etf] = X_test
         models[etf] = model
         explainers[etf] = explainer
+        print(f"  {etf:>3s}: {model.best_iteration+1:>3d} arboles | {time.time()-t_e:.1f}s")
 
-        elapsed = time.time() - t_etf
-        n_trees = model.best_iteration + 1
-        print(f"  ✓ {etf:>3s}: {n_trees:>3d} árboles | "
-              f"SHAP shape: {sv.shape} | {elapsed:.1f}s")
-
-    t_train = time.time() - t0
-    print(f"\n  Entrenamiento + SHAP completado en {t_train:.0f}s")
-
-    # ── Generar las 8 figuras ───────────────────────────────────────
+    # Generar 8 figuras
     print(f"\n{'=' * 62}")
     print("GENERANDO FIGURAS")
     print(f"{'=' * 62}")
 
-    # Figura 1 — Importancia global
     p1 = plot_global_importance(all_shap_values, feature_names, feature_groups)
-    print(f"  ✓ Figura 1: {os.path.basename(p1)}")
+    print(f"  1. {os.path.basename(p1)}")
 
-    # Figura 2 — Importancia por dimensión
     p2, dim_imp, dim_total = plot_dimension_importance(
         all_shap_values, feature_names, feature_groups)
-    print(f"  ✓ Figura 2: {os.path.basename(p2)}")
+    print(f"  2. {os.path.basename(p2)}")
 
-    # Figuras 3-5 — Beeswarm (SPY, AGG, GLD)
-    beeswarm_paths = plot_beeswarm_top_etfs(
-        all_shap_values, X_tests, feature_names)
-    for i, p in enumerate(beeswarm_paths, 3):
-        print(f"  ✓ Figura {i}: {os.path.basename(p)}")
+    for i, p in enumerate(plot_beeswarm_top_etfs(all_shap_values, X_tests, feature_names), 3):
+        print(f"  {i}. {os.path.basename(p)}")
 
-    # Figura 6 — Heatmap ETF comparison
     p6 = plot_etf_comparison(all_shap_values, feature_names)
-    print(f"  ✓ Figura 6: {os.path.basename(p6)}")
+    print(f"  6. {os.path.basename(p6)}")
 
-    # Figura 7 — Importancia temporal (3 períodos)
-    print(f"  Calculando SHAP temporal (3 períodos × 3 ETFs)...")
-    p7 = plot_temporal_importance(
-        features, targets, best_params, feature_names, feature_groups)
-    print(f"  ✓ Figura 7: {os.path.basename(p7)}")
+    print(f"  7. Calculando SHAP temporal (3 periodos x 3 ETFs)...")
+    p7 = plot_temporal_importance(features, targets, best_params, feature_names, feature_groups)
+    print(f"     {os.path.basename(p7)}")
 
-    # Figura 8 — Waterfall predicción extrema
-    p8, date_str = plot_single_prediction(
+    p8, date_str, context = plot_single_prediction(
         models["SPY"], explainers["SPY"], X_tests["SPY"], feature_names, "SPY")
-    print(f"  ✓ Figura 8: {os.path.basename(p8)} (semana {date_str})")
+    print(f"  8. {os.path.basename(p8)} ({date_str}, {context})")
 
     print(f"{'=' * 62}")
 
-    # ── Resumen en consola ──────────────────────────────────────────
-    print_shap_summary(all_shap_values, feature_names, feature_groups,
-                       dim_imp, dim_total)
+    print_shap_summary(all_shap_values, feature_names, feature_groups, dim_imp, dim_total)
 
-    # ── Listar figuras guardadas ────────────────────────────────────
     shap_files = sorted([f for f in os.listdir(FIGURES_DIR) if f.startswith("shap_")])
-    print(f"\n{'=' * 62}")
-    print(f"  FIGURAS SHAP GUARDADAS EN {FIGURES_DIR}/")
-    print(f"{'=' * 62}")
+    print(f"\n  Figuras en {FIGURES_DIR}/:")
     for f in shap_files:
         size = os.path.getsize(os.path.join(FIGURES_DIR, f))
         print(f"    {f:<40s} {size:>9,} bytes")
-    print(f"{'=' * 62}")
 
-    total = time.time() - t0
-    print(f"\n⏱️  Tiempo total: {int(total // 60)}m {int(total % 60)}s")
+    print(f"\n  Tiempo total: {int((time.time()-t0)//60)}m {int((time.time()-t0)%60)}s")
