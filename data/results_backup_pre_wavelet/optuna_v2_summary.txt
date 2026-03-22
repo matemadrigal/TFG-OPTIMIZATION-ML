@@ -1,0 +1,36 @@
+OPTUNA v2 — RESUMEN DEL TUNING
+==================================================
+
+XGBoost:
+  Sharpe v1: 1.397
+  Sharpe v2: 1.397
+  Mejores params v2: {
+    "learning_rate": 0.022076583911090145,
+    "max_depth": 7,
+    "subsample": 0.6874723597235824,
+    "colsample_bytree": 0.8252736895030667,
+    "reg_alpha": 2.0101235877104179e-07,
+    "reg_lambda": 1.2723209327285888e-07,
+    "min_child_weight": 20,
+    "gamma": 0.0,
+    "max_bin": 256
+}
+  → v2 NO mejora. Los params de v1 son definitivos.
+
+LightGBM:
+  Sharpe v1: 1.313
+  Sharpe v2: 1.206
+  Mejores params v2: {
+    "learning_rate": 0.004664734991102912,
+    "num_leaves": 172,
+    "max_depth": 13,
+    "subsample": 0.7323609325029053,
+    "colsample_bytree": 0.5407566128024925,
+    "reg_alpha": 0.0004907951600645905,
+    "reg_lambda": 5.639667489517997,
+    "min_child_samples": 56,
+    "min_split_gain": 0.00431639310812066,
+    "subsample_freq": 7,
+    "path_smooth": 0.7884226183494615
+}
+  → v2 NO mejora. Los params de v1 son definitivos.
