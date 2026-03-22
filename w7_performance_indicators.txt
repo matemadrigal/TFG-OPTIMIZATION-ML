@@ -1,0 +1,372 @@
+Algorithmic Trading - A Practitioners Guide
+
+Backtesting & Performance Measurement
+
+Nick Firoozye / Brian Healy
+07 September 2023
+Outline
+
+     1. Performance Indicators
+     2. Illustrating Drawdowns
+     3. Python for Analysis
+     4. Performance Indicator Comparisons
+     5. A Realistic Backtest
+     6. Optimizing Hyperparameters
+
+          Common Methods
+          Bayesian Optimisation
+     7. Multi-Objective Optimization
+     8. Summary
+
+                                                                                                                                                    1
+Performance Indicators
+Performance Indicators
+
+Performance Indicators
+Paper: How sharp is the Sharpe ratio
+
+· Sharpe Ratio                        µ
+                                        ,
+                            SR   =    
+
+where µ is the average return and  volatility, also called the
+
+risk-adjusted return, is the most common.
+
+· Value-at-Risk (VaR) is the value such that, taking the cumulative
+  distribution function of the strategy returns,
+  CDF(-VaR()) = 1 - . VaR() represents a potential relative
+  loss of the strategy for a given confidence level ,
+
+· Conditional Sharpe Ratio
+
+                            CSR  =    µ
+                                    ES() ,
+
+where ES() is the expected shortfall, i.e. the average of the
+
+strategy returns that are lower than the VaR().                      2
+Performance Indicators
+
+Performance Indicators
+
+· Burke Ratio                  µ
+
+                        BR  =          i      DDi2  ,
+
+where the i-th drawdown DDi within the interval considered is
+                   ThroughValuei -PeakValuei
+given by  DDi   =            PeakValue)       where    the i-th through value
+
+of the price time series has to follow in time the i-th peak value,
+
+· Maximum Drawdown
+
+          MDD      =  MinThroughValue - MaxPeakValue   ,
+                                   MaxPeakValue
+
+where the minimum through value of the price time series has
+to follow in time the maximum peak value,
+
+· Calmar Ratio                      µ
+                                  MDD .
+                        CR     =
+
+                                                                               3
+Illustrating Drawdowns
+Analysing Drawdowns
+
+     Analysing Drawdowns
+
+                 Figure 1: Strategy Cumulative Return/PNL G Gunderson blog
+
+                                                                                                                                                    4
+Analysing Drawdowns
+
+     Analysing Drawdowns - Plotting Cumulative PnL
+
+                   Figure 2: Cumulative Returns with DDs G Gunderson blog
+
+                                                                                                                                                    5
+Analysing Drawdowns
+
+     Analysing Drawdowns - Drawdown Plot and MaxDD
+
+                    Figure 3: Drawdown plot with Max DD G Gunderson blog
+
+                                                                                                                                                    6
+Analysing Drawdowns
+
+     Analysing Drawdowns - Identifying Longest DD
+
+                 Figure 4: Strategy Cumulative Return/PNL G Gunderson blog
+
+                                                                                                                                                    7
+Python for Analysis
+Annualising Returns
+
+     Annualising Returns/Vol
+
+                                           Figure 5: Annualising
+
+                                                                                                                                                    8
+SR and Value-at-risk
+
+     VaR and SR
+
+                      Figure 6: VAR and SR  9
+MaxDD
+
+     MaxDD
+
+                                               Figure 7: MaxDD
+
+                                                                                                                                                   10
+MaxDD Length
+
+     MaxDD-Length 1
+
+                                               Figure 8: MaxDD
+
+                                                                                                                                                   11
+MaxDD Length
+
+     MaxDD-Length 2
+
+                                               Figure 9: MaxDD
+
+                                                                                                                                                   12
+Calmar Etc
+
+     Calmar etc
+
+                                              Figure 10: Calmar
+
+                                                                                                                                                   13
+Omega Sortino
+
+     Omega Sortino
+
+                                      Figure 11: Omega and Sortino
+
+                                                                                                                                                   14
+Tail Ratio etc
+
+     Tail Ratio
+
+                                            Figure 12: Tail Ratio
+
+                                                                                                                                                   15
+Performance Indicator
+Comparisons
+Performance Measure Comparisons
+
+     Performance Measure Comparisons
+
+                                                                                                                                                   16
+
+                                          Figure 13: Google Sheet
+Performance Measure Comparisons
+
+     Performance Measure Comparisons
+
+                                          Figure 14: Google Sheet
+
+                                                                                                                                                   17
+Perf Meas Comparisons
+
+     Performance Measure Comparisons
+
+                                          Figure 15: Google Sheet
+
+                                                                                                                                                   18
+A Realistic Backtest
+Backtesting
+
+     Realistic Backtests
+         · Backtests should include all realiastic assumptions
+         · Historic costing or costing model (i.e., mid, bid-ask spread,
+           market impact measure) for market orders
+         · Elements like roll and roll cost (i.e., when rolling from ERZ3 to
+           ERH4 when we come to the Dec IMM date, we usually pay 1/2 *
+           bid-ask spread for the two trades)
+         · Financing if bought on a margin, including long and/or short
+           side for most costly version)
+         · Can summarize returns before and after costs, etc.
+
+                                                                                                                                                   19
+Recording Backtests
+
+     Screen Recording
+
+                                                                                                                                                  20
+Backtesting
+
+     Realistic Backtests
+         · Backtests Take time
+         · Costly
+         · May involve many simulations
+         · Many performance measures need calculation
+         · Many other measures for sanity checks etc.
+
+                                                                                                                                                   21
+Optimizing Hyperparameters
+Hyperparameter Optimisations
+
+     Hyperparameter Optimisation
+         · Parameters:
+                 · Rolling Betas (RLS, EWRLS)
+                 · Changing Vol Estimates (GARCH model)
+                 · Betas (OLS)
+         · Hyperparmaters:
+                 · Multipliers (in an optimisation problem)
+                 · Risk aversion (in a utility) and Thresholds
+                 · Exponential Weights (EWRLS) / Learning Decay
+                 · Rolling windows (RLS)
+                 · Epoch length
+                 · Shrinkage parameters
+         · Some intrinsic overlap and ambiguity.
+
+                                                                                                                                                   22
+Hyperparameter Optimisations
+
+     Hyperparameter Tuning
+         · Manual Tuning
+         · Grid Search
+         · Random Search
+         · Bayesian Optimization
+         · Tree-structured Parzen Estimators (TPE)
+
+                                                                                                                                                   23
+Tuning Algos
+
+     Hyperparameter Tuning Algos
+         · HyperOpt
+         · Scikit-Optimize
+         · Optuna
+         · GPyOpt
+         · Many others
+
+     We will look a bit more at Optuna, commonly used in Kaggle
+     competitions - Uses a combination of search techniques including
+     random starting TPE with Bandits and early stopping. Can easily be
+     parallelized (e.g., dask).
+
+                                                                                                                                                   24
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+Figure 16: Example Function to Maximize Nanonets Blog
+
+Global Optimization is part art, part science. Bayesian optimization  25
+
+uses global data more efficiently. Better if function valuations are
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+               Figure 17: Two evaluation - GP Posterior Density Nanonets Blog
+
+                                                                                                                                                  26
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+                                         Figure 18: Nanonets Blog
+
+                                                                                                                                                   27
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+                                         Figure 19: Nanonets Blog
+
+                                                                                                                                                  28
+Multi-Objective Optimization
+Multiple Objectives
+
+     Multiple Objectives
+         · Many design problems involve a large number of competing
+           objectives
+         · These are common in areas of self-driving vehicles,
+           search-engine optimization, and many other areas
+         · Technically MOO is at play in mean-variance optimization in
+           finance: we want to maximize returns while minimizing risk.
+         · Trying to do both simultaneously leads to what is known as a
+           Pareto solution - which gives us the efficient frontier
+
+                                                                                                                                                   29
+Multi Objective Optimisation
+
+     MOO
+         · Plan to simultaneously
+
+                                            f1,opt = max f1(x)
+                                            f1,opt = max f1(x)
+                                            f2,opt = max f2(x)
+                                            f3,opt = max f3(x)
+
+                                                 ......
+
+         · One solution is Pareto solution
+         · if x is a Pareto solution then x + x may improve one if the fi but
+
+           only at the expense of other fj.
+
+                                                                                                                                                  30
+Multi Objective Optimisations
+
+     Multi-Objective Optimisation - MVO
+
+  Figure 20: Mean vs Stdev and Random Portfolios
+
+· The efficient frontier involves all portfolios which cannot be
+  improved, i.e., if the mean return goes up, the risk will also be
+  greater, or if the risk is lessened the mean will also be lessened.
+
+· `Technically each is a solution of E[R] - /2Var[R] for different
+
+                                                                       31
+Multi Objective Optimisations
+
+     Multi-Objective Optimisation - Random Sampling
+
+                Figure 21: Randomly sampled ML Model configs vs Objectives
+
+                                                                                                                                                   32
+Multi Objective Optimisations
+
+     Multi-Objective Optimisation - Pareto Boundary
+
+      Figure 22: Pareto Frontier is not stochastically dominated FasatForward Labs
+      Blog
+
+                                                                                                                                                   33
+Multiple Objectives
+
+     Multiple Objectives- Linear Combinations
+         · MOO works for up to 4 objective functions
+         · MOO is equivalent to having linear combinations, i.e.,
+                            max f1(x) + 2f2(x) + 3f3(x) + · · · nfn(x)
+         · Having more than four objectives  Many-Objective
+           Optimization (MaOO)
+         · Some methods for MaOO include finding PCAs of objectives and
+           then using Pareto-methods on the principal components
+         · Once the parameter space is explored, a single choice must be
+           done!
+
+                                                                                                                                                   34
+Summary
+Summary
+
+     Summary
+         · Performance Indicators
+         · Drawdowns
+         · None is perfect
+         · Backtesting
+         · Hyperparamter Optimization
+         · MOO
+
+                                                                                                                                                   35
+

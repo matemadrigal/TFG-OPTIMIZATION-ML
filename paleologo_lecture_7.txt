@@ -1,0 +1,240 @@
+Algorithmic Trading &
+Quantitative Strategies
+
+                   Lecture 7 (4/23/2024)
+            Giuseppe Paleologo (gardener)
+Today's Session
+
+  No quiz today
+  Today is entirely devoted to backtesting
+Recap on Last Quiz                                4. Which constraint here is not like
+                                                        the others?
+ 1. Why do we perform factor/idio
+       short-term updating? Wrong answer                   a. Long-only
+       only                                                b. Max Style Vol
+                                                           c. Max GMV
+          a. There are transient, mean-reverting           d. Factor Vol > Idio Vol
+                  shocks
+                                                  5. If my covariance matrix is
+          b. Volatility is higher in January            ill-conditioned:
+          c. The world is not stationary
+          d. It lowers QLIKE loss                          a. Alpha error is more damaging
+                                                           b. Covariance error is more damaging
+ 2. What can go wrong with                                 c. Max GMV constraint is more
+       thresholding cov matrices?
+                                                                   damaging
+          a. Non pos-definite                              d. Max variance constraint is more
+          b. Performance can worsen
+          c. Matrix storage                                        damaging
+          d. Hard to interpret
+
+ 3. What operation you don't do on idio
+       cov matrices
+
+          a. Shrinkage
+          b. Rotation
+          c. Short-term updating
+          d. Exponential Weighting
+Backtesting
+
+ Financial Researchers cannot design experiments.
+
+    History is all we have
+ We still live in a small data kind of world
+ Backtesting is an (the) essential tool for
+
+    confirmatory analysis
+ Many challenges
+ Two parts to this lecture.
+
+      Folk wisdom stuff
+      Some hardcore analysis
+Best Practices: Data (1)
+
+  What does the data mean? The most basic question
+
+          Definition
+          Physical dimensions
+
+  Provenance
+
+          Where are the data coming from?
+          Does the vendor collect the data themselves?
+          Collection criterion?
+          Does the vendor sample data or collects the data exhaustively?
+          Is the population sampling methodology sound?
+          If originate elsewhere, who is originating the data?
+
+ 
+Best Practices: Data (2)
+
+  Completeness
+
+          Missingness analysis
+          X-sec, serial completeness
+
+  Quality assurance
+
+          Vendor procedures
+          Change point detection
+
+  Point-in-time vs. restated
+  Transformation
+  Substitutes and complements
+Best Practices: Process (1)
+
+  Data Leakage: presence in the training data, the data available up
+
+     to time t, of information contained in the target, i.e., returns in
+
+     periods t+1 and later
+
+          Survivorship bias
+          Financial statements as-of-date or lagged (check for robustness)
+          Price adjustments. Adjusted prices are subtly informative!
+          Missingness. Can be informative!
+          Stupid mistakes. E.g., off-by-one. They happen.
+Best Practices: Process (2)
+
+  Strategy development
+
+          Have a theory (if you can)
+          Enforce reproducibility
+          Use as much as possible the same setting in research and production
+          Calibrate the market impact
+          Include borrow costs (and maybe/maybe not dividend taxation)
+          Define beforehand the dataset
+          Define beforehand the backtesting protocol
+Backtesting Protocol
+
+Two main approaches: cross-validation and walk-forward
+Some
+Cross-Validation
+Cross-Validation
+
+   The intended goal is to estimate the expected loss (performance) of a model
+   Usage to select large numbers of models would be very different from practice
+   Do not screen factors before or by cross-validation
+   Challenges (partially addressable):
+
+            Serial dependencies
+            Data leakage
+An Example
+
+  N=1000, T variable (20 years, 5
+       years), number of random factors
+       variable (2, 500). True SR zero
+
+  5-fold cross-validation
+  Run 1000 simulations
+Walk Forward
+
+ Basic idea: align research and production
+       No data leakage
+       Serial dependencies are accounted for
+       Comes in variants
+Walk-Forward
+
+It is a necessary step in the research
+process. Often the chain is:
+K-fold cross-validation (screening)
+=> walk-forward
+=> test production
+=> deploy at at scale
+Drawback: data usage. You can't select
+among large sets of signal using a single
+walk-forward run. In practice each
+signal is tested separately
+A Wish List
+
+1. non-anticipative/immune from data leakage
+2. taking into account serial dependency
+3. using all data
+4. allowing for multiple testing of a very large
+
+     number of signals
+5. Providing a rigorous decision rule
+A Modest Proposal: The Rademacher AntiSerum (RAS)
+Against Backtesting Bites
+
+Driving ideas:
+
+1. Use a data-based measure of complexity
+2. Reinterpret and extend known results in Machine Learning
+3. Answer the question quants are asking (what is the haircut?), not
+
+      the question you like to answer (hypothesis tests)
+4. Computations are cheap
+Setup
+
+  Primitive data: T x N matrix X.
+  X[t, i] is the performance at time t
+
+       a are signals, r are return, w are portfolios, and S are covariance matrices
+          Signals: Information Coefficient x[t,i]:
+                       x[t,i] :=a[i,t], r[t]/ (||a[i,t]|| ||r[t]||)
+          Strategy: z-scored strategy return:
+                       x[t,i] =w[i,t]',r[t]/ sqrt (w[i,t]' * S[t] * w[i,t])
+
+  Use x :=x[t,:] and xn:=x[:,n]
+
+                     t
+
+  Define the empirical performance:
+Moar Machinery
+
+Rademacher random vector  in RT: iid binary -1/1 with prob ½
+The star of the show: Rademacher Complexity
+Interpretations of Rademacher Complexity
+
+As the covariance to random noise:  as a random covariate. We can
+interpret R as the expected value of the highest covariance of the
+performance measure of a strategy to random noise. If, on average, for
+every set of +/-1 indicators, there is at least a strategy that
+covaries with it, then "we can do no wrong'': for every realization of a
+random series, there's a strategy that would do well matching it. If we
+interpret the x[t,n] as predictions for epoch t, then this means that
+for every sequence of events [t] we have a strategy that predicts them
+well.
+Interpretations of Rademacher Complexity
+Main Result: Signals
+
+For all signals, with probability at least equal to 1-:
+Main Result: Strategies
+
+For all signals, with probability at least equal to 1-:
+Discussion: Strategy/Signal Complexity Space
+
+  These are uniform bounds, and you can check whether a
+     strategy's Sharpe > 0 with high probability
+
+ The first is the term 2R. This is the data snooping term
+ The larger the number of strategies => the higher the R
+ The higher the dependency among strategies => the lower
+
+     R.
+  In the limit case where we test multiple replicas of the
+
+     same strategy R is zero.
+Discussion: Estimation Error
+
+The second is the estimation term. It is the unavoidable
+Intuition: consider T iid rv standard normal. Their average is
+approximately distributed as a normal distribution with standard
+deviation 1/sqrt(T).
+What is the -quantile of the distribution? Approximation:
+
+                                                =>
+Practical Considerations
+
+1. IC is bounded by 1, but in practice it's < 0.1. Apply this
+      (non-rigorous) correction, and the estimation error is reduced by
+      a factor 10
+
+2. And the estimation error constant is probably non-optimal. If you
+      consider the stand-along Sharpe estimation Error, it's 3x too big.
+      Effectively, we can do better.
+
+3. The real issue is the data mining impact, and that is unchanged
+      and equal to 2R
+

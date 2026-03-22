@@ -1,0 +1,2383 @@
+Algorithmic Trading - A Practitioners Guide
+
+Risk Management & Portfolio Theory
+
+Nick Firoozye / Brian Healy
+18th December 2023
+Outline
+
+     1. Asset Pricing Models
+     2. Optimal Portfolios
+     3. Risk Management
+     4. Market Risk
+     5. Operational Risk
+     6. Optimal Scaling for Strategies
+     7. Value at Risk and Related Appraches
+     8. Factor Models
+
+                                                                                                                                                    1
+Asset Pricing Models
+Asset Pricing Model
+
+                An asset pricing model is a quantitative model that
+             describes the value of a portfolio (including single-stock
+
+                      ones) based on a set of financial indicators.
+
+                                                                                                                                                    2
+CAPM, Fama-French, APT
+
+     Here we will briefly discuss three main asset pricing models: Capital
+     Asset Pricing model (CAPM), Fama-French three factor model and the
+     more general Arbitrage Pricing Theory (APT).
+
+                                                                                                                                                    3
+CAPM
+
+     Capital Asset Pricing model (CAPM)
+         · This describes the values of portfolio returns by comparing
+           against market returns, introducing , that is a measure of the
+           volatility of a portfolio (stock) return as compared with market
+           return volatility and introducing also s, that is a measure of the
+           residual expected return of a portfolio (stock) return, we get the
+           more general formulation,
+
+                                 rit - rft = i + iM (rMt - rft) + it
+
+                                                                                                                                                    4
+CAPM Illustration 1
+
+                                              Figure 1: Caption
+
+                                                                                                                                                    5
+Asset Pricing Models
+
+     Definition: Asset Pricing Model
+     An asset pricing model is a quantitative model that describes the
+     value of a portfolio (including single-stock ones) based on a set of
+     financial indicators.
+
+                                                                                                                                                    6
+CAPM, APT & Fama-French
+
+     CAPM, APT, Fama-French
+     Here we will briefly discuss three main asset pricing models:
+
+         · Capital Asset Pricing Model (CAPM - Sharpe, Treynor, Lintner,
+           Mossin, etc),
+
+         · Arbitrage Pricing Theory (APT - Ross) A much more flexible
+           framework
+
+         · Fama-French a three/five/etc factor model. APT's most famous
+           application
+
+         · Each is the outcome of an equilibrium model where
+           representative investors maximize the utility of their
+           wealth/returns (i.e., MVO).
+
+         · We will discuss in more detail when we discuss Portfolio
+           Optimization.
+
+                                                                                                                                                    7
+CAPM
+
+     CAPM
+     Capital Asset Pricing model (CAPM) describes the values of asset
+     returns by comparing against market returns,
+
+         · In its most general formulation where ri is the return of the ith
+           stock, rf is the risk-free return and rM is the market return
+                                 rit - rft = i + iM (rMt - rft) + it
+
+         · Here  is a measure of the sensitivity of the stock to the market,
+           with higher values expecting higher compensation for the risk
+
+         · In this most general formulation  is not in the original
+           formulation, and is a measure of the residual expected return of
+           a portfolio (stock) return
+
+                                                                                                                                                    8
+CAPM in Pictures
+
+Figure 2: The efficient frontier with no risk-free, the tangency portfolio T,
+
+which is the market, and the capital markets line                              9
+APT
+
+APT
+
+     · Ross extended CAPM to consider multiple (non-diversifable)
+
+     sources                 
+                                 bijfjt
+              reit  =  i  +              +  it
+
+                             j
+
+     · Here rei is the excess return of the ith asset, and fjt is the jth
+       factor's excess return.
+
+     · Note, unlike PCA, the factors need not be orthogonal.
+
+     · All non-diversifiable sources of risk must have a market price of
+       risk (i.e., a positive expected excess return), i.e,
+                                    EP[ fj ] = j > 0, but
+                                    EQ[ fj ] = 0
+
+                                                                           10
+APT
+
+APT
+
+     · Ross extended CAPM to consider multiple (non-diversifable)
+
+     sources                        
+                                        bijfjt
+                     reit  =  i  +              +  it
+
+                                    j
+
+     · Here rie is the excess return of the ith asset, and fjt is the jth
+       factor's excess return.
+
+     · Note, unlike PCA, the factors need not be orthogonal.
+
+     · All non-diversifiable sources of risk must have a market price of
+       risk (i.e., a positive expected excess return), i.e,
+                                    EP[ fj ] = j > 0, but
+                                    EQ[ fj ] = 0
+
+     · All idiosyncratic risks are (asymptotically) diversifiable and thus,
+
+     uncompensated.                                                          10
+Fama-French Model
+Fama-French three factor model describes the values of portfolio
+returns by considering the returns of
+
+   · an average market portfolio,
+   · a stock size factor (Small Minus Big factor, SMB), and
+   · stock book-to-market ratio factor (High Minus Low factor, HML).
+   · Mathematically, we have
+
+              rit - rft = i + iM (rMt - rft) + isSMBt + ihHMLt + it
+   · SMB and HML are in the original formulation, but many others
+
+      are feasible
+
+                                                                                                                                           11
+Fama-French Portfolios
+
+Figure 3: FF Portfolio Excess Returns  12
+Fama-French Model Explanation
+
+     Fama-French
+     The model introduces multiple s,
+
+         · the small-vs-big (SMB) factor, which weights a stock market
+           capitalization,
+
+         · the high-vs-low factor (HML), which weights the ratio between
+           the fundamental valuation and the market valuation of a stock.
+
+         · the market beta () which weights the overall sensitivity to
+           market moves
+
+         · Stocks characterised by high book-to-market ratios are called
+           value stocks, while stocks characterised by low ratios
+           correspond to growth stocks.
+
+                                                                                                                                                   13
+Optimal Portfolios
+Portfolio Theory
+
+     Portfolio theory it it the theory which describes the criteria and the
+     process of allocating capital in a portfolio,
+
+                                              Figure 4: Caption
+
+                                                                                                                                                   14
+Optimal portfolio theory
+
+Let us consider a universe of N assets, characterised by a N time
+
+series of returns ri, let us compute two main quantities: the vector of
+expected returns for each asset,
+
+                                         µi = ri
+the covariance matrix for each pair of assets,
+
+Sij  =                    (ri  -  µi)  (rj  -    )
+                                               µj
+
+                                                                         15
+Optimal portfolio theory
+
+     Predicting µi and Sij is crucial for the efficient construction of an
+     optimal portfolio. This requires modeling assumptions and statistical
+     estimation methodologies from time series data. The challenge is
+     two-fold:
+
+         · estimating the correlation matrix between a large number of
+           time series, e.g. stock returns, requires estimating N(N - 1)/2
+           coefficients from N × T data points,
+
+         · predicting future values of expected correlations and expected
+           returns, (i.e., the alphas), which is in many cases far harder.
+
+     Correlation cleaning methodologies (linear and non-linear shrinkage,
+     rotationally invariant estimators) and multivariate time-series
+     prediction models are therefore crucial for portfolio optimisation.
+
+                                                                                                                                                   16
+Optimal portfolio theory
+
+Let us ask this question: what would be a good portfolio selection
+
+based on the quantities, µi and Sij ? A portfolio, defined by a set of
+weights wi , which would yield an high return while keeping a low
+variance. The expected return for a generic portfolio reads
+
+                                     
+
+       µp =                     wiri = wiµi
+
+                            i               i
+
+the variance of a generic portfolio reads:
+
+p2     (                  wiri        )2           wiSijwj
+                                   µp
+
+    =                           -           =
+
+       i                                       ij
+
+                                                                        17
+Optimal portfolio theory
+
+Optimal portfolio theory
+Let us find a methodology for the optimal portfolio selection: we
+
+want to minimise p2 while we condition on the normalisation of the
+portfolio, and on the expected return, i.e.
+
+conditional on  w = argminwp2[w]
+and
+                     
+                          wi = 1
+
+                          i
+
+                  
+                       wiµi = µp.
+
+                      i
+
+                                                                    18
+Generalisations
+
+     We may also add further conditions on the weights:
+         · No of short-selling wi > 0
+         · Avoid concentration with a limit over the maximum weight,
+           maxi wi < M
+         · Limit leverage maxi |wi| < L
+         · Limit investments in specific sectors, e.g. do not invest more
+           than $10 in high-carbon assets
+
+                                                                                                                                                   19
+Two assets portfolio
+
+     A simple case is the one with two assets, as we have only one
+     relevant weight w, as the other one is naturally 1 - w , if we also
+     make the hypothesis µ1 = µ2, then changing w the expected return,
+     µp, does not change.
+
+                                                                                                                                                  20
+Two assets portfolio
+
+     The variance reads:
+                           p2 = w212 + (1 - w)222 + 2w(1 - w)
+
+     where  is the covariance between the two assets. Let us take the
+     derivative of the variance with respect to w and set it to zero,
+
+                        2w12 - 2(1 - w)22 + 2(1 - w) - 2w = 0.
+
+                                                                                                                                                   21
+Two assets portfolio
+
+The solution reads
+
+                      w  =    22 - 
+                            12 + 22-2
+
+                                       22
+N assets portfolio
+
+Let us consider a more general case with N assets, we want to
+
+im.ei.nimiiwsei  =p21[wa]n, dcoonnditthioeneinxpgeocntetdherentuorrnm, ai.leis. atioi wni  of  the portfolio,
+                                                                                           µi  = µp. We use
+
+Lagrangian multipliers to perform the calculation: we want to
+
+minimise
+
+                    p2 [w]           wi           wiµi
+                      2
+                            -  1         -  2
+
+                                  i            i
+
+                                                                                                               23
+N assets portfolio
+
+Taking the derivative with respect to wi and setting it to zero, we
+obtain
+
+                        (Sw)i = 1 + 2µi
+
+so the solution reads,
+
+                                 w = S-1(11 + 2µ),
+where 1 is a vector of ones.
+
+                                                                     24
+N assets portfolio
+
+     We just need to fix the Lagrange multipliers, imposing the
+     normalisation we obtain,
+
+                                   1 = 11TS-11 + 21TS-1µ,
+     and the portfolio expected return,
+
+                                 µp = 1µTS-11 + 2µTS-1µ.
+
+                                                                                                                                                   25
+N assets portfolio
+
+We realise that we are looking at a linear system of two equations in
+two variables,
+
+                                     1 = 1a + 2b,
+and
+
+                       µp = 1b + 2c,
+
+whose solution reads,
+
+                                   1 = (c - bµp)/d
+and
+
+                                 2 = (-b + aµp)/d
+
+where d = ac - b2. We note that Lagrange multipliers are both linear
+in the portfolio expected return µp.
+
+                                                                       26
+N assets portfolio
+
+     From this solution we can compute explicitly the variance of the
+     optimal portfolio:
+
+                                    p2 = 21 a + 212b + 22c
+     Considering that the linear dependence of the Lagrange multipliers
+     on the portfolio expected return µp, the minimum variance
+     p2 is quadratic in µp, i.e.
+
+                                       p2 = Aµp2 + Bµp + C
+     Varying µp and computing the corresponding p, it is possible to
+     draw the efficient frontier.
+
+                                                                                                                                                   27
+Optimal Sharpe ratio
+
+· By including a risk-free asset we can identify the tangency
+
+portfolio.
+
+· This is a portfolio in the return-risk plane that:
+
+· Sits on the efficient frontier.      µp -rf
+                                         p
+·  Has the highest Sharpe ratio, SR =          on the frontier.
+
+· This means it sits on the line starting from the risk-free investment
+
+   and touching the efficient frontier with the highest possible slope.
+
+                                                                         28
+Equivalent Formulations of MVO
+
+· Portfolio Optimization is actually a set of optimisation problems
+  - or a stochastic control problem.
+
+· We can think of the following problems as being pretty much the
+
+sameM: ax Return  max µ ·                s  · 1 = 1
+
+Min Risk          min                  µ·=m ·1=1
+
+Max Utility       max  µ  ·    -       ·1=1
+                                  2
+
+· The max utility formulation allows us to consider various other
+  formulations.
+
+· As we let the risk-aversion  vary, we can trace out the entire
+  efficient frontier.
+
+                                                                     29
+Adding Transaction Costs
+
+· Transaction costs are the amount you pay to enter (and exit) a
+  trade.
+
+· Usually we model the mid price - the average of the best-bid
+  and best-offer.
+
+· Ignoring the size of the trades and the possibility of walking the
+  order book etc.
+
+· Let                             bid  +  ask
+                                       2
+                          mid  =
+
+· Then assume that we buy at the ask price and sell at the bid
+  price giving a transaction cost for each trade of:
+
+                          tc  =  ask  -  bid
+                                      2
+
+                                                                      30
+Adding Transaction Costs
+
+· If tc is a vector of costs for all our assets and we assume that
+  our current position is 0, we can reformulate the problem as:
+
+max  µ                    ·    -       -  tc  ·  |  -  0|
+                                  2
+  
+
+· There are many other functions of the recommended trade
+
+( - 0) possible to model market impact or for computational
+ease.
+
+                                                                    31
+Transaction Costs as QP
+
+· Recall that a QP usually takes the form:
+                                   max xPX + q · x
+
+                                              Axb,Cx=d
+
+· We can write our absolute value in this form using slack
+
+variables, i.e,                 = 0 + b - s
+
+with b  0, s  0             ·  µ  -       -  tc  ·  (b  +  s)
+                     max             2
+
+                                = 0 + b - s
+
+                          b, s  0
+
+· If tci > 0 then bisi = 0, i.e., you won't buy and sell the same
+  asset.
+
+                                                                   32
+Transaction Costs - Closed Form Solutions
+
+· We follow the approach in: De Miguel, Mei and Nogales,
+  Multiperiod Portfolio Optimization with Many Risky Assets and
+  General Transaction Costs.
+
+· The N asset case is difficult to follow, so we look at the
+  one-asset case:
+
+        max           µ  -     22  -  tc |  -  0|
+                            2
+          
+
+with  = cost aversion and  = risk-aversion.
+
+· Let y =  - 0 then:
+
+u(y) =                   µ(0   +  y)  -        +  y)22  -  tc|y|
+                                         2 (0
+
+=       µ0 + (µ - 20)y - (1/2)2y2 - tc|y|
+
+and let µ~ = (µ - 20).
+
+                                                                  33
+Transaction Costs - Closed Form Solutions
+
+· Taking FOC,
+
+               u(y) = µ~ - 2y -  tc sign(y) = 0
+
+·  So if y > 0, then y =  µ~-tc  and if y < 0 then y =  µ~+tc  and so
+                           2                             2
+
+                          µ~-tc  if µ~  tc
+                           2     if - tc  µ~  tc
+                                 if µ~  -tc
+               y = 0µ~+tc
+                          2
+
+                                                                       34
+Transaction Costs - Closed Form Solutions
+
+· Rewriting in terms of , we see
+
+  µ- tc          if                     µ- tc
+    2                                     2
+                                  0  <
+
+ = µ0+ tc        if               0     [  µ- tc  ,  µ+ tc  ]
+                                             2         2
+              2
+                 if               0  >  µ+ tc
+                                          2
+
+                                                               35
+Transaction Costs - Explanation
+
+·  There is a no-trade zone centered at the Markowitz solution   µ
+                                                                2
+   with  width  dependent  on  transaction  costs  (±   tc  ).
+                                                       2
+
+· if initial allocation is in this zone, we do keep the position the
+
+   same.
+
+· if the initial allocation is below this zone, we trade to just the
+  lower boundary of this zone.
+
+· if the initial allocation is above this zone, we trade to just the
+  upper boundary of this zone.
+
+· higher tc increases width of no-trade zone, higher vol decreases
+  width.
+
+                                                                      36
+Quadratic Programs
+
+Quadratic Programs
+More generally in the context of convex optimisation we want to
+solve the following problems:
+
+                    min  1  xTPx  +  qTx
+                         2
+                      x
+
+subject to:              Gx  h
+and
+
+                         x=b
+
+                                                                 37
+QP and Slack Variables
+
+· We can include net limits |  i|  C1 and gross limits  |i|  C2
+  with ease.
+
+· All QP problems include slack variables. For instance
+
+i = i0  + bi   - smi wi ithCb2 it,osiimp0leamndenti   mi,    -i  -mi    with
+mi  0   and                                          tcosts  and gross  limits.
+
+· Easily a 30-asset problem can include 30 buys, 30 sells, 30
+
+maxes, etc, increasing the size from a 30×30 matrix input with a
+
+30-vector of means to a 120×120 or larger.
+
+· Implementing and manipulating these large matrices is a huge
+  problem-tedious
+
+                                                                                 38
+Examples
+
+         · We will share a JuPyter Notebook giving CVXPY examples.
+           (Stephen Boyd et al).
+
+         · If you're interested in convex cone optimization, then
+           Boyd-Vanderleven is a great resource.
+
+         · Fortunately, CVXPY creates all the necessary matrices from our
+           symbolic representations.
+
+         · Not suitable for general optimization - must have special
+           structure.
+
+                                                                                                                                                   39
+Tactical Asset Allocation
+
+     Asset allocation with fixed weights is biased - True efficient frontier vs
+
+       plug-ins, vs Covar-shrinkage, vs bootstrap method (Michaud et al), vs biased-Empirical
+       Bayes method.
+
+         Figure 5: MV Portfolio Optim when Means and Covar are Unknown Lai-Xing-Chen
+
+                                                                                                                                                  40
+Tactical Asset Allocation
+
+· In practice, most asset managers will estimate:
+
+      · Et[Rt] = µt
+      · Cov[Rt] = t
+      · tc
+
+· using dynamic models, and then optimise the one-period ahead
+  (or multiple period) optimisation model.
+
+U()  =  µt                 ·  t  -     t  tt  -    tct  ·  |t|
+                                    2
+
+which is known as Tactical Asset Allocation (see, e.g., Grinnold-Kahn,
+Active Portfolio Management - a very oddly notated book).
+
+                                                                        41
+Tactical Asset Allocation
+
+         · Some people call this book the bible of automated trading. I
+           very much disagree. Nonetheless, Grinnold and Kahn (Barra 
+           Barclays Global Investors  Blackrock) are well known in this
+           areas for active management (vs benchmarks, i.e., fund manager
+           wants to outperform FTSE 100 and can be long only, can
+           overweight and underweight sectors up to fixed limits, etc).
+
+                                                                                                                                                   42
+MVO as Regression
+
+                              1 = X + e
+
+                   e^ = (XX)-1X1
+
+Note that
+
+           (XX)-1X1 = ( + µµ)-1µ
+
+                              =  (-1   -  -1µµ-1
+                                          1 + µ-1µ )µ
+
+                              =  1  +   1    -1  µ
+                                       µ-1µ
+
+A scaled tangency portfolio.
+
+M Britten-Jones, Sampling Error in Estimatesof Mean Var Weights
+
+                                                                 43
+Risk Management
+Risk Management
+
+                    Risk management is the systematic process of
+                   identifying, assessing, and mitigating threats or
+                  uncertainties that can affect your organization. It
+                   involves analyzing risks' likelihood and impact,
+             developing strategies to minimize harm, and monitoring
+                measures' effectiveness. - Harvard Business School
+
+                                                                                                                                                  44
+Risk Management
+
+         · Different types of risk require different instruments of measure.
+         · Harvey, Liu, and Zhu (2016) define a risk factor as a "variable that
+
+           has unpredictable variation through time" and such that "assets'
+           risk exposures to this factor need to be able to explain the
+           cross-sectional return patterns."
+         · Not every kind of risk is easily quantifiable, but the extensive
+           literature attempting to explain asset returns' variations
+           provides numerous examples of risk factors.
+         · Cochrane (2011) speaks of a "zoo of factors" and Harvey et al.
+           survey and provide a list of 316 factors from the general finance
+           and economics literature.
+         · Each of these factors is a potential candidate to explain in part
+           the risks to which a portfolio is exposed.
+
+                                                                                                                                                   45
+Risk Management
+
+         · Broadly, the types of risk to which portfolio is exposed fall into:
+                 · Market risk, which is the single risk in the capital asset pricing
+                   model (CAPM), represents the return of a broad market index.
+                 · Liquidity risk is the risk of being unable to convert assets into cash
+                   without incurring a loss of capital or income in the process. This
+                   risk has been at the heart of many financial crises. Measuring
+                   liquidity risk is difficult because it is a multidimensional concept
+                   whose impact on returns may vary through time.
+                 · Credit risk is the risk of default on a debt that may arise from a
+                   borrower failing to make the required payments. At the market
+                   level, a credit spread serves as one measurement of credit risk.
+
+                         One of the best ways to make money is
+                                          not to lose it.
+
+                                                                                                                                                  46
+Risk Management
+
+         · One type of risk is always present - operational risk.
+         · More fund failures are due to operational mismanagement than
+
+           any other failing.
+         · This is the risk associated with:
+
+                 · Personnel problems.
+                 · Issues with the investment process.
+                 · Internal control failures.
+                 · Compliance issues.
+         · Operational risk is difficult to assess because it depends on
+           many intangible variables but measurable issues exist.
+
+                                                                                                                                                   47
+Risk Management
+
+· Risk measurement and risk management are closely related
+
+activities and both are important contributors to the success or
+
+failure of a fund:
+
+· Complex strategies require advanced risk measures and
+
+management tools adapted to the characteristics of the fund and
+
+its investment approach.
+
+· The regulatory oversight of much of the fund space is looser than
+
+for much of the rest of the industry and the opaque nature of
+
+many fund makes it difficult for investors to measure performance
+
+and risk.
+
+· A lack of transparency and oversight means that operational risks
+
+are potentially a big issue.
+
+· Properly managed risk can have a significant effect on
+
+performance but this relies on the correct assessment of risk.
+
+· Given the inexorable trade-off between risk and return, we can
+
+only accurately judge performance/return with accurate
+
+knowledge of the risks and this can only be achieved through
+
+rigorous risk measurement/management.                                48
+Market Risk
+Delta
+
+       · This is the sensitivity of a position or portfolio P to a single
+         underlying.
+
+       · It is expressed as:
+
+                              Delta  =  P
+                                        S
+       where S can represent any underlying variable but is typically
+
+       something like:
+
+       · Spot value of gold.
+       · Current price of the front corn future.
+       · The USDJPY exchange rate.
+
+       · So our "Delta to S" or our "S Delta", is the change in the position
+         value (in USD or GBP etc) for a small change in S.
+
+                                                                              49
+Delta
+
+           Figure 6: Linear Relationship Between Underlying Variable and Value
+         · For a linear position there is nice relationship between
+
+           underlying and position value and Delta (the slope of the line) is
+           close to constant.
+
+                                                                                                                                                  50
+Delta
+
+       · If you have a delta of USD +1mm to Aluminium, where delta is
+         measured as the sensitivity to a 1% increase in the Aluminium
+         price.
+
+       · You can neutralise this risk in a number of ways:
+             · Sell Aluminium in the cash market.
+
+       · The current spot price is $1,950 per tonne.
+
+       · A 1% increase in spot price equates to a $19.50 increase in the price
+
+          per tonne.                     1,000,000
+                                            19.50
+       ·  Therefore   i  need  to  sell             =  51, 828  tonnes.
+
+       · Sell Aluminium futures on LME:
+
+       · Price is $2,000 per tonne and each contract is for 25 tonnes  each
+         contract is worth $50,000.
+
+       · A 1% increase in price changes the value of one contract by $500.
+                                         1,000,000
+       ·  There  for  I  need  to  sell      500    =  2, 000  contracts.
+
+       · Using options or positions in some highly correlated market
+
+       (more complex and risky).
+
+                                                                                51
+Basis Risk
+
+         · Basis Risk is an overused term in finance which causes much
+           confusion. Here we using it to mean the residual risk when i
+           hedge using something similar but not the same.
+
+         · A good example is shorting an asset to hedge a long forward
+           position.
+                 · In order to sell short in the spot market you need to borrow the
+                   asset. This exposes you to noisy borrowing costs and the risk of a
+                   "short squeeze".
+                 · This hedge will typically work with some p&l noise along the way
+                   but there is a risk of a large loss.
+
+         · In general, linear products have the attractive property that
+           hedges protect against large as well as small changes in the
+           value of the underlying. Additionally, once the hedge has been
+           set up it never needs to be changed.
+
+                                                                                                                                                   52
+Non-linear Products
+
+         · Options and many other derivatives have a nonlinear
+           relationship with the value of the underlying asset price.
+
+         · This nonlinearity creates two main problems for hedging:
+                1. A hedged position will only remain delta neutral for small
+                   movements in the price of the underlying asset.
+               2. The hedge needs to be changed frequently - called dynamic
+                   hedging.
+
+         · Aside from option positions etc it is quite common for any
+           portfolio, that is non-trival, to exhibit some non-linearlity for a
+           variety of reasons.
+
+                                                                                                                                                   53
+Non-linear Products
+
+· Take a simple example of a short position in 100,000 European
+  call options on a stock:
+
+· Current stock price S = $49.
+
+· Strike price K = $50.
+
+· Risk-free interest rate r = 5%.
+
+· Volatility  = 20% per annum.
+
+·  Time to option maturity is 20 weeks   =  20  = 0.3846 years.
+                                            52
+
+                                                                 54
+Non-linear Products
+
+      Figure 7: Value of Call Option as a Function of Stock Price (K = $50, rf = 5%,
+      vol = 20%, time to maturity = 20 weeks - Source: Risk Management and
+      Financial Institutions - J. Hull
+
+                                                                                                                                                   55
+Non-linear Products
+
+         · Since the function is nonlinear, the delta of the option position
+           changes as the stock price changes.
+
+         · When the stock price is low:
+                 · The value of the option is almost zero.
+                 · The change in the value of the option as a result of a small change
+                   in the stock price is also close to zero.
+                 ·  the delta of the option is close to zero.
+
+         · When the stock price is high:
+                 · The option is almost certain to be exercised.
+                 · The delta of a position in the option is close to 1.0.
+                 · This is because an increase of S in the stock price increases the
+                   value of the option by  S.
+                 · Exact same risk profile as a position in the underlying.
+
+                                                                                                                                                  56
+Non-linear Products
+
+         · In the case of non-linear products our hedge needs to be
+           monitored and adjusted periodically - typically called
+           rebalancing.
+
+         · If the assumptions of the pricing model were correct and our
+           hedging scheme worked perfectly, the cost of hedging would,
+           after discounting, be exactly equal to the Black­Scholes­Merton
+           price. In reality there is always variation due to discrete
+           rebalancing and transaction costs.
+
+         · The aim of delta hedging is to keep the value of a
+           position/portfolio as close to unchanged as possible.
+
+         · Hedging a short option position will involve selling the
+           underlying just after its price has gone down and buying it just
+           after its price has gone up - loses money.
+
+         · Hedging a long option position will involve selling the
+           underlying just after its price has gone up and buying it just
+           after its price has gone down - makes money.
+
+                                                                                                                                                   57
+Gamma
+
+         · Since delta neutrality only provides local protection against the
+           impact of changes in the price of the underlying asset, we need
+           ways of measuring the higher order sensitivities of a
+           position/portfolio.
+
+         · Gamma  measures the extent to which large in the underlying
+           price cause problems for our delta hedge.
+
+         · It is the rate of change of the portfolio's delta with respect to
+           the price of the underlying asset;
+                                                       2P
+                                                  = S2
+
+         · Small gamma  delta changes slowly  portfolio rebalancing
+           can be less frequent.
+
+         · Large gamma  delta changes fast  risky to leave a
+           delta-neutral portfolio unchanged for any length of time.
+
+                                                                                                                                                  58
+Gamma
+
+         · A linear product has zero gamma and so can not be used to
+           change the gamma of a portfolio.
+
+         · In order to adjust the gamma of a portfolio we need to take a
+           position in an instrument with a non-linear dependence on the
+           underlying asset price.
+
+         · It is important to note that adding option positions to the
+           portfolio will likely change the delta of the portfolio. We must
+           then rebalance our position in the underlying to maintain delta
+           neutrality.
+
+         · As with delta, the portfolio will be gamma neutral for a short
+           period of time only.
+
+         · Making a portfolio gamma neutral is the first correction for the
+           fact that the position in the underlying asset cannot be changed
+           continuously - gamma neutrality provides protection against
+           larger movements in the asset price between delta rebalancing.
+
+                                                                                                                                                   59
+Gamma
+
+                            Figure 8: Hedging Error Due to Non-Linearity
+
+                                                                                                                                                  60
+Vega
+
+         · Another source of risk in a portfolio is the possibility that
+           volatilities will change.
+
+         · This is an obvious risk when the portfolio contains options as
+           these are used to take explicit positions in the volatility of the
+           underlying but it is present in some form in most portfolios.
+
+         · Volatility measures our uncertainty about the future value of a
+           variable. Is is often assumed to be constant, but in practice it is
+           always changing.
+
+         · The vega of a portfolio, V, is the rate of change of the value of
+           the portfolio with respect to the volatility, , of the underlying
+           asset price:
+                                                        P
+                                                  V = 
+
+                                                                                                                                                   61
+Vega
+
+         · A large vega means the portfolio's value is very sensitive to
+           changes in volatility.
+
+         · A small vega means that volatility changes have relatively little
+           impact on the value of the portfolio.
+
+         · Like gamma, the vega of a portfolio can be changed by adding a
+           position in an option.
+
+         · However, a portfolio that is gamma neutral will not, in general,
+           be vega neutral, and vice versa.
+
+         · To make a portfolio both gamma and vega neutral, we need to
+           trade at least two options and solve this form of sysyem:
+
+                                        P + w1O1 + w2O2 = 0
+                                       VP + w1VO1 + w2VO2 = 0
+
+                                                                                                                                                   62
+Vega
+
+         · A long position in a vanilla option has a positive vega.
+         · The volatilities of short-dated options tend to be more variable
+
+           than the volatilities of longer options and so when calculating
+           the vega of a portfolio we change the volatilities of short-dated
+           options by more than that of long-dated options.
+
+      Figure 9: Vega profile of a vanilla option as the underlying asset price varies.
+      Note the vega is highest for ATM options.
+
+                                                                                                                                                   63
+Theta
+
+         · An easily neglected risk is the change in the portfolio value due
+           to the passage of time - this is referred to at theta .
+
+         · It is usually calculated by keeping all other variables the the
+           same and is often called time decay.
+
+         · For long option position - theta is usually negative as options
+           tends to become less valuable as the time remaining declines.
+
+         · Theta is largest for ATM options and declines as the underling
+           moves away from the strike price.
+                                                        P
+                                                   = t
+
+                                                                                                                                                  64
+Theta
+
+         · Whilst there is no uncertainty about the passage of time theta
+           quantifies something very important.
+
+         · Whilst often only discussed for portfolios with options, anytime
+           we have products with interest rate sensitivities, the portfolio
+           value will change as time progresses.
+
+         · It does not make sense to hedge against the effect of the
+           passage of time on a portfolio in the same was as we hedge
+           against changes in the value of the underlying.
+
+         · It is a useful descriptive statistic for a portfolio.
+         · For a delta-neutral portfolio there is an inverse relationship
+
+           between theta gamma.
+
+                                                                                                                                                  65
+Taylor Expansions
+
+· To see how this all fits together we "split" the change in portfolio
+  value in the various components:
+
+P                  =  P  S  +  P        +  P  t
+                      S                    t
+
+                               
+
+                   +    2P  (S)2  +  2P  ()2  +  2P  (t)2
+                        S2           2           t2
+
+                   +   2P   (S)      +   2P   (St)
+                      S                  St
+
+                   +...
+
+                                                                        66
+Taylor Expansions
+
+· We won't do into the details here but it turns out that for small
+  time-steps we can ignore the t terms of order greater than one.
+
+· If we assume that  is locally constant and focus on the terms
+  involving S and t then we can easily get this very useful
+  expression:
+
+                   P  =  t  +  1  (S)2
+                               2
+
+· This makes clear the relationship between the  and  of a
+  portfolio.
+
+                                                                     67
+Operational Risk
+Operational Risk
+
+         · Operational risk covers a wide range of issues and in banks and
+           other highly regulated firms an attempt is made to quantify it
+           and its likely impact before setting aside a reserve to cover likely
+           losses.
+
+         · In the less regulated world of funds the regulatory and reserve
+           requirements may not be there but since most of the larger
+           losses experienced by financial institutions have been as a result
+           of operational rather than credit, market or other types of risk.
+
+            The risk of loss resulting from inadequate or failed internal
+              processes, people, and systems or from external events.
+
+                                                                                                                                                  68
+Operational Risk
+
+         · Internal fraud: Acts of a type intended to defraud,
+           misappropriate property, or circumvent regulations, the law, or
+           company policy involving at least one internal party. Examples
+           include intentional misreporting of positions, employee theft,
+           insider trading on an employee's own account, and rogue
+           trading.
+
+         · External fraud: Acts by a third party of a type intended to
+           defraud, misappropriate property, or circumvent the law.
+           Examples include robbery, forgery, check fraud, and damage
+           from computer hacking.
+
+         · Employment practices and workplace safety: Acts inconsistent
+           with employment, health or safety laws or agreements or that
+           result in payment of personal injury claims or claims relating to
+           diversity or discrimination issues. Examples include worker
+           compensation claims, violation of employee health and safety
+           rules, discrimination claims, and general liability .
+
+                                                                                                                                                  69
+Operational Risk
+
+· Clients, products, and business practices: Unintentional or
+
+negligent failure to meet a professional obligation to clients.
+
+Examples are fiduciary breaches, misuse of confidential
+
+customer information, improper trading activities on the bank's
+
+account, money laundering and the sale of unauthorised
+
+products.
+
+· Damage to physical assets: Loss or damage to physical assets
+
+from natural disasters or other events. Examples include
+
+terrorism, vandalism, earthquakes, fires, and floods.
+
+· Business disruption and system failures: Disruption of business
+
+or system failures. Examples include hardware and software
+
+failures, telecommunication problems, and utility outages.
+
+· Process management: Failed transactions and disputes with
+
+trade counterparties and vendors. Examples include data entry
+
+errors, collateral management failures, incomplete legal
+
+documentation, unapproved access given to clients' accounts
+
+and vendor disputes.                                               70
+Fund Characteristics
+
+         · It is important to consider the nature of the fund when thinking
+           about risk management.
+
+         · Hedge funds typically pursue absolute performance targets and
+           will use any available tool at their disposal: leverage, margin,
+           short selling using derivative.
+
+         · Many hedge fund managers have large amounts of their own
+           capital in the fund and have a performance-based
+           compensation structure which seeks to align their risk with that
+           of heir investors. This structure means that the investor is "short
+           a call option on the value of the fund portfolio".
+
+         · Hedge fund returns display non-normal characteristics such as
+           skewness, excess kurtosis, as well as serial correlation.
+           Therefore, traditional measures of performance such as the
+           Sharpe ratio are insufficient to assess investments. The risk
+           profile is often option-like due to trading dynamically.
+
+                                                                                                                                                   71
+Fund Characteristics
+
+         · Some funds show insignificant unconditional correlations with
+           major financial markets, such as the equity or bond markets but
+           show significant time-varying conditional correlations with the
+           same risk factors.
+
+         · The CTA Equal Weighted index shows no relationship with the
+           S&P 500 index return in bull markets, but a significant and
+           positive relationship in bear markets. This suggests that CTA
+           managers short the S&P 500 index in bear markets while finding
+           other sources of performance in bull markets.
+
+         · Similarly, the Global Macro index shows two significantly
+           different regimes with conditional correlation coefficients of 0.33
+           and 0.17 to S&P500 in between bull and bear markets,
+           respectively.
+
+         · This non-linearity in hedge fund returns is part of the attraction
+           of hedge funds and has led to the rise of several alternative
+           beta replication products.
+
+                                                                                                                                                   72
+Fund Correlation
+
+Figure 10: Correlation between: CTA (CTA), Equity Market Neutral (EMN) &  73
+
+Global Macro (GLMA)
+Fund Correlation
+
+     Decisions/Issues for an Equity Long-Short Fund:
+
+         · Investment style (value, growth, etc.).
+         · Fundamental analysis (earnings, analyst forecasts, accounting
+
+           data).
+         · Factor exposures (S&P 500 Index, industries, sectors,
+
+           characteristics).
+         · Portfolio optimization (mean-variance analysis, market
+
+           neutrality).
+         · Stock loan considerations (hard-to-borrow securities, "short
+
+           squeezes").
+         · Execution costs (price impact, commissions, borrowing rate,
+
+           short rebate).
+         · Benchmarks and tracking error (T-bill rate versus S&P 500).
+
+                                                                                                                                                   74
+Fund Correlation
+
+     Decisions/Issues for a Global Macro Fund:
+         · Yield-curve models (equilibrium versus arbitrage models).
+         · Prepayment models (for mortgage-backed securities).
+         · Optionality (call, convertible, and put features).
+         · Credit risk (defaults, rating changes, etc.).
+         · Inflationary pressures & central bank activity.
+         · Other macroeconomic factors and events.
+
+                                                                                                                                                   75
+Risk-Management Framework
+
+         · Risk controls are critical to ensuring appropriate governance OF
+           algorithmic trading.
+
+         · These controls express the risk appetite of the firm and make
+           clear any restrictions on the types of security that can be traded
+           and eligibility of counterparties.
+
+         · All trading activity should adhere to the strategic objectives, risk
+           strategy, and governance of the firm.
+
+                                                                                                                                                   76
+Governance
+
+         · The governance framework defines lines of responsibility for:
+                 · Overseeing the execution of the algorithmic trading policy.
+                 · Monitoring adherence to that policy.
+                 · Reviewing and approving algorithms in line with the algorithm
+                   approval process.
+                 · Assigning ownership of algorithms and risk controls.
+                 · Assigning ownership for the kill-switch controls.
+                 · Setting out and overseeing a review process for algorithmic
+                   trading incidents.
+
+                                                                                                                                                   77
+Governance
+
+         · All strategies suffer drawdowns which may last a few minutes or
+           a few years.
+
+         · To stay in business it is essential to:
+                 · Keep drawdowns limited to a tolerable level.
+                 · Be positioned to use optimal leverage to achieve maximum
+                   possible growth.
+                 · Optimally allocate capital across multiple strategies.
+
+           so as to maximise overall risk-adjusted return.
+
+                                                                                                                                                   78
+Optimal Scaling for Strategies
+Optimal Capital Allocation
+
+         · When we have multiple strategies, each with their own expected
+           returns and standard deviations we need to decide how to
+           allocate capital between them 1
+
+         · Additionally we must decide on the leverage.
+         · Our objective is to maximise long-term wealth which is the same
+
+           as maximising the long-term compounded growth rate g of your
+           portfolio.
+         · Assume that the probability distribution of the returns, net of all
+           costs, of each of the trading strategies is Gaussian with mean mi
+           and standard deviation si.
+         · Denote the optimal fractions of your equity that you should
+           allocate to each of your n strategies by a vector
+           F = (f1 , f2 , . . . , fn)T
+
+        1(Thorp, 1997) has an excellent discussion of this problem.
+
+                                                                                                                                                   79
+Optimal Capital Allocation
+
+· The optimal allocation is given by:
+                                       F = C-1M
+
+· Where C is the covariance matrix and M = (m1, m2, . . . , mn)T is
+  the vector of mean returns.
+
+· When the strategies are statistically independent, the covariance
+
+matrix becomes a diagonal matrix, with variance of the
+
+individual strategies on the diagonal. This leads to an especially
+
+simple formula:                    mi
+                                   si2
+                            fi  =
+
+· This is the famous Kelly formula and it gives the optimal
+  leverage one should employ for a particular trading strategy.
+
+                                                                     80
+Optimal Capital Allocation
+
+· Given uncertainty about parameter estimates and the fact that
+  return distributions are not really Gaussian we often cut this
+  recommended leverage in half for safety - called half-Kelly
+  betting.
+
+· It is important to note that we have ignored the possibility that
+  some positions may offset each other which should allow for
+  higher leverage than the formula suggests.
+
+· What is this maximum compounded growth rate achieved by this
+
+allocation:                             SR2
+                                         2
+                            g  =  r  +
+
+· So if we employ optimal leverage/allocation, higher Sharpe
+  ration  higher long-term wealth.
+
+                                                                     81
+Optimal Capital Allocation
+
+         · The continuous updating of the capital allocation should occur
+           at least once at the end of each trading day.
+
+         · In addition to updating the capital allocation according to F we
+           must also periodically update F itself using the most recent
+           trailing mean return and standard deviation.
+
+         · The length of the lookback period for the variables depends on
+           the average holding period of your strategy - longer holding
+           period  longer lookback period.
+
+         · A short lookback period has the advantage of gradually
+           reduceing exposure to strategies that have been losing their
+           performance.
+
+         · It should be possible to update F at least daily .
+
+                                                                                                                                                  82
+Kelly for Risk Managment
+
+· It can be easily seen that the Kelly formula will advise reducing
+
+the portfolio size in the face of losses.
+
+· Selling at a loss is a frequent result of risk management
+
+regardless of the approach used - risk management dictates
+
+that you should reduce your position size whenever there is a
+
+loss, even though it means realising that loss.
+
+· Optimal leverage dictates that you increase your position size
+
+when your strategy generates profits.
+
+· Selling as a result of losses is believed by some to be the cause
+
+of "financial contagion" affecting many funds simultaneously
+
+when one faces a large loss 2.
+
+· Contagion occurs because a large loss by one hedge fund causes
+
+it to sell off some large positions which causes the prices of the
+
+securities to fall. Other hedge funds holding similar positions
+
+will then suffer large losses also, causing their own risk
+
+management system to sell off their own positions, and so on.
+2see article "What Happened to the Quants in August 2007?" by Amir Khandani and
+                                                                                 83
+
+Andrew Lo
+Kelly for Risk Managment
+
+         · A lower leverage implies a smaller size of selling required for
+           risk management.
+
+         · Some traders limit their portfolio size further with additional
+           constraints due to the faulty assumption that the return
+           distribution is Gaussian.
+
+         · The probability of an event far, far from the mean is much higher
+           than suggested by the Gaussian distribution.
+
+         · To handle extreme events that fall outside the Gaussian
+           distribution, we can use a backtest to roughly estimate the
+           maximum one-period loss historically.
+
+         · You should bear in mind the maximum one-period drawdown
+           you are willing to suffer. Dividing this by the maximum historical
+           loss gives a good indication of target leverage. The leverage to
+           use is always the smaller of the (half) Kelly leverage and the
+           maximum leverage obtained using the worst historical loss.
+
+                                                                                                                                                  84
+Stop-Losses
+
+         · Some believe that it is good practice to have a stop loss on
+           every trade.
+
+         · It is a common fallacy to believe that imposing stop losses will
+           prevent the portfolio from suffering catastrophic losses.
+
+         · However, when a catastrophic event occurs, securities prices will
+           drop discontinuously and stop loss orders will be filled at prices
+           much worse than those before the event.
+
+         · So, by exiting the positions, we are actually realising the huge
+           loss and not avoiding it.
+
+         · For stop loss to be beneficial, we must believe that we are in a
+           trending regime. In other words, prices will get worse within the
+           expected lifetime of our trade.
+
+         · If the market is mean reverting, we will eventually recoup our
+           losses if we didn't exit the position too quickly.
+
+                                                                                                                                                  85
+Model Risk
+
+         · Model risk refers to the possibility that losses are due to the fact
+           that the trading model is wrong.
+
+         · It could be wrong for a large number of reasons including:
+                 · Data-snooping.
+                 · Survivorship bias.
+                 · Foresight bias.
+
+         · Model risk can also come from increased competition from
+           other institutional traders all running the same strategy as you.
+
+         · It could be a result of some fundamental change (regime shift)
+           in market structure that eliminated the edge of your trading
+           model.
+
+                                                                                                                                                  86
+Software Risk
+
+         · This refers to situations where the system that generates trades
+           does not faithfully reflect your backtest model due to software
+           bugs.
+
+         · You should compare the trades generated by your automated
+           system with the theoretical trades generated by your backtest
+           system to ensure that they are the same.
+
+         · There will always be some bugs and it pays to check each stage
+           of the process.
+
+                                                                                                                                                   87
+Psychological Biases
+
+         · There are many important psychological biases, details of which
+           can be found in one of the many papers on behavioural finance.
+
+         · In particular, despair and greed, can lead to over-leveraging:
+                 · In despair, one tries to recoup the losses by adding fresh capital.
+                 · In greed, one adds capital too quickly after initial successes.
+
+         · Therefore, the golden rule of risk management is to keep the
+           size of your portfolio under control at all times.
+
+         · The best approach is to start with a small portfolio and
+           gradually gain psychological preparedness, discipline and
+           confidence in your models.
+
+         · The greatest risk lies in a model that has performed model that
+           is at the greatest risk of huge loss due to overconfidence and
+           over-leverage.
+
+                                                                                                                                                  88
+Value at Risk and Related
+Appraches
+Value at Risk
+
+                         Figure 11: The loss V corresponding to an X% VaR
+
+         · The X% VaR for time T is satisfies the statement "We are X%
+           certain that we will not lose more than $V in time T."
+
+         · It is a function of two parameters: the time horizon, T, and the
+           confidence level, X%.
+
+         · It is the loss level during a time period of length T that we are
+           X% certain will not be exceeded.
+
+                                                                                                                                                  89
+Value at Risk
+
+         · VaR is an attractive measure because it is a single easy to
+           understand $ number.
+
+         · The idea of compressing all the Greek letters for all the market
+           sensitivities in a portfolio into a single number is very appealing.
+
+         · However, used to limit the risks taken by a trader, it often leads
+           to undesirable results.
+
+         · A 1-day 99% VaR of $10 million can be achieved as follows:
+                 · A portfolio with a 99.1% chance that the daily loss is less than $10
+                   million and a 0.9% chance of a loss of $500 million.
+
+         · A probability distribution like this is not that unusual as many
+           trading strategies give a high probability of good returns and a
+           small probability of a huge loss e.g. short option type strategies.
+
+                                                                                                                                                  90
+Why not VaR?
+
+         · VaR is a powerful tool in many situations. However in the case
+           of hedge funds it has significant limitations.
+
+         · VaR has problems capturing the full spectrum of risks identified
+           in the lists above.
+
+         · VaR may not be ideally suited to some investments such as e.g.
+           emerging market debt, risk arbitrage, or convertible bond
+           arbitrage.
+
+         · VaR does not capture liquidity risk, event risk, credit risk, factor
+           exposures, or time-varying risks due to dynamic trading
+           strategies that may be systematically keyed to market
+           conditions.
+
+         · VaR is notoriously difficult to estimate as "tail events" happen
+           rarely and historical data will contain only a few of these events,
+           generally too small a sample to yield reliable estimates of tail
+           probabilities.
+
+                                                                                                                                                   91
+Why not VaR?
+
+         · Finally, VaR is an unconditional measure of risk as the
+           calculations are based on the unconditional distribution of a
+           portfolio's profit and loss.
+
+         · For active risk management, conditional measures are more
+           relevant, especially for investment strategies that respond
+           actively to changing market conditions.
+
+         · A portfolio VaR of $10mm for the next week is less informative
+           than: VaR is $100mm if the S&P 500 declines by 5% or more and
+           $1 million otherwise.
+
+         · VaR calculations make assumptions about the unconditional
+           correlations between components of the portfolio, but we have
+           learned the hard way that correlations are highly dependent on
+           market conditions and that securities which seem uncorrelated
+           during normal times may become extremely highly correlated
+           during market turmoil.
+
+                                                                                                                                                   92
+Why not VaR?
+
+         · Finally, VaR is an unconditional measure of risk as the
+           calculations are based on the unconditional distribution of a
+           portfolio's profit and loss.
+
+         · For active risk management, conditional measures are more
+           relevant, especially for investment strategies that respond
+           actively to changing market conditions.
+
+         · A portfolio VaR of $10mm for the next week is less informative
+           than: VaR is $100mm if the S&P 500 declines by 5% or more and
+           $1 million otherwise.
+
+         · VaR calculations make assumptions about the unconditional
+           correlations between components of the portfolio, but we have
+           learned the hard way that correlations are highly dependent on
+           market conditions and that securities which seem uncorrelated
+           during normal times may become extremely highly correlated
+           during market turmoil.
+
+                                                                                                                                                   93
+Expected Shortfall
+
+         · A better approach is to use expected shortfall (ES), also called
+           conditional value at risk.
+
+         · ES tries to quantify the expected loss given a large loss.
+         · ES is the expected loss during time T conditional on the loss
+
+           being greater than the X% VaR.
+         · Setting an ES limit rather than a VaR limit for traders makes it
+
+           less likely that they will be able to game the system.
+         · ES has better properties than VaR in that it always recognizes
+
+           the benefits of diversification.
+         · ES does not have the simplicity of VaR and it is more difficult to
+
+           back-test a procedure for calculating it.
+
+                                                                                                                                                  94
+Features of a Good Risk Measure
+
+        1. Monotonicity: A portfolio which gives a worse result than
+           another for every state of the world should give a higher
+           measure.
+
+        2. Translation Invariance: Adding an amount of cash K to a
+           portfolio should reduce its risk by K.
+
+        3. Homogeneity: Changing the size of a portfolio by a factor 
+           while keeping the relative amounts of different items in the
+           portfolio the same should result in the risk measure being
+           multiplied by .
+
+        4. Subadditivity: The risk of two portfolios once merged should be
+           no greater than the sum of their risks before they were merged.
+
+                                                                                                                                                  95
+Choice of Parameters
+
+         · The choice of the time horizon depends on the portfolio.
+                 · For liquid and actively instruments it makes sense to use a short
+                   time horizon (a few days).
+                 · A longer time horizon can make sense if the composition of the
+                   portfolio changes frequently.
+
+         · If the liquidity of a portfolio varies from one instrument to
+           another, the definition of VaR or ES can be changed to
+           incorporate different horizons for different instruments.
+
+                                                                                                                                                  96
+Changing the Horizon
+
+         · We often start by calculating VaR or ES for a time horizon of one
+           day.
+
+         · The the usual assumption is:
+                                    t-day VaR = 1-day VaR × t
+                                      t-day ES = 1-day ES × t
+
+         · These are only true when the changes in the value of the
+           portfolio on successive days are i.i.d. Gaussian with mean zero.
+
+                                                                                                                                                   97
+Changing the Horizon
+
+· In reality, the changes in the value of a portfolio from one day to
+  the next are not independent.
+
+· Let Pt be the change in the value of a portfolio on day t and the
+  first-order autocorrelation between Pt and Pt-1 is  for all t.
+
+· Let the variance of Pt be 2 for all t.
+
+· The the variance of Pt-1 + Pt is:
+                          2 + 2 + 22 = 2 (1 + ) 2
+
+·  TcahlecucloartreeltahteiosntabnedtwarededneviPattiaonndof  Pt-Tt=s1is Pst  which  allows  us  to
+                                                                              as:
+
+    T + 2(T - 1) + 2(T - 2)2 + 2(T - 3)3 + · · · + 2T
+
+                                                                                                     98
+Historical Simulation
+
+         · A common way of calculating VaR/ES is using historical
+           simulation.
+
+         · This involves using past data as a guide to what will happen in
+           the future.
+
+         · The first step is to identify the market variables or risk factors
+           affecting the portfolio - indices, exchange rates, interest rates,
+           volatilities, etc.
+
+         · We then collect the history of these variables over our lookback
+           window (say) 500 days which is roughly two years.
+
+         · We now have 500 different 1-day scenarios.
+         · The dollar change in the overall value of the portfolio over each
+
+           historic 1 day period is calculated.
+
+                                                                                                                                                  99
+Historical Simulation
+
+         · These 500 numbers define a probability distribution for daily
+           loss.
+
+         · For instance the The 99th percentile loss corresponds to the fifth
+           worst outcome.
+
+         · We are 99% certain that we will not experience a loss greater
+           than this number if the past 500 days are representative of what
+           will happen between today and tomorrow.
+
+         · The 1% ES can also be estimated by averaging the four worst
+           losses.
+
+         · One thing to note is that for some variables such as interest
+           rates, credit spreads, and volatilities, actual rather than
+           percentage changes in market variables are typically considered.
+
+                                                                                                                                                 100
+Extreme Value Theory
+
+         · Extreme value theory is the science of estimating the tails of a
+           distribution and it can be used to improve VaR or ES estimates
+           and to help in situations where we want to estimate VaR with a
+           very high confidence level.
+
+         · It provides useful tools for smoothing and extrapolating the tails
+           of an empirical distribution.
+
+         · The key result in EVT shows that the tails of a range of different
+           probability distributions share common properties.
+
+         · Suppose that F(v) be the cumulative distribution function for
+           some variable v and that u is a value of v in the right-hand tail
+           of the distribution. Then:
+
+                                 P[v  [u, u + y]] = F(u + y) - F(u)
+                                          P[v > u] = 1 - F(u)
+
+                                                                                                                                                 101
+Extreme Value Theory
+
+· Define Fu(y) as the probability that v lies between u and u + y
+
+conditional on v > u.           F(u + y) - F(u)
+                                    1 - F(u)
+                      Fu(y)  =
+
+· This variable Fu(y) defines the right tail of the probability
+  distribution.
+
+· It is the cumulative probability distribution for the amount by
+  which v exceeds u given that it does exceed u.
+
+· For a wide class of distributions F(v) the distribution of Fu(y)
+  converges to a Generalised Pareto Distribution as the threshold
+  u is increased.
+
+                                                                    102
+Extreme Value Theory
+
+· The generalised Pareto (cumulativ[e) distr]ibution is:
+                                 1+
+                      G,(y) = 1        
+
+· The parameter  is the shape parameter and determines the
+  heaviness of the tail of the distribution and  is a scale
+  parameter - these must be estimated from data using maximum
+  likelihood methods.
+
+· When the underlying variable v has a Gaussian distribution,
+   = 0.12.
+
+· For heavier tails, the value of  increases - for most financial
+  data,  is in the range 0.1 to 0.4.
+
+                                                                   103
+Extreme Value Theory
+
+         · If we are interested in the left tail of the probability distribution,
+           we can work with v instead of v.
+
+         · A good rule of thumb is that u should be approximately equal to
+           the 95th percentile of the empirical distribution.
+
+         · EVT is a way of smoothing the tails of the distribution of
+           portfolio daily changes calculated using historical simulation
+           and leads to estimates of VaR and ES that reflect the whole
+           shape of the tail of the distribution, not just the positions of a
+           few losses in the tails.
+
+                                                                                                                                                 104
+Factor Models
+Factor Models
+
+         · Factor models are an attempt to define the relationships
+           between asset returns in a portfolio.
+
+         · The basic premise is that similar assets should display similar
+           returns.
+
+         · These similarities can be in terms of market information,
+           fundamental company data or exposure to other factors.
+
+         · The goal is to identify common factors which capture common
+           characteristics of different securities, and determine the return
+           sensitivity of each security to each factor.
+
+         · The models can use a combination of macroeconomic,
+           fundamental, and statistical data.
+
+                                                                                                                                                 105
+Factor Models
+
+         · Our model will build on the APT approach.
+         · An asset's return is broken out into the return due to a number
+
+           of individual factors and a portion unique to the asset and not
+           due to the common factors.
+         · The contribution of each factor is the product of the asset's
+           exposure or weight in the factor and the return of that factor.
+         · The total excess return equation for a multiple-factor model can
+           be summarized as:
+
+                             rti = 1f1t + 2ft2 + 3ft3 + 4ft4 + · · · + ti
+
+                                                                                                                                                 106
+Covariance Estimation
+
+         · Modelling portfolio risk requires an accurate estimate of the
+           covariance matrix of security returns.
+
+         · The obvious was to do this is to use the history of security
+           returns to compute each variance and covariance.
+
+         · There are two serious problems with this approach:
+                 · If we want to estimating the covariance matrix for, 3,000 assets, we
+                   need at least 3,000 periods of history (12 years of daily data).
+                 · It is subject to estimation error due to sample size and outliers etc.
+
+                                                                                                                                                 107
+Covariance Estimation
+
+         · A critical component of a portfolio model is the factor
+           covariance matrix.
+
+         · This matrix contains the variances and covariances of the
+           common factors.
+
+         · In order to estimate the risk of a portfolio, we must consider the
+           portfolio's exposures to the factors plus the risk of each factor
+           and the covariance between factors.
+
+         · When estimating covariance a good factor model can help us
+           avoid finding spurious relationships.
+
+                                                                                                                                                 108
+Covariance Estimation
+
+· The covariance for m factors will look like:
+
+  Var(f1),           Cov(f1, f2),  Cov(f1, f2),  . . . , Cov(f1, fm)  
+                      Var(f2),     Cov(f2, f2),
+  Cov(f2,    f1  ),        ...                   ...,   Cov(f2,    fm)
+        ...                              ...       ...        ...
+
+  Cov(fm, f1), Cov(fm, f2), Cov(fm, f3), . . . , Var(fm)
+
+                                                                        109
+Covariance Shrinkage
+
+· In general we have a matrix Y which has shape (T × N) of
+  historical returns which has T observations of N securities.
+
+· The empirical covariance is estimated as:
+
+                      E  =  1  YT  Y
+                            T
+
+· If T is small relative to N this estimator of covariance is very
+  unstable.
+
+· It is possible to come up with estimators that are much better in
+  terms of mean squared error.
+
+· If T < N the empirical estimate of the covariance matrix
+  becomes singular and can't be computed.
+
+                                                                     110
+Covariance Shrinkage
+
+         · Shrinkage methods allow us to estimate covariance when we
+           don't have as many observations as we would like.
+
+         · They provide a way of reducing the variance of a covariance
+           estimate E from the true covariance C i.e.
+                                             minVar[C - E]
+
+         · A popular linear shrinkage estimator is the Ledoit-Wolf which is
+           the convex combination of the estimate E and some target A:
+
+                                          E = A + (1 - )E
+           where  is selected to maximise the expected accuracy of the
+           shrunken estimator.
+
+                                                                                                                                                  111
+Covariance Shrinkage
+
+         · The shrinkage parameter  can be estimated using
+           cross-validation, or by using an analytic estimate.
+
+         · The resulting regularised estimate E has been shown to
+           outperform the maximum likelihood estimator for small
+           samples.
+
+         · As the sample grows, the shrinkage intensity will reduce to zero,
+           hence in this case the shrinkage estimator will be identical to
+           the empirical estimator.
+
+         · The shrinkage estimator is always positive definite and well
+           conditioned.
+
+         · There are many targets used including:
+                 · The identity matrix multiplied by the average sample variance.
+                 · Diagonal matrix with the estimated variances the diagonal.
+                 · The above with all off-diagonal elements equal to the average
+                   across all covariances.
+
+                                                                                                                                                  112
+Principal Components Analysis
+
+         · Rather than specifying the factors, PCA offers a completely
+           statistical approach to factor analysis.
+
+         · It just uses the data as provided to find the factors which
+           explain the highest amount of observed variance down to those
+           which explain the least.
+
+         · It is very useful for analysing datasets which have a large
+           number of dimensions/features per observation. PCA reduces
+           the dimensionality of a dataset by transforming the data into a
+           new coordinate system where the variation in the data can be
+           described with fewer dimensions than the initial data.
+
+                                                                                                                                                  113
+Principal Components Analysis
+
+         · For something like our interest rate risk we easily calculate our
+           exposure to each of 15 different maturities on the yield curve.
+
+         · This seems unnecessary since the variables are highly correlated
+           - a trader is fairly well hedged if they have a large positive
+           exposure to the 5y rate and a similar large negative exposure to
+           the 10y rate.
+
+         · For a yield curve it turns out that the first factor (PC1)
+           corresponds to a parallel shift in the yield curve.
+
+         · The second factor (PC2) corresponds to a steepening/flattening
+           of the curve - the long and short end of the curve move in
+           opposite directions.
+
+         · The third factor (PC3) corresponds to a bowing of the curve - the
+           long and short end move in the same direction with the middle
+           of the curve moving in the opposite direction.
+
+                                                                                                                                                  114
+Algorithmic Trading - A Practitioners Guide
+
+Backtesting & Performance Measurement
+
+Nick Firoozye / Brian Healy
+07 September 2023
+Outline
+
+     1. Performance Indicators
+     2. Illustrating Drawdowns
+     3. Python for Analysis
+     4. Performance Indicator Comparisons
+     5. A Realistic Backtest
+     6. Optimizing Hyperparameters
+
+          Common Methods
+          Bayesian Optimisation
+     7. Multi-Objective Optimization
+     8. Summary
+
+                                                                                                                                                    1
+Performance Indicators
+Performance Indicators
+
+Performance Indicators
+Paper: How sharp is the Sharpe ratio
+
+· Sharpe Ratio                        µ
+                                        ,
+                            SR   =    
+
+where µ is the average return and  volatility, also called the
+
+risk-adjusted return, is the most common.
+
+· Value-at-Risk (VaR) is the value such that, taking the cumulative
+  distribution function of the strategy returns,
+  CDF(-VaR()) = 1 - . VaR() represents a potential relative
+  loss of the strategy for a given confidence level ,
+
+· Conditional Sharpe Ratio
+
+                            CSR  =    µ
+                                    ES() ,
+
+where ES() is the expected shortfall, i.e. the average of the
+
+strategy returns that are lower than the VaR().                      2
+Performance Indicators
+
+Performance Indicators
+
+· Burke Ratio                  µ
+
+                        BR  =          i      DDi2  ,
+
+where the i-th drawdown DDi within the interval considered is
+                   ThroughValuei -PeakValuei
+given by  DDi   =            PeakValue)       where    the i-th through value
+
+of the price time series has to follow in time the i-th peak value,
+
+· Maximum Drawdown
+
+          MDD      =  MinThroughValue - MaxPeakValue   ,
+                                   MaxPeakValue
+
+where the minimum through value of the price time series has
+to follow in time the maximum peak value,
+
+· Calmar Ratio                      µ
+                                  MDD .
+                        CR     =
+
+                                                                               3
+Illustrating Drawdowns
+Analysing Drawdowns
+
+     Analysing Drawdowns
+
+                 Figure 1: Strategy Cumulative Return/PNL G Gunderson blog
+
+                                                                                                                                                    4
+Analysing Drawdowns
+
+     Analysing Drawdowns - Plotting Cumulative PnL
+
+                   Figure 2: Cumulative Returns with DDs G Gunderson blog
+
+                                                                                                                                                    5
+Analysing Drawdowns
+
+     Analysing Drawdowns - Drawdown Plot and MaxDD
+
+                    Figure 3: Drawdown plot with Max DD G Gunderson blog
+
+                                                                                                                                                    6
+Analysing Drawdowns
+
+     Analysing Drawdowns - Identifying Longest DD
+
+                 Figure 4: Strategy Cumulative Return/PNL G Gunderson blog
+
+                                                                                                                                                    7
+Python for Analysis
+Annualising Returns
+
+     Annualising Returns/Vol
+
+                                           Figure 5: Annualising
+
+                                                                                                                                                    8
+SR and Value-at-risk
+
+     VaR and SR
+
+                      Figure 6: VAR and SR  9
+MaxDD
+
+     MaxDD
+
+                                               Figure 7: MaxDD
+
+                                                                                                                                                   10
+MaxDD Length
+
+     MaxDD-Length 1
+
+                                               Figure 8: MaxDD
+
+                                                                                                                                                   11
+MaxDD Length
+
+     MaxDD-Length 2
+
+                                               Figure 9: MaxDD
+
+                                                                                                                                                   12
+Calmar Etc
+
+     Calmar etc
+
+                                              Figure 10: Calmar
+
+                                                                                                                                                   13
+Omega Sortino
+
+     Omega Sortino
+
+                                      Figure 11: Omega and Sortino
+
+                                                                                                                                                   14
+Tail Ratio etc
+
+     Tail Ratio
+
+                                            Figure 12: Tail Ratio
+
+                                                                                                                                                   15
+Performance Indicator
+Comparisons
+Performance Measure Comparisons
+
+     Performance Measure Comparisons
+
+                                                                                                                                                   16
+
+                                          Figure 13: Google Sheet
+Performance Measure Comparisons
+
+     Performance Measure Comparisons
+
+                                          Figure 14: Google Sheet
+
+                                                                                                                                                   17
+Perf Meas Comparisons
+
+     Performance Measure Comparisons
+
+                                          Figure 15: Google Sheet
+
+                                                                                                                                                   18
+A Realistic Backtest
+Backtesting
+
+     Realistic Backtests
+         · Backtests should include all realiastic assumptions
+         · Historic costing or costing model (i.e., mid, bid-ask spread,
+           market impact measure) for market orders
+         · Elements like roll and roll cost (i.e., when rolling from ERZ3 to
+           ERH4 when we come to the Dec IMM date, we usually pay 1/2 *
+           bid-ask spread for the two trades)
+         · Financing if bought on a margin, including long and/or short
+           side for most costly version)
+         · Can summarize returns before and after costs, etc.
+
+                                                                                                                                                   19
+Recording Backtests
+
+     Screen Recording
+
+                                                                                                                                                  20
+Backtesting
+
+     Realistic Backtests
+         · Backtests Take time
+         · Costly
+         · May involve many simulations
+         · Many performance measures need calculation
+         · Many other measures for sanity checks etc.
+
+                                                                                                                                                   21
+Optimizing Hyperparameters
+Hyperparameter Optimisations
+
+     Hyperparameter Optimisation
+         · Parameters:
+                 · Rolling Betas (RLS, EWRLS)
+                 · Changing Vol Estimates (GARCH model)
+                 · Betas (OLS)
+         · Hyperparmaters:
+                 · Multipliers (in an optimisation problem)
+                 · Risk aversion (in a utility) and Thresholds
+                 · Exponential Weights (EWRLS) / Learning Decay
+                 · Rolling windows (RLS)
+                 · Epoch length
+                 · Shrinkage parameters
+         · Some intrinsic overlap and ambiguity.
+
+                                                                                                                                                   22
+Hyperparameter Optimisations
+
+     Hyperparameter Tuning
+         · Manual Tuning
+         · Grid Search
+         · Random Search
+         · Bayesian Optimization
+         · Tree-structured Parzen Estimators (TPE)
+
+                                                                                                                                                   23
+Tuning Algos
+
+     Hyperparameter Tuning Algos
+         · HyperOpt
+         · Scikit-Optimize
+         · Optuna
+         · GPyOpt
+         · Many others
+
+     We will look a bit more at Optuna, commonly used in Kaggle
+     competitions - Uses a combination of search techniques including
+     random starting TPE with Bandits and early stopping. Can easily be
+     parallelized (e.g., dask).
+
+                                                                                                                                                   24
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+Figure 16: Example Function to Maximize Nanonets Blog
+
+Global Optimization is part art, part science. Bayesian optimization  25
+
+uses global data more efficiently. Better if function valuations are
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+               Figure 17: Two evaluation - GP Posterior Density Nanonets Blog
+
+                                                                                                                                                  26
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+                                         Figure 18: Nanonets Blog
+
+                                                                                                                                                   27
+Bayesian Optimisation
+
+     Bayesian Optimisation Example
+
+                                         Figure 19: Nanonets Blog
+
+                                                                                                                                                  28
+Multi-Objective Optimization
+Multiple Objectives
+
+     Multiple Objectives
+         · Many design problems involve a large number of competing
+           objectives
+         · These are common in areas of self-driving vehicles,
+           search-engine optimization, and many other areas
+         · Technically MOO is at play in mean-variance optimization in
+           finance: we want to maximize returns while minimizing risk.
+         · Trying to do both simultaneously leads to what is known as a
+           Pareto solution - which gives us the efficient frontier
+
+                                                                                                                                                   29
+Multi Objective Optimisation
+
+     MOO
+         · Plan to simultaneously
+
+                                            f1,opt = max f1(x)
+                                            f1,opt = max f1(x)
+                                            f2,opt = max f2(x)
+                                            f3,opt = max f3(x)
+
+                                                 ......
+
+         · One solution is Pareto solution
+         · if x is a Pareto solution then x + x may improve one if the fi but
+
+           only at the expense of other fj.
+
+                                                                                                                                                  30
+Multi Objective Optimisations
+
+     Multi-Objective Optimisation - MVO
+
+  Figure 20: Mean vs Stdev and Random Portfolios
+
+· The efficient frontier involves all portfolios which cannot be
+  improved, i.e., if the mean return goes up, the risk will also be
+  greater, or if the risk is lessened the mean will also be lessened.
+
+· `Technically each is a solution of E[R] - /2Var[R] for different
+
+                                                                       31
+Multi Objective Optimisations
+
+     Multi-Objective Optimisation - Random Sampling
+
+                Figure 21: Randomly sampled ML Model configs vs Objectives
+
+                                                                                                                                                   32
+Multi Objective Optimisations
+
+     Multi-Objective Optimisation - Pareto Boundary
+
+      Figure 22: Pareto Frontier is not stochastically dominated FasatForward Labs
+      Blog
+
+                                                                                                                                                   33
+Multiple Objectives
+
+     Multiple Objectives- Linear Combinations
+         · MOO works for up to 4 objective functions
+         · MOO is equivalent to having linear combinations, i.e.,
+                            max f1(x) + 2f2(x) + 3f3(x) + · · · nfn(x)
+         · Having more than four objectives  Many-Objective
+           Optimization (MaOO)
+         · Some methods for MaOO include finding PCAs of objectives and
+           then using Pareto-methods on the principal components
+         · Once the parameter space is explored, a single choice must be
+           done!
+
+                                                                                                                                                   34
+Summary
+Summary
+
+     Summary
+         · Performance Indicators
+         · Drawdowns
+         · None is perfect
+         · Backtesting
+         · Hyperparamter Optimization
+         · MOO
+
+                                                                                                                                                   35
+

@@ -1,0 +1,244 @@
+Algorithmic Trading &
+Quantitative Strategies
+
+                  Lecture 6 (4/16/2024)
+            Giuseppe Paleologo (gardener)
+Today's Session
+
+  There will be a short multiple-answer quiz at the end of the
+      lecture.
+
+  Please send answers in the form
+
+          1-a
+          2-c
+         ...
+
+      To gp2642@nyu.edu. You will have 5 minutes
+Recap on Last Quiz                                4. Should you shrink the factor
+                                                        covariance matrix?
+ 1. In Fundamental Models, you can't use
+       directly the following data                         a. Yes, you should almost shrink a
+                                                                   covariance matrix
+          a. Company trailing earnings
+          b. Company forward earnings                      b. Yes, we have not enough observations
+          c. Inflation rate (CPI)                          c. Yes, because of spikes
+          d. Trailing 10-day returns
+                                                  5. Should you use a non-quadratic loss
+ 2. Is it better to have a peaky
+       spectrum?                                           a. Yes. It could be more robust to
+                                                                   outliers
+          a. Yes because there are fewer
+                  eigenvalues                              b. No. Mismatch with factor returns
+                                                           c. Maybe. For example penalties
+          b. Yes because they are more separated
+                  from the bulk                   6. Dynamic Volatility Adjustment
+
+          c. Not necessarily                               a. Only makes the model more
+                                                                   responsive
+ 3. Bulk eigenvalues correspond to
+                                                           b. Makes the model more predictive of
+          a. Idiosyncratic variances                               risk
+          b. Factor variances
+          c. A combination of the two                      c. Makes the model more responsive but
+                                                                   not more predictive
+Topics
+
+  Fundamental Model: residual variance estimation
+
+          Practical considerations: z-scoring and reducing turnover
+
+  Advanced Portfolio Construction
+  Next Time (final lecture):
+
+          Backtesting
+Residual Volatilities
+
+Do not reinvent the wheel (mostly). We have seen the bassic
+ingredients before. Steps:
+
+1. EWMA
+2. Ledoit-Wolf Shrinkage
+3. Short-Term Volatility Updating
+4. Cluster Analysis
+Short-Term Idio Updating
+
+  You can actually use exactly the same approach as factors, with
+      identity correlation. It still works
+
+  But it works much better if you include in the model the earning
+      dates and introduce an asset weight that gets smaller the farther
+      away from the earning date:
+STIU
+
+  And then the same machinery but easier: measure the
+      "cross-sectional vol surprise". Easier because C=I
+
+  And then update the affected vols:
+Clustering
+
+  Approximate and exact models. The former have diagonal idio
+      covariances
+
+  Sparse is fine as well. A simple thresholding (Bickel-Levina, El
+      Karoui 2008) will take you a long way.
+
+  The theoretical thresholds (sqrt(log n/T)) don't work well in my
+      subjective experience. You have to do a bit of trial and error.
+
+  Usually clusters correspond to "insensitive region" of the
+      threshold (makes sense), and the cluster elements are close in
+      factor loading space.
+Clusters and Sparsity
+How Do You Use This?
+
+ For risk, obviously
+
+         Risk may be under/overestimated
+
+ And for alpha
+
+         Clusters are sub-sub-sub...-industry. Themes, on which people bet
+         The assets are cointegrated. Identify rich and cheap assets
+Advanced Portfolio Construction
+
+  MVO is widely used. Also widely criticized, also the criticism is
+      often a bit vague and qualitative. "Error maximization" and the
+      like.
+
+  Three questions:
+1. What is the impact of error on input data?
+2. Are constraints good or bad for your portfolio health
+3. What constraints?
+The Simplest Example
+
+Two assets, Sharpes s , s , and correlation 
+
+                                                12
+
+So simple and yet so rich:
+1. Second asset has no alpha and positive correlation? It's a hedge
+2. Second asset has alpha, but is positively correlated? Relative
+
+      Value
+Let's Introduce Errors
+
+True Sharpe is s tilde. Assume
+How much do we loss in realized sharpe?
+Assume error in correlation. Below, and error of +/-0.1:
+Constraints
+
+Sweeping statement: Everything in life has a) an objective; b) some
+data; c) some structure. Constraints are the structure. But why?
+
+1. Investors' preferences
+2. Tactical considerations
+3. Regulatory considerations
+4. Fiduciary considerations
+5. Implementation considerations
+Linear Constraints
+
+1. Long-only
+2. GMV constraint. Not linear but linearized with a trick.
+
+3. Long-Short
+4. Exposure constraint
+5. Constant unit trading costs. Also linearizable
+Quadratic Constraints
+
+1. Factor/Style/Industry constraints
+
+2. Tracking Error constraints. Define active holdings
+Non-Convex Constraints
+
+1. Discrete number of assets, number of stocks. Usually you don't
+      need those
+
+2. Minimum percentage idio variance. Non-pd quadratic. Don't do
+      it.
+
+                 i.e.
+
+3. Also, maximum drawdown.
+4. Usually having these constraints reflect bad
+
+     modeling practice. Even if you can find the global
+     minimum, don't
+Do Constraints Improve or Worsen Performance?
+
+  Received wisdom: yes. You're reducing the feasible region
+  True only if input parameters (risk and alpha) are correct
+  In practice, constraints act as regularization terms that correct
+
+      input error
+  Constraints can be priced out as penalties, and reinterpreted as
+
+      controlling for input error, in expectation or minimax
+
+  Read the Notes for the rigorous derivation of these
+The Impact of Error on Performance
+
+  It is an old topic
+
+          Michaud (1989): The Markowitz Optimization Enigma: Is `Optimized' Optimal?
+          Ziemba and Chopra (1992): The Effect of Errors in Means, Variances, and
+
+               Covariances on Optimal Portfolio Choice
+          Shepard (2009): Second Order Risk
+          Kan and Zhou (2007): Optimal Portfolio Choice with Parameter Uncertainty
+          Several papers, starting with Jagannathan and Ma (2003) interpret constraints
+
+               as parameter regularization terms
+
+  It is an important topic
+
+          See the two-asset portfolio examples. These are massive reductions in
+               profitability!
+
+          The relative importance of alpha and risk is usually reported 90/10. It's based
+               on no evidence whatsoever; really bad research and hot takes
+Realized vs Predicted Sharpe
+
+Realized Sharpe:
+
+Sharpe Ratio Efficiency (SRE):
+
+Fact: SRE < 1 and =1 iff parameters are correct
+Proof: Cauchy-Schwartz
+Impact of Alpha Error
+
+Fact: If
+Then
+
+Proof: complicated but not complex. See the Appendix in the
+Notes
+Alpha Error: Implications
+
+  You can estimate the angle between alphas by cross-sectional
+      regression
+
+  The result is an upper bound on SRE loss, but there is a matching
+      lower bound, up to a constant! So, this is kind of tight.
+
+  If you have an ill-conditioned (idio) true covariance matrix, the
+      alpha error can be very damaging (see the 2-asset example)
+
+  Intuition: I am wrong on a low-vol stock => I am going to be very
+      very wrong in PnL
+Impact of Risk Error
+
+Fact: if
+
+then
+Risk Error: Implications
+
+  The bound is not tight, in the sense that: a) you can be very wrong
+      on the risk of a subset of your universe; b) you can alpha alpha on
+      the complement set; and c) experience no loss in Sharpe
+
+  Still: if your cov mat is off by a constant, that is ok and the
+      bound gets it right
+
+  And assume that your get the eigenportfolios right. Then there is
+      a nice formula:
+

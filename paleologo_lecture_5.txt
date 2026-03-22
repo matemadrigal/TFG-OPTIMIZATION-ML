@@ -1,0 +1,192 @@
+Algorithmic Trading &
+Quantitative Strategies
+
+                   Lecture 5 (4/2/2024)
+            Giuseppe Paleologo (gardener)
+Today's Session
+
+  I will send a project description on Thursday
+  There will be a short multiple-answer quiz at the end of the
+
+      lecture.
+  Please send answers in the form
+
+          1-a
+          2-c
+         ...
+
+      To gp2642@nyu.edu. You will have 5 minutes
+Recap on Last Quiz                                 4. Why can't you use Marchenko-Pastur
+                                                         for cleaning correlation matrices?
+ 1. A drawback of statistical models is
+                                                            a. Unit variance assumption does not
+          a. Low predictive power                                   hold
+          b. Computational burden
+          c. Limited history                                b. Zero correlation assumption does
+          d. Low information use                                    not hold
+
+ 2. The standard PCA is based on an                         c. Sample is too small
+       underlying factor model
+                                                   5. PPCA recommends to
+          a. True
+          b. False                                          a. Shrink the factor volatilities and
+          c. Uncertain                                              correlations
+
+ 3. If two eigenvalues of a matrix are                      b. Shrink the factor correlations
+       identical, its eigenvectors have                     c. Shrink the factor volatilities
+
+          a. Indefinite norm                       6. PPCA recommends to
+          b. Indefinite direction
+          c. The jargon name "Dick" and "Jane" in           a. Shrink the idio volatilities
+                                                            b. Shrink the big idio volatilities,
+                  the academic literature
+          d. Very important                                         increase the small ones
+                                                            c. Leave the damn things unchanged
+Topics
+
+  Statistical Models
+
+          Practical considerations: z-scoring and reducing turnover
+
+  Fundamental Factor Models
+  Next Time:
+
+          Recap on Fundamental Models
+          Advanced Portfolio Construction
+Why Fundamental Models?
+
+ Interpretable
+ Extensible
+ Good performance
+ Connects to academic research and to alpha research
+Primitives
+
+  Returns
+
+          Which returns? Closing auctions. Based on equal weighted/EWMA/volume
+               weighted averages
+
+  Characteristics
+
+          "Features", "Terms", "Signals"
+          Continuous variables
+          Discrete/categorical
+Process
+
+  Data ingestion and quality assurance
+
+          Missingness
+          Turnover
+
+  Winsorization
+  Estimation universe selection
+  Loadings generation
+  Cross-sectional regression
+  Time-series estimation
+Statistical Models
+
+Reminder: positive features of the spectrum of a matrix are:
+  The spectrum is high and separated from the bulk. The spiked
+
+      assumptions hold better
+  Spike eigenvalues are separated. The eigenvectors are
+
+      identifiable
+Whitening with idio vol
+proxy helps
+Additional
+Benefits of Idio
+Whitening:
+Returns
+Additional Benefits of Idio Whitening: Returns
+Reducing Turnover
+
+Factors are turn over a lot. They can also change sign. They can be
+stabilized by rotating them from one period to the next.
+
+There is a clever solution for this problem.
+Read the notes for details
+Putting it all Together
+Fundamental Models
+
+Takeaways for Fundamental Models
+
+  At their core, very simple: at their core, alpha and risk modeling
+      are very simple
+
+  There are many details
+
+          Data
+          Shrinkage
+          Heteroskedastic and correlation correction
+          Regime Change
+Steps
+
+Steps:
+
+1. Data ingestion: integrity, temporal continuity, missingness,
+      outliers
+
+2. Estimation universe: data quality, continuity, liquidity,
+      relevance
+
+3. Winsorization
+4. Loadings Generation
+5. Cross-Sectional Regression
+6. Covariance Generation
+Cross-Sectional Regression
+
+Assumptions:
+
+1. Loadings are full rank
+2. Homoskedastic idio returns are homoskedastic (jkg)
+3. Factor returns and idio returns are independent
+4. At least fourth moments are finite
+Basics of X-sec regression
+
+Gaussian Likelihood
+
+Note the similarity with PCA
+Note that the estimation is exactly the same as factor mimicking portfolios
+And this is why you should use squared loss
+Shrinkage
+
+  Factor volatilities are biased upwards because they are
+      regression coefficients with errors, so they should be shrinked:
+
+  Anderson's asymptotics for T doesn't apply. Recommended:
+      simple Ledoit-Wolf. Let's not overkill.
+Separation Volatility-Correlation
+
+Correlations change at a slower time-scale than volatilities
+When people say, "in a crisis all correlations go to 1"... they should
+think twice [discuss!]
+Dynamic Factor Volatility
+
+Add a "modulating term".
+
+The intuition is that
+cross-sectional factor returns
+are pretty large, and
+responsive.
+
+If you get them wrong, adjust.
+Autocorrelation Correction
+
+You need this. Example: Asynchronous Returns.
+
+Scholes correction:
+Newey-West correction:
+Winsorization
+
+  Ideally, choose the right estimation/investment universe and
+      never winsorize
+
+  In practice, the investment universe selection is imperfect
+
+          Bad data sources
+          Illiquid assets
+          Bankruptcies relistings
+
+  So use a simple measure
+

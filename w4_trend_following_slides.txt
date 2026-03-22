@@ -1,0 +1,818 @@
+Algorithmic Trading - A Practitioners Guide
+
+Trend Based Strategies
+
+Nick Firoozye / Brian Healy
+05 September 2023
+Outline
+
+     1. Trading Strategies
+     2. Trend Following
+     3. Momentum and Skewness
+     4. Momentum and Responsiveness
+     5. Trading Futures
+     6. An Exercise
+     7. References
+     8. What have we covered
+
+                                                                                                                                                    1
+Trading Strategies
+Trading Strategies
+
+     Definition
+     A series of rules that implements buys and sells of a set of assets,
+     given the information available just prior to the trade.
+
+                                                                                                                                                    2
+Trading Strategies
+
+     Definition
+     A series of rules that implements buys and sells of a set of assets,
+     given the information available just prior to the trade.
+
+         · Continuous time Trading Strategy (with Value V) defined by the
+           Itô Integral:
+                                                         T
+                                       V(T) = V( ) + t · dPt
+
+                                                                                     
+
+           where dPt  Rk+1 a set of price changes, and t  Rk+1 is the
+           weight-process (conditioned on the filtration Ft).
+
+                                                                                                                                                    2
+Trading Strategies
+
+     Definition
+     A series of rules that implements buys and sells of a set of assets,
+     given the information available just prior to the trade.
+
+         · Continuous time Trading Strategy (with Value V) defined by the
+           Itô Integral:
+
+                                                         T
+                                       V(T) = V( ) + t · dPt
+
+                                                                                     
+
+           where dPt  Rk+1 a set of price changes, and t  Rk+1 is the
+           weight-process (conditioned on the filtration Ft).
+         · In discrete time it is defined as
+
+                                                        k
+                                    V(tk) = V(t0) + k · Pk+1
+
+                                                                                   1
+
+           where k is known at time tk, as is Pk and Pk+1 = Pk+1 - Pk.
+
+                                                                                                                                                    2
+Trading Strategies
+
+     Definition
+     A series of rules that implements buys and sells of a set of assets,
+     given the information available just prior to the trade.
+
+         · Continuous time Trading Strategy (with Value V) defined by the
+           Itô Integral:
+
+                                                         T
+                                       V(T) = V( ) + t · dPt
+
+                                                                                     
+
+           where dPt  Rk+1 a set of price changes, and t  Rk+1 is the
+           weight-process (conditioned on the filtration Ft).
+         · In discrete time it is defined as
+
+                                                        k
+                                    V(tk) = V(t0) + k · Pk+1
+
+                                                                                   1
+
+           where k is known at time tk, as is Pk and Pk+1 = Pk+1 - Pk.
+
+                                                                                                                                                    2
+Trading Strategies (cont'd)
+
+         · We let Pt0 be the money-market account, dPt0 = rt Pt0dt or
+           Pk0+1 = rkP0k.
+
+                                                                                                                                                    3
+Dynamic Trading Strategies
+
+A dynamic strategy is defined as a set of dynamically updated
+weights, also called the signal st-1 multiplied by excess returns rt,
+i.e., the strategy returns
+
+                                       rst = st-1rt
+
+or, if we track final wealth
+
+WT = T rts = T st-1rt
+
+                            t=1  t=1
+
+The concept of strategy is used frequently in quantitative finance, in
+particular, self-financing strategies, see, e.g., Duffie, Dynamic Asset
+Pricing Theory, p 83ff.
+
+                                                                         4
+Example signals
+
+Strategy weights can be defined in a diverse number of ways, and we
+will focus on momentum strategies although other strategies may
+have similarly defined signals. (see, e.g, Firoozye-Koshiyama)
+
+   · Simple Moving Average (SMA):
+
+                 st-1  =  1  T
+                          T      rt-k
+
+                               1
+
+· Exponentially-Weighted Moving Average (EWMA):
+
+                 St-1 = c()   krt-k
+
+                                       k=1
+
+                                                                                                          5
+More example signals
+
+· Difference between current price and moving average
+
+                      st-1  =  pt-1  -  1  T
+                                        T      pt-k
+
+                                             1
+
+· Differences between EWMAs:
+                   st-1 = c(1)  k1 rt-k - c(2)  k2rt-k
+
+· Differences between SMAs:
+
+st-1                  =  1    T1        -  1    T2
+                         T1      pt-k      T2      pt-j
+
+                               1                 1
+
+· (with no restriction on the signs of 's this may not necessarily
+  be a trend-following strategy) Forecasts from ARMA(p, q) models:
+
+st-1 = 1rt-1 + . . . + prt-p + 1t-1 + . . . + qt-q
+
+                                                                    6
+Final Comments on Signals
+
+cNhoatrea-ctCeorinsveodluatsiosnt-k1 e=rnelk:=A1ll korft-thk efoser  strategies can be    (or
+                                                                     some set of weights
+
+convolution kernel) .
+
+Strategies can also be non-linear functions of any of the above, e.g.,
+
+                          st = 1{T1 rT-k>0} - 1{1T rT-k<0}
+
+going long one unit whenever the SMA of returns is positive, and
+short one unit whenever the SMA is negative.
+
+We will focus on the simpler strategies which are linear in historic
+returns.
+
+                                                                                               7
+Example Strategies
+
+     Standard trading strategies which we will consider in various
+     amounts of detail.
+
+         · Buy and hold
+         · Trend-Following - Time-Series
+         · Momentum - Cross-Sectional
+         · Mean-Reversion
+         · Carry
+         · Vol-based strategies (e.g., short-gamma)
+         · Others
+
+                                                                                                                                                    8
+Buy-and-Hold
+
+     Buy one unit of asset and hold over horizon.
+         · Boring!
+         · Only ever meant as a benchmark
+         · If Equities - you are long, so have a positive  to the market
+           (usually).
+         · If Bonds - you are long bonds, which often are negatively
+           correlated to Equities.
+         · 60-40 Strategy - 60% Equities + 40% bonds is a type of
+           buy-and-hold strategy. Again a benchmark for a global macro
+           fund.
+
+                                                                                                                                                    9
+Trend Following
+Trend-Following
+
+     Momentum or Trend Following
+
+         · Most widely known Algo style
+         · Ben Graham (the father of value investing wrote about it (and
+
+           invested in it)
+         · Proven to have worked for at least 200 years.
+
+         · Two major forms:
+                 · Cross-sectional, i.e., a Momentum factor
+                 · Time-series, e.g., a CTA
+
+         · Underlies almost all the CTA industry
+         · Not a diversified source of return
+         · Often thought of as an insurance trade (significant downside
+
+           protection)
+
+                                                                                                                                                   10
+Defining Momentum
+
+     Definition (A version of Momentum)
+     In it's most basic form: Find a moving average/trend.
+
+         · Go Long if
+                 · Level > Moving average (+threshold)
+                 · Short Moving Average > Long Moving Average
+                 · Trend is going up
+                 · Some combination
+
+         · Go Short if
+                 · level < Moving average (- threshold)
+                 · Short Moving Average < Long Moving Average
+                 · Trend is going down
+                 · Some combination
+
+                                                                                                                                                   11
+Example
+
+         Figure 1: USD-JPY and 15/30-day Moving Averages  12
+Questions
+
+         · How do we establish trend?
+         · How far do we look back?
+         · Do we normalize signal?
+         · Do we cap and floor?
+         · Do we take other nonlinear transformations?
+
+                                                                                                                                                   13
+200 Years of Trend Following
+
+                                              Figure 2: Caption
+     Combined Sharpe Ratio of 0.72.
+     Lempérière et al - Two Centuries of Trend Following (2014)
+
+                                                                                                                                                   14
+Momentum Factoids
+
+Momentum's desirable properties
+
+   · It tends to perform when vol is high. (counter: when vol is low it
+      tends to underperform)
+
+   · It tends to have positively skewed returns (i.e., it may not win
+      often, but when it wins, it wins big)
+
+   · The skewness of returns appears greater when measured over
+      longer horizons (e.g., when investors look at quarterly returns
+      they are very highly skewed, compared to daily returns).
+
+   · Its payoff is similar to that of a straddle, at least empirically.
+      (Fung-Hsieh analysed this despite it being a heuristic )
+
+   · Makes money in trending markets, including down-trends
+      (insurance)
+
+   · Loses money in sideways markets (pays for insurance)
+
+We investigate the skewness over different horizons and We also
+
+investigate responsiveness to changes in trend.                          15
+Momentum and Skewness
+Skewness Analysis
+
+Skewness - Martin& Zou
+
+· Let returns be Xt  N (0, 1) IID
+· We can still have a filter with nice properties
+
+· Strategy returns Rt = st-1Xt where st-1 is signal
+                                              T
+·  Consider horizon T returns, i.e., Rt+T  =           s -1X
+                                                   =t
+
+· We consider EWMA signals
+
+                        st =       akXt-k
+
+                              k=1
+
+                            = c   kXt-k
+
+                              k=1
+
+   where c is a normalizing constant
+
+                                                              16
+Calculating Skewness
+
+     Calculating Skewness
+         · We can take first three moments. Skewness is interesting
+         · Let innovation Xt be iid, with zero mean and 3rd moment and
+           unit variance:
+                 · Xt, Xs = 0 for t = s
+                 · Xt = 0, Xt2 = 1 and < Xt3 >= 0
+         · Zero mean and skewness
+         · Algebra alone will get that:
+                 · Mean:
+
+                           · < Rt+T >= 0
+                 · Variance:
+
+                                       R2t+T = (s0X1 + s1X2 + · · · + sT-1XT)2
+                                               = T  s2i Xi2+1
+                                               = T × s2
+
+                                                                                                                                                   17
+Skewness II
+
+Skewness
+   · 3rd Moment - Skewness:
+
+R03+T = (s0X1 + s1X2 + · · · + sT-1XT)3
+
+                         ssn2nX1 X2nn+11+s1msnX2mX+n21:+ 1s0n3 Xn3+1 :  0
+
+             =  const                                                      with n1 < n2 < n3
+             +  const  
+                                                                                   with n < m
+             + const  sn3Xn3+1: 0                                                   with n > 0
+                                                                                   with n > m
+             +  c3ons t  sn2Xs2nm2+s1nsXmnX+m1+1  
+             =
+
+                0n<m<T
+
+Since sn2 may depend on Xm+1
+
+                                                                                                18
+Skewness by Horizon
+
+     Skewness by horizon
+
+                                                                                                                                                   19
+Skewness III
+
+Skewness
+Now if Xk have a non-zero acf:
+
+· Letting signal                 
+
+                  sk =               ajXk-j
+
+                                j=0
+
+  where aj are fixed filter weights (e.g., aj = c × j for EWMA)
+· The third moment becomes
+
+                    T
+                  6 (T - j)ajk(a)
+
+                       1
+
+· where k is the autocovariance function of weights a i.e.,
+
+                                    ka =  ajaj+k
+
+                                                                j
+
+                                                                   20
+Fascinating skewness
+
+     Why is skewness so interesting?
+
+         · Even an un-skewed return distribution can lead to positive
+           skewness
+
+         · (Almost all) risk-averse investors prefer:
+                 · more positive returns
+                 · less volatility
+                 · more positive skewness
+
+         · Why is skewness so strange?
+                 · Interaction between future signal (at time T + k) involving terms
+                   from T to T + k - 1
+                 · Interaction between future returns (at times T to T + k - 1)
+
+         · In reality mean, standard deviation and Sharpe also (even more)
+           interesting!
+
+                                                                                                                                                   21
+Skewness and Risk Premia
+
+     Negatively Skewed have higher SR except for Momentum
+
+Figure 4: More negatively skewed have higher Sharpe Ratio. Source:       22
+
+Lemperiere et al, Risk Premia: Asymmetric Tail Risks and Excess Returns
+Trend Following Practicalities
+
+     Many different methods all lead to reasonable trend-following
+     strategies
+
+         · SMA, EWMA, combinations of signals (crossing EWMA, weighted
+           EWMAs)
+
+         · Capped and floored signals (Winsorising)
+         · State-space models (local level and local slope models), etc.
+         · Loess, or local regressions
+         · ARIMA models
+         · Wavelets, Fourier decomposition
+
+                                                                                                                                                   23
+Taxonomy of filtering methods
+
+     Filtering returns
+         · Exponentially weighted moving averages (EWMA)
+         · Simple moving averages (SMA)
+         · Normalizing
+         · Winsorising
+         · Indicator Functions
+         · Combining Signals (Ensemble Methods)
+         · Nonlinear Transforms used as well
+
+                                                                                                                                                   24
+Taxonomy II
+
+     Filtering Levels (Differences of levels)
+         · Level vs EWMA
+         · Level vs SMA
+         · Crossing moving averages (specific order indicating momentum)
+                 · e.g., y5 > y10 > y30 go very long,
+                 · y5 < y10 < y30 go very short.
+                 · Sum or various horizon indicator functions of levels
+         · Differences of filters
+         · Holt-Winters (H-W) and local trend extraction
+
+     In spite of wide variety of models, momentum returns are almost
+     identical Levine and Pedersen, Which trend is your friend?
+
+                                                                                                                                                   25
+Skewness in Practice
+
+     Now, despite the fact that the time series of returns is here assumed
+     to be a sequence of iid variables following a normal distribution, the
+     strategy returns rst+T time series has different properties, in particular
+     it displays skewness, i.e. trend followers lose more often than they
+     gain, as shown in a paper by Bouchaud and Potters (2005).
+
+                                              Figure 5: Caption
+
+                                                                                                                                                  26
+Skewness and Nonlinear Transforms
+
+                                          Figure 6: Step Function
+
+                                                                                                                                                   27
+Skewness and Nonlinear Transforms
+
+                                              Figure 7: Sigmoid
+
+                                                                                                                                                  28
+Skewness and Nonlinear Transforms
+
+                                        Figure 8: Reverse Sigmoid
+
+                                                                                                                                                   29
+Skewness and Nonlinear Transforms
+
+                           Figure 9: Step Skewness - threshold lowers it
+
+                                                                                                                                                  30
+Skewness and Nonlinear Transforms
+
+                     Figure 10: Sigmoid Skewness - peak closer in lowers it
+
+                                                                                                                                                   31
+Skewness and Nonlinear Transforms
+
+       Figure 11: Reverse Sigmoid Skewness - peak closer/falls quicker in lowers it
+
+                                                                                                                                                   32
+Momentum and Responsiveness
+Responsiveness
+
+         · Short-term MA -
+                 · more responsive - captures established trends near their start
+                 · higher transaction costs - bleeds away in a sideways market
+
+         · Long-term MA
+                 · less responsive - lagged response to new turning points
+                 · lower transaction costs - doesn't lose money in a sideways market
+
+                                                                                                                                                   33
+Trend via SDEs
+
+Trend via SDE   dS   =  µdt  +  dW
+We let          S
+and define
+                                    dS
+                dµ^  =  -µ^dt  +    S
+
+µ^ is an EWMA. Note that we still cannot represent all ARMA processes
+using SDE. Only MA terms. AR terms requires integrodifferential SDE
+or functional SDE. Sometimes studied in physics or engineering
+literature.
+
+where                dV dS
+                     V = S
+                       = mµ^
+
+                                                                       34
+SDE approach
+
+SDE Cont'd
+Then we have the following identity (just using Ito's Lemma)
+
+   V(T)       =  m  (µ^T2  -  µ^02 )  +  m2  T    (  µ^2  (1  -  m2    -     )  dt
+ln( V(0) )       2                                   2             2)     2
+                                               0
+
+· Bruder-Gaussel: Risk-Return Analysis of Dynamic Investment
+  Strategies
+
+· Jusselin et al: Understanding the Momentum Risk Premium
+
+                                                                                    35
+Trading Futures
+Information on Futures Markets
+
+     No one source ­ Combine several
+     Information on Futures Markets
+
+         · Bloomberg (WEIF, WBF, Comdty pages, etc)
+         · Tick Data
+         · CSI Data
+         · Pure Financial Academy
+         · MRCI
+         · Bar Chart
+
+                                                                                                                                                  36
+Bloomberg for Futures
+
+     Futures DES pages:
+         · Exchange
+         · Underlying
+         · Contract Size
+         · Tick Size
+         · Tick Value
+         · Calendar
+
+     Other FLDS:
+         · EDA Comdty FLDS <go> Size <go>
+         · NGA Comdty FLDS <go>
+         · Underlying <go>
+
+                                                                                                                                                   37
+Futures research sources
+
+     Tickdata - https://www.tickdata.com
+         · Paid service Rolls properly
+
+     CSIdata - http://www.csidata.com
+         · Lots of info
+         · Funny symbol names
+
+     Barchart - https://www.barchart.com
+         · Many other relevant details
+
+     Other sources
+         · Good and relevant information (sometimes spotty coverage)
+         · Inconsistent naming conventions
+         · Have to merge all with manual adjustments
+         · Double-check and verify
+
+                                                                                                                                                  38
+Futures Master Table
+
+     This is always a work in progress, but at minimum contains:
+     Futures Master Table
+
+        - Ticker
+        - BBGType - Index, Comdty
+        - Exchange
+        - Bloomberg code
+        - Holidays
+        - Description of underlying
+        - Currency
+        - Delivery Type ­ Cash or Physical
+        - Contract Size
+        - Delivery Months
+        - Tick Value
+
+                                                                                                                                                   39
+Rolling Futures
+
+     Rolling Futures
+
+         · Futures must be rolled to avoid cash settlement/physical
+           settlement
+
+         · Roll dates based on either:
+                 · Min(last trade date, first notice date, first delivery date) ­ k days
+                 · When the volume of the 2nd contract exceed than on the 1st
+                   contract
+
+         · Need the key dates and volumes for first 2 contracts
+         · Can roll some futures sporadically rather than deterministically.
+         · Roll entire chain at same time ­ 1st, 2nd, etc, out to Nth contract.
+         · Rolling incurs one-sided transaction costs.
+         · Continuous Futures Contracts for Backtesting
+         · Continuous Futures Methodology for Backtesting
+         · Cont Futures for Backtesting and Technical Analysis
+
+                                                                                                                                                  40
+Futures Expiry Tables
+
+     Futures Expiry Tables
+         · Contract name for each contract
+         · Expiry Month
+         · Last Trade
+         · First Notice
+         · First Delivery
+         · Last Delivery
+         · Last Price
+
+                                                                                                                                                   41
+Futures Naming Convention
+
+Futures Naming Conventions
+Contract names usually 2/3 letter prefix:
+
+· ED = Eurodollar
+· ES = SPX mini
+· TY = 10y-UST bond
+· G = Gilt (with space)
+· SFFR = SOFR
+
+Next comes delivery month:
+
+· Monthlies: Jan:F, Feb:G, Mar:H, Apr: J, May: K, Jun:M, Jul:N, Aug:Q,
+  Sep:U, Oct:V, Nov:X, Dec:Z
+
+· H, M, U, Z = quarterlies, Others = Serials
+
+Finally comes year:
+
+· Usually 1 digit, but BBG has schedule to convert to 2 digits          42
+Updating Futures Data
+
+     Storing Futures Data
+        - Periodic bulk download of all the timeseries needed OR use a
+           real-time downloader which updates all series on fixed
+           schedule.
+        - Make sure full history of expiries are available (for proper
+           rolling).
+        - Bulk download missing series etc.
+        - Pull in reference index if available (for carry calcs, signal)
+        - Convert all to at least 2-digit year expiry (if not 4-digit)
+        - Store in a suitable database.
+        - Must store unadjusted futures prices (for levels and carry calcs)
+
+                                                                                                                                                   43
+Other Considerations
+
+     Other Considerations
+        - Can store intraday (eg, BBG has HLOC ASK, BID and MID at 1-min
+           or longer. Refinitiv has long histories).
+        - Store opening times. (see e.g., Pandas Market Calendars)
+        - Close may not coincide with pricing time for deliverable. (what is
+           the carry of the first contract?)
+        - Closing = Last = Final Trade
+        - Settle Price - Where traders will mark mid- How is it determined?
+        - Bid / Ask - sticky or real?
+
+                                                                                                                                                  44
+An Exercise
+Exercise
+
+     Background - Momentum in Equities
+         · Recall - Equities Indices typically trend in the medium term (e.g.,
+           1y), but mean-revert in the short term (e.g., 10 days)
+         · Carhart recognised this and created the momentum factor
+           sorting returns from 12m less the previous month.
+         · At that point buy the winners and hold.
+         · It is also known that momentum stops working after about 18m.
+           Sometimes this is called mean-reversion even though the term
+           is loose. (It is also unclear if we need to worry about this)
+
+                                                                                                                                                   45
+Exercise
+
+     Exercise - 1
+         · Download an equities index (e.g., SPX Index, SX5E Index, NKY,
+           CAC, HSI etc) or futures series (CL1, CO1, NG1, GC1, C 1, etc), or ETF
+           (SPDR, etc). At least 5 years.
+         · If a futures, make sure you account for the roll properly - 2-3
+           days before first notice date.
+         · Download an approx risk-free rate (SOFR - repo rate, or Fed
+           Funds or SONIA or similar)
+         · Note: First Notice > First Delivery > Last Delivery  Last Trade
+           Date (Discussed in Futures section)
+
+                                                                                                                                                  46
+Exercise
+
+Exercise - 1b
+   · Preferable to account for bid/ask, i.e., forecast and mark using
+
+          mid  =  bid               +  ask
+                                    2
+
+but enter and exit incurring costs
+
+          tc  =  ask                -  bid
+                                    2
+
+                                                                       47
+Exercise-2
+
+     Excercise - 2
+         · Create an appropriate momentum signal given you know what
+           you know.
+         · Save at least 1y for testing
+         · "Train" by adapting for filter parameter(s) to ensure decent
+           performance on the test set.
+         · By performance we mean Sharpe Ratio (Avg Excess Return/Stdev
+           Returns). Do it by year and for entire train set. You can include $
+           Returns or % returns, etc. Adjust as you wish. Only when you are
+           done, apply to test set.
+         · How have you accounted for what you know about the
+           time-series?
+
+                                                                                                                                                  48
+References
+References
+
+     Time-series and cross-sectional momentum
+         · Asness, Moskowitz and Pedersen, "Value and momentum
+           everywhere." The Journal of Finance 68.3 (2013): 929-985.]
+           Momentum in all asset classes
+         · Moskowitz-Ooi-Pedersen, Time-Series Momentum
+         · Lecture Notes Moskowitz' Lecture Notes Documents significant
+           momentum in Equity index, currency, commodity, and bond
+           futures for 58 instruments
+
+                                                                                                                                                  49
+References
+
+     Varieties of Trend-following methods
+         · Bruder, Zhao, Richard, Roncali, Trend Filtering Mechanisms for
+           Momentum Strategies Practicalities of filtering - one method for
+           trend-following
+         · Moskowitz and Pedersen Which trend is your friend? Present a
+           variety of different trend method, Many different methods can
+           be used to construct basically the same signals
+
+                                                                                                                                                  50
+References
+
+     Other papers of note
+
+         · Fung-Hsieh - first presented empirical paper on straddle-like
+           payoff Fung Hsieh Risk in HF strategies
+                 · Some important empirical work on CTAs, showing the straddle-like
+                   payout.
+                 · The theory is very facile (daily lookback straddles do *not* and
+                   *never did* exist).
+                 · The strategies are never perfectly efficient as would be true of the
+                   exotic lookback straddle.
+
+         · Lo-Kaminski When do stop losses stop losses?Also quite simple
+           paper, Stop losses work only for trending series, hurt for
+           mean-reverting
+
+         · Firoozye-Kohiyama Avoiding Backtest Overfitting - Describes
+           dynamic strategies including momentum and mean-reversion
+           and 'optimal' ways of choosing how to weight them.
+
+                                                                                                                                                   51
+What have we covered
+Learnings
+
+     What we covered
+         · Trading Strategies - Definitions
+         · Momentum, its history and pervasiveness
+         · Cross Sectional and Time-series Trend
+         · Momentum and Skewness
+         · Momentum's Responsiveness
+         · Futures, How to store them, how to roll them
+         · An Exercise in Momentum trading
+
+                                                                                                                                                   52
+

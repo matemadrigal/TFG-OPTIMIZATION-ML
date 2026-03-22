@@ -1,0 +1,1231 @@
+Algorithmic Trading - A Practitioners Guide
+
+Features, Factors, Dimension Reduction & Regularization
+
+Nick Firoozye / Brian Healy
+06 November 2023
+Structure of an Algorithmic
+Trading System
+Structure
+
+     Algorithmic Trading Structure
+
+                          Figure 1: Algorithms in Future Capital Markets - Koshiyama, Firoozye, Treleaven
+
+                                                                                                                                                    1
+Structure II
+
+     Algorithmic Trading Structure - A second view
+
+                                                                                                                                                    2
+Structure - Explanatory
+
+Algo Trading Structure - Notes
+
+· Target system is not always strictly adhered to.
+
+· Three basic models go into the optimizer/allocator
+
+      · Alpha / Forecasting Models
+      · Risk Models
+      · TCA type models
+
+· Some of these 'models' may be overly simple, e.g., slippage =
+              (bid-ask)
+most  recent        2    ,  or  yesterday's,  or  may  even  be  ignored,
+
+alpha may be trivial crossing MAs.
+
+                                                                           3
+Structure - Explanatory II
+
+     Algo Trading Structure - Notes
+         · Some parts are often combined, e.g., alpha and allocation in one
+           go -
+
+                              Posn = +1 unit if MAshort > MAlong
+                              Posn = -1 unit if MAshort < MALong
+                              Posn = 0 otherwise
+
+         · Allocation - can be one of many types of frameworks, MVO, Risk
+           Parity, etc. Usually some plug-in method.
+
+         · Many benefits to leapfrogging and combining parts of this
+           process.
+
+         · Some of the storage/retrieval may only be for backtesting,
+           depending on speed requirements
+
+                                                                                                                                                    4
+Structure of the Future
+
+     Algorithmic Trading Structure - A future view
+
+                                     Figure 3: Possible Alternatives
+
+                                                                                                                                                    5
+Structure of the Future II
+
+     Algorithmic Trading Structure - A future view
+
+                     Figure 4: Source: Algorithms in Future Capital Markets
+
+                                                                                                                                                    6
+Features
+Data Processing
+
+     Data Processing Pipeline
+         · ETL - Extract, Transform, Load
+         · Store Raw files
+         · Type it
+         · Clean and Verification
+                 · Missing data fixes - Filling, Multiple Imputation, etc
+                 · Outlier Removal / Engineering, Robust Methods
+                 · Data Correcting
+                 · Data Encoding / Categorization
+                 · Data Discretisation
+                 · Data Transformation
+
+      Reference: Kaggle Feature Engineering Methods
+
+                                                                                                                                                    7
+Missing Data
+
+     Missing Data
+         · Subject of a branch of Statistics
+         · Let M be missing data indicator. Let  be parameters for joint
+           distribution f of data Y, which is split into Yobs and Ymiss A
+           missing data mechanism is
+                 · MCAR - (independent of observed data)
+                                        f(M.|Y, ) = f(M|) for all Ymiss, Yobs
+
+                 · MAR - (condnl on obs data),
+                                     f(M.|Y, ) = f(M|Yobs, ) for all Ymiss, Yobs
+
+                 · MNAR - (unknown mech, systematic), M may depend on Ymiss (i.e.,
+                   the values they take).
+
+         · Related: Censored data, Rounded and Truncated
+
+                                                                                                                                                    8
+Missing Data II
+
+     Missing Data Solutions
+         · Complete Case (delete rows with missing obs)
+         · Single Imputation - Fill with mean/median/mode or forward-fill
+         · Multiple Imputation using one of many methods
+                 · Bayesian Methods
+                 · EM Algorithm
+         · Full Information Maximum Likelihood
+
+                                                                                                                                                    9
+Multiple Imputation
+
+     Multiple Imputation
+     Multiple imputation involves three distinct phases. In Rubin's (1987)
+     terminology:
+
+        1. The missing values are filled in M times to generate M complete
+           data sets.
+
+        2. The M complete data sets are analyzed by using standard
+           procedures.
+
+        3. The results from the M analyses are combined / pooled into a
+           single inference.
+
+                                                                                                                                                   10
+Multiple Imputation Details
+
+     A Bayesian version
+         · (Imputation) Draw  from distribution of 
+         · (Imputation) Draw Ymiss from distribution of f(Ymiss|Yobs, )
+         · (Estimation - completed data) One can estimate parameter of
+           note and its variance, say  using completed data ^(Ymiss, Yobs)
+           and the within imputation variance v^ar(^)
+         · (Pooling) Repeat m times to get multiple estimates we want
+
+                                                                                                                                                   11
+Problem with Outliers
+
+     Outliers and Robust Statistics
+         · In Robust Statistics, data is often characterized as being
+           y  N(µ, 2) with probability p and y  N(µ, 10 × 2) with
+           probability 1 - p.
+         · Robust Statistics develops methods which are not sensitive to
+           outliers, i.e.,
+                 · use Trimmed-Mean or Median instead of mean,
+                 · use MAD (median-absolute-deviation) instead of standard
+                   deviation
+                 · use Percentile Regression instead of OLS
+         · A very large number of methods are not immune to outliers, so
+           it is more common to identify and clean them
+
+                                                                                                                                                   12
+Outlier Detection
+
+     Methods
+         · Normal data - |y| > k  stdev(y) where everything is computed
+           using previous values and k can be a large number say, 3 or 4.
+         · Non normal data, interquartile range = IQR = 75th percentile
+           -25th percentile.
+         · Outliers if y > 75th percentile +3  IQR
+         · Outliers if y < 25th percentile -3  IQR
+         · Solutions:
+                 · Replace by NaN - Use missing data method
+                 · Remove observation
+                 · Cap or Floor-Winsorization
+                 · Categorisation
+
+                                                                                                                                                   13
+Data Types
+
+     Data Types - What should you be gathering?
+     Even before the regular predictive features
+
+         · Prices, Yields, Bids/Asks (top-of-book). EOD or Snaps/Bars.
+           (mids + slippage) or deeper LOB info.
+
+         · Funding, both long and short. Margin limits/haircuts.
+         · Events, Coupons, Dividends, calls, etc.
+         · Schedules, roll-dates, maturities, etc.
+         · Structural info/descriptions.
+         · Calendars, holidays, opening hours.
+         · Of course all the predictive data types too.
+
+                                                                                                                                                   14
+Databases ­ Sql and NOSql
+
+         · Normalized Data: Sql (for data whose structure never changes).
+           Decent for EOD timeseries if schema is designed properly.
+           PostgreSQL
+
+         · Unstructured Data: MongoDB ­ For news articles, etc, but can be
+           used for timeseries data (storing "pickled" blobs).
+
+         · Memory Store: Redis ­ Cached data, parallel processing, limited
+           by RAM, Alternatives use VM, e.g., MemCached
+
+         · Timeseries DB: InfluxDB (real-time, SQL-like), KDB (real-time,
+           huge overhead), TSDB (not as cumbersome), Timescale DB
+           (PostgreSQL-clone), Pystore (Parquet)
+
+         · Other Types: Object Stores, Graph DBs, etc.
+         · Build one yourself using 'cheaper/slower' memory­local files,
+
+           S3, etc.
+
+                                                                                                                                                   15
+Database Examples
+
+     MongoDB ­ data lake
+         · Good for unstructured (e.g., text) data
+         · Can be used with compression to store any form of data
+
+     Arctic ­ API for easy access via Pandas
+         · Easy to use.
+         · Ease may create disorder
+
+     Redis ­ cached key-value store
+         · In-memory but persistent on disk.
+         · Extremely fast with workers/manager for multi-tasking
+         · Good for map/reduce operations
+
+                                                                                                                                                   16
+Database Examples II
+
+     InfluxDB ­ For tick-level data
+
+         · Large Tick-level data store.
+         · Shard-able, columnar store - Not as fast as KDB
+         · Real-time event recording
+
+     PostgreSql
+
+         · Useful as object store
+         · Stores program state and can be used for event logging
+
+     Pystore
+
+         · Technically not a database ­ a set of files
+         · Based on Arctic with data written in Apache Parquet, a columnar
+
+           data format
+         · Can be easily transported/sharded
+
+                                                                                                                                                   17
+Feature Stores
+
+     Feature Stores
+         · Feature Stores are used extensively in ML-Ops. Most ML-ops
+           related feature stores are highly engineered with a lot of
+           functionality (e.g., real-time 'serving' of features etc), which may
+           not be appropriate to the specific trading set-up.
+         · Best to just be inspired by ML-Ops
+         · Output: Time-series data (possibly with timestamps, e.g.,
+           'as-of-time', 'creation time')
+         · Large amount of extra meta-data - creation method, feature
+           hyper-parameters, possibly SHA to git commit
+         · Version your data, version your features
+
+                                                                                                                                                   18
+Asset classes
+
+     Many different ways of dividing up the universe.
+     For retail investors:
+
+         · Spot FX ­ DM Majors and minors, Crypto
+         · CFDs (for trading spot indices, commodities, etc)
+         · Cash Equities, Cash Bonds (Corporates, Govvies)
+         · ETFs
+         · Futures ­ EQ index, FX, Comdty, Interest Rates
+         · Listed derivatives ­ options on futures, indices, fx, etc
+
+                                                                                                                                                   19
+Asset classes
+
+     For institutional investors
+         · Futures: Interest Rates, Equities, FX, Commodities, Indices
+         · Rates (OTC, ISDA): IR Swaps, swaptions, bond options
+         · Govvies: Sovereign bonds (USTs, Bunds, etc), SSA etc.
+         · FX: DM and EM, forwards, NDFs, derivatives, swaps
+         · Equities: Derivatives- var, vol swaps, more exotic products
+         · Credit: Corp Bonds, Credit default swaps (CDS), derivatives
+         · MBS/ABS ­ MBS TBAs, Pass-throughs, Tranches, CMOs, Options
+         · Commodities: Derivatives, Physical (huge number of spot mkts)
+         · Funding (OTC, GMRS,MRA, ISDA): OIS swaps, Basis swaps, Repo,
+           Sec-Lending
+
+                                                                                                                                                  20
+Quant Packages
+
+     Quant Analytics
+     Various Financial Models / Daycount libraries, etc, which are
+     necessary for some products (e.g., fixed income), likely useful for
+     others (e.g., futures, equity derivatives), and can lead to a large
+     number of engineered features.
+
+         · Quantlib ­ C++ libraries, wrapped with SWIG for python
+         · ORE ­ C++ extensions of Quantlib
+         · OpenGamma ­ Java libraries. More maintenance, less portable
+         · Fincad ­ Not open-sourced
+         · Numerix ­ Not open-sourced
+         · Beacon ­ Open sourced but not open platform
+
+                                                                                                                                                   21
+Signals - Overview
+Overview
+
+     Overview on Features
+         · Features/Signals/alpha-sources are often very product- specific.
+         · Some require significant product expertise (while others do not)
+         · Some are highly 'engineered' (e.g., involving the history of a
+           z-spread of a bond - which requires a curve and spread
+           calculations).
+         · Some require extensive datasets (e.g., commodity supply-chain
+           data shipment details and storage capacity)
+         · Many require fast calculations
+         · Impossible to be comprehensive (that's where funds get a lot of
+           their 'secret sauce')
+         · Due to time-constraints, many specifics will only be in the online
+           handouts
+
+                                                                                                                                                   22
+Signals I
+
+     More General Signals
+
+         · Price & volume: Models based on the price/volume.
+         · Fundamentals: Company/Security-specific data to build
+
+           fundamental alphas. Usually very low turnover. (Security specific
+           fundamentals)
+         · Macro / Systemic data: GDP, employment rates. Have big
+           impacts on markets. (Event driven or fundamental or sentiment)
+         · Sentiment: FOMC minutes, company filings, papers, journals,
+           news, or social media. It's necessary to quantify the text into
+           numbers (eventually number of shares to buy/sell). Text data
+           includes both current and future events.
+         · Multimedia: More alt data - Videos/audios as information
+           sources. Use Text-To-Speech techniques to extract text from the
+           video/audio. Build models on text information.
+
+                                                                                                                                                   23
+Signals II
+
+         · The categories of can be understood by examining the data that
+           they use: price-related data or fundamental data.
+
+         · Understanding the inputs to a strategy is essential to
+           understanding the strategy itself.
+
+         · Trend and mean reversion, are based on price-related data.
+         · Value/yield, growth/sentiment and quality based strategies are
+
+           based on fundamental data.
+
+                                                                                                                                                   24
+Price-based technical features
+
+Technicals for Trend and Mean-Reversion etc
+Can be used to find medium-term trends or short-term
+reversals/mean-reversion.
+
+· SMA, EWMA of returns or price - SMA or EWMA
+· SMA(short) - SMA(Long), etc
+· Other convolution filter st =  wkpt-k
+· Other 'technical indicators' are feasible
+
+Often have a volume conditions on:
+
+· Volume - strong trend with high volume is more significant than
+  trend with low-volume.
+
+· Put/call volume or Put/call volume ratios
+
+· Slope of VIX futures curve, Level of VIX
+
+· Options/futures open interest
+
+· Shape of the order book / Order imbalances                       25
+Relative Value
+
+         · Similar to mean-reversion /reversals but sometimes much
+           slower
+
+         · Fair value may be constant or much longer term MA.
+         · Transaction costs less of an issue than mean reversion
+         · Consider impact of vol, or var scaling
+         · Decide what constituents "reversion"
+         · Typical RV is
+
+                 · pairs trading - one asset follows a multiple of another,
+                 · butterflies - 2-5-10 flies revert to a value, typically based on
+
+                   monetary cycle,
+                 · spread trades - a spread between two prices or yields reverts
+                 · more complex combinations
+
+                                                                                                                                                  26
+Carry
+
+     Different for each asset class. (see Carry,
+     Koijen-Moskowitz-Pedersen-Vrugt)
+
+         · Easier for futures: One-day carry is calculated by interpolating
+           between the spot price and the first future
+
+                                   PriceofFirstFuture - SpotPrice
+                               Numberofdaysuntilthefutureexpires
+
+           For other contracts we interpolate between the longer contract
+           and next shorter one
+         · For bond futures we technically need to find price of the CTD -
+           may approximate with 6% coupon bond on curve.
+         · Technically need Futures delivery model which measures
+           optionality
+         · Go long the high carry instrument and go short the low carry
+           instrument. Use vol scaling.
+
+                                                                                                                                                   27
+Equity Factors
+
+         · Market
+         · Size / capitalisation
+         · Book/Market Value
+         · Momentum
+         · etc
+     Sort universe by metric, divide into deciles and go long top decile,
+     short lowest. Can be cash-neutral. In academic literature: 314
+     Factors.
+
+                                                                                                                                                  28
+Data Types
+
+         · News
+         · Company/regulatory Releases
+         · Economic data and Now-casting (convert infrequent releases to
+
+           daily)
+         · Auction results, IPOs etc
+         · Alternative data ­ weather, sentiment, satellite
+         · Weirder yet ­ Magnetic disturbances, solar storms, lunar
+
+           phases, mercury retrograde, Chinese numerology (see citations of
+           https://scholar.google.com/scholar?cites=8027680009623846266&as_sdt
+
+                                                                                                                                                   29
+Factor Trading
+Definition: Asset Pricing Model
+An asset pricing model is a quantitative model that describes the
+value of a portfolio (including single-stock ones) based on a set of
+financial indicators.
+
+                                                                                                                                          30
+CAPM, APT, Fama-French
+Here we will briefly discuss three main asset pricing models:
+
+   · Capital Asset Pricing Model (CAPM - Sharpe, Treynor, Lintner,
+      Mossin, etc),
+
+   · Arbitrage Pricing Theory (APT - Ross) A much more flexible
+      framework
+
+   · Fama-French a three/five/etc factor model. APT's most famous
+      application
+
+   · Each is the outcome of an equilibrium model where
+      representative investors maximize the utility of their
+      wealth/returns (i.e., MVO).
+
+   · We will discuss in more detail when we discuss Portfolio
+      Optimization.
+
+                                                                                                                                           31
+CAPM
+Capital Asset Pricing model (CAPM) describes the values of asset
+returns by comparing against market returns,
+
+   · In its most general formulation where ri is the return of the ith
+      stock, rf is the risk-free return and rM is the market return
+                            rit - rft = i + iM (rMt - rft) + it
+
+   · Here  is a measure of the sensitivity of the stock to the market,
+      with higher values expecting higher compensation for the risk
+
+   · In this most general formulation  is not in the original
+      formulation, and is a measure of the residual expected return of
+      a portfolio (stock) return
+
+                                                                                                                                           32
+CAPM in Pictures
+
+Figure 5: The efficient frontier with no risk-free, the tangency portfolio T,
+
+which is the market, and the capital markets line                              33
+APT
+
+· Ross extended CAPM to consider multiple (non-diversifable)
+
+     sources                 
+                                 bijfjt
+              riet  =  i  +              +  it
+
+                             j
+
+· Here rei is the excess return of the ith asset, and fjt is the jth
+  factor's excess return.
+
+· Note, unlike PCA, the factors need not be orthogonal.
+
+· All non-diversifiable sources of risk must have a market price of
+  risk (i.e., a positive expected excess return), i.e,
+
+              EP[ fj ] = j > 0, but                           (1)
+
+              EQ[ fj ] = 0                                    (2)
+
+· All idiosyncratic risks are (asymptotically) diversifiable and thus,
+  uncompensated.
+
+                                                                                                                                     34
+Fama-French Model
+Fama-French three factor model describes the values of portfolio
+returns by considering the returns of
+
+   · an average market portfolio,
+   · a stock size factor (Small Minus Big factor, SMB), and
+   · stock book-to-market ratio factor (High Minus Low factor, HML).
+   · Mathematically, we have
+
+              rit - rft = i + iM (rMt - rft) + isSMBt + ihHMLt + it
+   · SMB and HML are in the original formulation, but many others
+
+      are feasible
+
+                                                                                                                                          35
+Fama-French Portfolios
+
+Figure 6: FF Portfolio Excess Returns  36
+Fama-French Model Explanation
+
+     Fama-French
+     The model introduces multiple s,
+
+         · the small-vs-big (SMB) factor, which weights a stock market
+           capitalization,
+
+         · the high-vs-low factor (HML), which weights the ratio between
+           the fundamental valuation and the market valuation of a stock.
+
+         · the market beta () which weights the overall sensitivity to
+           market moves
+
+         · Stocks characterised by high book-to-market ratios are called
+           value stocks, while stocks characterised by low ratios
+           correspond to growth stocks.
+
+                                                                                                                                                   37
+Factor Portfolios
+
+     What is a factor?
+         · Many other factors are possible
+         · In Fama-French - a 'factor portfolio' was defined as a portfolio
+           which was long the top decile for a given indicator and short the
+           bottom decile.
+         · Typically this portfolio is weighted to be cash-neutral
+         · Underlying this is a cross-sectional indicator e.g.,
+           book-to-market as a (not very good) measure, a capitalization
+           measure, etc
+         · Technically we measure and do a rank or sort of the market.
+         · Other Portfolios from Sorts (references available) are possible
+           and likely better
+
+                                                                                                                                                  38
+Factor Zoo
+
+     Factors or Anomalies have proliferated
+         · Vast number of finance papers on pricing anomalies or
+           alternative factors
+         · Most successful was Carhart's Momentum factor (NB: Fama and
+           French disliked this immensely)
+         · Various meta-analyses of factors/anomalies have been since
+           studied.
+         · Harvey-Liu-Zhu was the first major study of 316 identified factors.
+         · Identified only 6 significant factors.
+
+                                                                                                                                                   39
+A Growing Factor Zoo
+
+                                                                                                                                                  40
+Factor Significance
+
+Figure 7: MHT Significance Levels and the 6 Significant Factors from Harvey et
+
+al. Note: MRT = CAPM, MOM=Momentum, HML, LIQ=Liquidity, SRV=Short-run
+
+vol, CVOL=Cons Vol, DCG=Dur Cons Goods,                                         41
+Jelly Beans
+
+                                                                                                                                                   42
+
+                                                Figure 8: XKCD
+Multiple Hypothesis Testing
+
+     MHT - The problem
+         · Technically, when performing a hypothesis test, you should only
+           look back at the same data once.
+         · Multiple trials will eventually yield a (false) positive.
+         · Researcher try to control Family Wise Error Rate (FWER, i.e.,
+           probability of one false positive) and False Discovery Rate (FDR,
+           controlled proportion of false positives)
+         · Common methods involve raising p-values for the hypothesis
+           testing, including Bonferroni, Holm and BHY adjust based on
+           worst-case (test stats are assumed independent)
+         · More sophisticated methods use bootstrap resulting in higher
+
+                                                                                                                                                   43
+False Positives vs False Negatives
+
+                     Figure 9: Type I: False Positives, Type II: False Negatives
+      FWER = Limit any Type I error (want no more than 5% chance of one false
+      positive). FDR = Limit proportion of Type I error (ok to have 5% of trials result 44
+Significance vs Power
+
+                            Figure 10: Control significance, study power
+
+                                                                                                                                                   45
+Dimension Reduction
+Principal Components Analysis
+
+     Principal Components Analysis
+         · PCA (sometimes used interchangeably with Factor Analysis)
+           devised by Hotelling 1933 and Spearman (around the same time)
+         · Introduced to find directions of largest common variation for a
+           set of series.
+         · PCA is used in a vast number of areas from psychology to health
+           to finance
+         · Essentially, we have a set of r.v.'s, Xt  RN and want to describe
+           their behaviour by a set of common factors:
+
+                                  Xt = LFt +  where   N (0, )
+
+           with  diagonal, and Ft are k typically independent / orthogonal
+           factors with k < N.
+
+                                                                                                                                                  46
+Principal Components Analysis
+
+     Principal Components Analysis
+         · L are known as the factor loadings while F are called the factor
+           scores or realizations.
+         · If F are orthonormal, we can assume F  N (0, I).
+         · Essentially,  is represented as a lower-rank matrix LL (i.e., rank
+           k < N) and a perturbation of idiosyncratic (i.e., independent IID)
+           innovations.  = LL + 
+         · Usually we consider normalized data first, i.e., If we let
+           X~ = (X - X¯)/X it is the same thing as doing PCA on the
+           correlation matrix, i.e.,  = diag{i}C diag{i} and then let
+
+                                               C = LL + 
+
+         · Consequently,
+
+                                    = diag{i}LLdiag{i} + ~
+
+                                                                                                                                                   47
+Principal Components Analysis
+
+     Principal Components Analysis-Fitting It
+         · Typical method is to find eigenvalues and eigenvectors of 
+           (usually denoted V = V
+         · Since  is non-negative semi-definite, we would always use
+           Singular Value Decomposition - more efficient:  = USU for U
+           orthonormal and S = diag{s1, s2, . . .} the singular values si  0.
+         · Of course L = US1/2 where S1/2 = diag{s11/2, s21/2, . . .} works
+         · Typically only the first few are used, i.e., L = UkS1/2,k where we let
+           Uk be only the first k columns of U, etc
+         · Typically  = diag{ - LL}
+
+                                                                                                                                                  48
+Principal Components Analysis
+
+     Messiness
+         · Is this unsatisfying and messy? What happens to the other
+           terms?
+         · MLE method assumes X is MVN, and then sample  w(·|, T) the
+           Wishart distribution (on positive semi-definite matrices).
+         · Consequently, we can form a likelihood, where we maximize the
+           L(LL + |sample)
+         · Possible to test numbers of principal components using
+           likelihood ratio tests.
+         · Problem: It assume normality
+         · Problem: It is a cumbersome iterative solution
+         · Problem: because of this, it is rarely done
+
+                                                                                                                                                  49
+Principal Components Analysis
+
+     More common approach
+         · Eigenvalues explain proportion of variance explained
+         · Numbers of components typically found from scree plots
+         · PCA is 'distribution free', so almost always 'rules of thumb'
+         · Off diagonal terms are ignored
+
+                                                                                                                                                  50
+Principal Components Analysis
+
+     More common approach
+         · Once Loadings are found, scores are just from a regression, i.e.
+
+                                             X = LF + 
+                                             F^t = (LL)-1LXt
+
+         · Scores are just linear combinations of X. If we let X be returns
+           then F is a portfolio.
+
+         · We may even link to Arbitrage Pricing Theory - all systematic
+           sources of risk have a factor mimicking portfolio.
+
+         · Most common use is the Yield curve
+           Knez-Litterman-Scheinkman (1994)
+
+         · Level / Slope / Curvature - like modes of oscillation
+
+                                                                                                                                                   51
+PCA for the Yield Curve
+
+     PCA for Yields
+
+                       Figure 12: Swap rates, source: Thomas Bjerring-blog
+
+                                                                                                                                                   52
+PCA for the Yield Curve - Loadings
+
+     PCA for Yields - Factor Loadings
+     In Sample. Subsamples will result in large differences, especially at
+     ZIRF!
+
+                       Figure 13: Swap rates, source: Thomas Bjerring-blog
+
+                                                                                                                                                   53
+PCA for the Yield Curve - Scores
+
+     PCA for Yields - Factor Scores
+
+                       Figure 14: Swap rates, source: Thomas Bjerring-blog
+
+                                                                                                                                                  54
+Dimension Reduction
+
+     Further Discussion
+         · PCA reduced from N(N + 1)/2 covariances to N × k +N
+         · PCA is used in many other contexts, e.g., Factor-Garch for Risk
+           estimation
+         · PCA is not always the best choice for yield curves
+         · PCA is just one of many - ICA, CCA, kCCA, RRR, and possibly
+           cointegration.
+         · Dimension reduction is pervasive.
+         · And more ...
+
+                                                                                                                                                   55
+Regularization
+Model Selection and Regularization
+
+     Model Selection
+     Methods for model selection include
+
+         · Hypothesis Testing (usually forward or backward selection)
+         · Criteria - AIC / BIC / Hannan-Quinn, etc.
+         · Regularization
+     Regularization started as a simple Bayes-inspired trick (Ridge
+     regularization or Tikhonov)
+
+                                       ||y - X||2 + ||||2
+     then y = (XX + I)-1Xy reduces any collinearity problems (i.e., if XX
+     is singular, this removes the problem. Or if XX has a large condition
+     number, again this is reduced).
+
+                                                                                                                                                  56
+AIC
+
+     Akaike's information criterion (AIC)
+     Introducing regression models with a varying number of factors k, we
+
+     can obtain:                           SSEk
+                                             N
+                          ^k2           =
+
+     where SSEk is the residual sum of squares under the model with k
+     regression coefficients and factors. Since more factors should
+
+     automatically lead to lower residuals, the Akaike's information
+
+     criterion considers the quantity:
+
+                  AIC  =  log(^k2)         +  2  k  +  1
+                                                 N
+
+                                                                           57
+BIC
+
+     Bayesian information criterion (BIC)
+     Following another reasoning we can get to the Bayesian information
+     criterion (or Schwarz information criterion):
+
+     BIC  =  log(^k2)  +  k  log(N)
+                               N
+
+                                                                         58
+Regularization
+
+     Model Regularization Methods
+     Introduces a bias (coefficients move to 0) but reduces
+     standard-error. May or may not introduce sparsity.
+
+         · Ridge Regression ||y - X||2 + ||2
+         · Lasso ||y - X||2 + ||
+         · Elastic Net ||y - X||2 + || + ||2
+     Lasso introduces sparsity but can only be solved via the dual (convex
+     programming). Ridge introduces stability. Both introduce bias.
+
+                                                                                                                                                   59
+Sparsity
+
+     Sparsity
+
+                       Figure 15: Lasso leads to Sparsity, Ridge to Stability
+
+                                                                                                                                                  60
+Regularization
+
+     What's going on?
+         · Bias Variance Trade-off - Forecast Error
+                          Forecast Error = (Bias)2 + Variance + noise
+         · We can make this precise but essentially, we can reduce forecast
+           error by reducing any of these terms (except ambient noise.
+         · Low bias means we fit everything around (i.e., we get close to
+           over-parameterised) and typically high variance
+         · High bias may be under-parameterised, but the variance will
+           typically be lower.
+
+                                                                                                                                                   61
+Regularization-Bias and Variance
+
+     Bias and Variance in Pictures
+
+                                       Figure 16: Bias and Variance
+
+                                                                                                                                                   62
+Summary
+What We Learned
+
+     What we learned
+         · Workflow of Algo Trading
+         · Features, Cleaning, Outliers, Filling, Storing
+         · Where do features come from?
+         · CAPM, APT, Fama-French
+         · Factor Trading
+         · Dimension Reduction - PCA/Factor Analysis
+         · Regularization
+
+                                                                                                                                                  64
+A linear regression model - multifactor
+If we consider ordinary least squares (OLS) estimation,
+
+Q()     N    t2     N            Txt)2
+                        (yt
+     =           =            -
+
+        t=1         t=1
+
+If we take the derivative of Q with respect to the coefficients , we
+obtain the normal equations for OLS estimation:
+
+(N             )  ^      N    xtyt
+          xtxtT
+                     =
+
+     t=1                 t=1
+
+                                                                      65
+A linear regression model - multifactor
+If we can solve the normal equations, i.e. if the matrix XXT is
+invertible, where (X)it = xit, we get to the formulation:
+
+                    ^     (N        )-1  N    xtyt
+                               xtxTt
+                       =
+
+                          t=1            t=1
+
+In matrix notation
+
+                          ^ = (XXT)-1Xy
+
+                                                                 66
+A linear regression model - multifactor
+If the matrix XXT is not invertible, we have to define the
+pseudoinverse of XXT, i.e.
+
+                                   (XXT)+ = UD+VT
+
+, and
+   · (XXT) = VDUT, where U, V are the right and left eigenvectors of
+      XXT,
+   · D is the diagonal matrix of eigenvalues  of XXT, i.e. Dkk = k,
+   · D+ is the diagonal matrix of inverse eigenvalues, i.e.
+      (D+)kk = 1/kk, with zeros when kk = 0.
+
+The solution for ^ then simply reads:
+
+                                     ^ = (XXT)+Xy
+
+                                                                                                                                           67
+OLS estimation for one factor models
+Let us consider a linear regression model with one factor
+
+                                     yt = 1x1t + t
+What is the OLS estimate of  for a one-factor linear regression
+model?
+
+                                                                                                                                          68
+Sum of squared errors
+The sum of squared errors (SSE) reads:
+
+                                      SSE = Q(^)
+The mean squared error (MSE) reads:
+
+                                 MSE = SSE/(N - q)
+
+                                                                                                                                          69
+Appendix: Product-Specific
+Features and Info
+Information on Futures Markets
+
+     No one source ­ Combine several
+         · Bloomberg (WEIF, WBF, Comdty pages, etc)
+         · https://www.tickdata.com/recommended-roll-dates/
+         · http://www.csidata.com/factsheets/factsheet-futures.html
+         · https://www.purefinancialacademy.com/futures-markets
+         · https://www.mrci.com/web/help-pages/futures-data-
+           vendors.html
+         · https://www.barchart.com/futures/contract-
+           specifications/indices
+
+                                                                                                                                                   70
+Bloomberg for Futures
+
+     Futures DES pages:
+         · Exchange
+         · Underlying
+         · Contract Size
+         · Tick Size
+         · Tick Value
+         · Calendar
+
+     Other FLDS:
+         · EDA Comdty FLDS <go> Size <go>
+         · NGA Comdty FLDS <go>
+         · Underlying <go>
+
+                                                                                                                                                   71
+Futures research sources
+
+     Tickdata - https://www.tickdata.com
+         · Paid service Rolls properly
+
+     CSIdata - http://www.csidata.com
+         · Lots of info
+         · Funny symbols
+
+     Barchart - https://www.barchart.com
+         · Many other relevant details
+
+     Other sources
+         · Good and relevant information (sometimes spotty coverage)
+         · Inconsistent naming conventions
+         · Have to merge all with manual adjustments
+         · Double-check and verify
+
+                                                                                                                                                   72
+Futures Master Table
+
+     This is always a work in progress, but at minimum contains:
+
+        - Ticker
+        - BBGType - Index, Comdty
+        - Exchange
+        - Bloomberg code
+        - Holidays
+        - Description of underlying
+        - Currency
+        - Delivery Type ­ Cash or Physical
+        - Contract Size
+        - Delivery Months
+        - Tick Value
+
+                                                                                                                                                   73
+Rolling Futures
+
+         · Futures must be rolled to avoid cash settlement/physical
+           settlement
+
+         · Roll dates based on either:
+                 · Min(last trade date, first notice date, first delivery date) ­ k days
+                 · When the volume of the 2nd contract exceed than on the 1st
+                   contract
+
+         · Need the key dates and volumes for first 2 contracts
+         · Can roll some futures sporadically rather than deterministically.
+         · Roll entire chain at same time ­ 1st, 2nd, etc, out to Nth contract.
+         · Rolling incurs one-sided transaction costs.
+         · Continuous Futures Data-Series for Backtesting -
+
+           https://www.quantstart.com/articles/Continuous-Futures-
+           Contracts-for-Backtesting
+
+                                                                                                                                                   74
+Futures Expiry files
+
+         · Contract name for each contract
+         · Expiry Month
+         · Last Trade
+         · First Notice
+         · First Delivery
+         · Last Delivery
+         · Last Price
+
+                                                                                                                                                   75
+Futures Naming Convention
+
+     Contract names usually 2/3 letter prefix:
+         · ED = Eurodollar
+         · ES = SPX mini
+         · TY = 10y-UST bond
+         · G = Gilt
+
+     Next comes delivery month:
+         · Monthlies: Jan:F, Feb:G, Mar:H, Apr: J, May: K, Jun:M, Jul:N, Aug:Q,
+           Sep:U, Oct:V, Nov:X, Dec:Z
+         · H, M, U, Z = quarterlies, Others = Serials
+
+     Finally comes year:
+         · Usually 2 digits
+
+     So, EDZ19 is Eurodollar Dec 2019, ESH20 is S&P500 Mini March 2020
+
+                                                                                                                                                   76
+Updating Futures
+
+        - Periodic bulk download of all the timeseries needed OR use a
+           real-time downloader which updates all series by one day.
+
+        - Make sure full history of expiries are available (for proper
+           rolling).
+
+        - Bulk download missing series etc.
+        - Pull in reference index if available (for carry calcs, signal)
+        - Store in a suitable database.
+
+                                                                                                                                                   77
+Commodities Sources
+
+    Commodities are usually traded via spot markets as well as
+    derivatives including forwards, swaps, and (the extremely broad) set
+    of commodity futures. Typical categories are interest are metals
+    (precious and industrial), energy, ags and other soft commodities
+    (e.g., livestock/meat, cereals, coffee/cocoa).
+
+        · https://www.spglobal.com/platts/en is a leading provider of
+          Commodities Information on all markets
+
+        · https://www.dtn.com - Feeding, Protecting & Fueling the world.
+          600,000 Strong. DTN is the independent, trusted source of
+          actionable insights for 600,000 customers focused on feeding,
+          protecting, and fueling the world.
+
+        · https://www.genscape.com/ Data and Intelligence for Global
+          Commodity and Energy Markets. Provides energy market data
+          and intelligence across the oil, power, natural gas and LNG,
+          agriculture, petrochemical and NGLs, maritime, and renewables.
+
+        · https://www.factset.com FactSet | Integrated Financial Data and 78
+          Software Solutions for Investment Professionals.
+Equity Tickers
+
+     Important Indices :
+         · SPX
+         · Russell 2000
+         · DJIA
+         · SX5E
+         · CAC
+         · DAX
+         · NKY
+         · etc
+
+     Note conventions ­ Are dividends included (Total Return TR)?
+
+                                                                                                                                                   79
+Creating The Universe
+
+         · Download the cash prices, and futures prices as needed.
+         · Create TR and ER for basket trades - including frictions such as
+
+           borrowing, financing and margining.
+         · Get the implied dividend curve as this is very useful.
+         · Can filter the universe based on a wide variety of characteristics
+
+           including:
+                 · Capitalization
+                 · Turnover
+                 · Book/Equity
+                 · Dividend Yield
+                 · Leverage
+
+                                                                                                                                                  80
+Things to Consider
+
+     A robust data environment needs more than just closing prices,
+     aggregated prices (OHLCV), and/or tick data. Some things that may
+     be helpful include:
+
+         · Fundamentals history
+         · Meta data on symbols (is this an ETF, a stock or an ADR)
+         · Economic data (a la FRED)
+         · Earnings calendars (historical and future)
+         · Index rebalance calendars (historical and future)
+         · Corporate action history (historical and future)
+         · Log of all symbol changes so historical analysis makes sense for
+
+           tickers that change over time
+
+                                                                                                                                                   81
+Things to Consider
+
+       Q. Where are you going to get these things and how should you put
+           them all together in a useful, fast, and easy-to-use way?
+
+       Q. What happens if a download fails, what if the vendor changes
+           historical data that you expected to be immutable?
+
+       Q. How are you going to deal with sparse series and timeframes
+           (e.g. earnings are quarterly, econometrics often monthly)
+
+       Q. Where are you going to store your high value derived data,
+           model/backtest results storage, trade history, P&L history,
+           aggregated trading books
+
+       Q. Will you have multiple separate strategies? Will these be in
+           separate accounts?
+
+                                                                                                                                                  82
+Swaps
+
+     Download:
+         · Data on the most liquid OIS swaps for multiple curves:
+                - 1y, 2y, 5y, 10y, 15y, 20y, 25y, 30y
+         · Front futures (up to 1y)
+         · Fed Fund Futures
+         · Basis swaps (OIS-3s, 3s-6s) to fill in gaps where OIS swaps not as
+           liquid
+
+     SWPM page in Bloomberg has all the swap related functions.
+
+                                                                                                                                                  83
+Bonds
+
+     We need to create Bond Library which can then be used to generate
+     contingent cashflows. It will include:
+
+         · Treasuries/Sovereigns
+                - On-the-runs, Off-the-runs, deliverables, auction info, GC, repo info
+
+         · SSAs
+         · Corporates
+
+                                                                                                                                                  84
+Other Libraries
+
+         · Credit ­ Need to define credit universe. Also index data (CDX,
+           x-over etc)
+
+         · Securitizations - MBS/ABS/CLO. Need prepayment data, and a
+           Prepay (Refi, Turnover, Credit) model. Different underlying assets
+           will require specific data and models.
+
+         · Analytics - Splines, 2+ models, etc, deliverable model for futures.
+
+                                                                                                                                                  85
+Fixed Income ­ Volatility
+
+     Data:
+         · Vol surfaces (Anything other than ATM is difficult to get)
+         · Vol skew (from brokers, IBs)
+         · Exchange traded vol ­ ED and ER options
+         · Exchange traded Midcurve vol
+         · Derived: SABR parameters, CMS adjustments, copulas for
+           Midcurves and CMS options
+
+                                                                                                                                                  86
+Adjustments in Equities
+
+     Accounting for the dividend:
+         · Are we trading ex-dividend?
+                 · If so we need to add back the dividend
+           If we are receiving the dividend:
+                 · What do we do with the cash?
+                 · When reinvesting we need to account for transaction costs
+
+     Splits and Repurchases:
+
+         · Need to adjust our price series forward or backward to calculate
+           returns
+
+         · No transaction costs associated with splits
+         · With a repurchase we need to calculate the proceeds and
+
+           account for any transaction costs when reinvesting.
+
+                                                                                                                                                   87
+

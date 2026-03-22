@@ -1,0 +1,862 @@
+Original Research Article                                     Big Data & Society
+                                                              January­June: 1­14
+The virtue of simplicity: On machine                          ! The Author(s) 2020
+learning models in algorithmic trading                        Article reuse guidelines:
+                                                              sagepub.com/journals-permissions
+Kristian Bondo Hansen                                         DOI: 10.1177/2053951720926558
+                                                              journals.sagepub.com/home/bds
+
+Abstract
+Machine learning models are becoming increasingly prevalent in algorithmic trading and investment management. The
+spread of machine learning in finance challenges existing practices of modelling and model use and creates a demand for
+practical solutions for how to manage the complexity pertaining to these techniques. Drawing on interviews with quants
+applying machine learning techniques to financial problems, the article examines how these people manage model
+complexity in the process of devising machine learning-powered trading algorithms. The analysis shows that machine
+learning quants use Ockham's razor ­ things should not be multiplied without necessity ­ as a heuristic tool to prevent
+excess model complexity and secure a certain level of human control and interpretability in the modelling process. I
+argue that understanding the way quants handle the complexity of learning models is a key to grasping the transfor-
+mation of the human's role in contemporary data and model-driven finance. The study contributes to social studies of
+finance research on the human­model interplay by exploring it in the context of machine learning model use.
+
+Keywords
+Ockham's razor, machine learning models, algorithmic trading, distributed cognition, model overfitting, explainability
+
+   This article is a part of special theme on The Turn to AI. To see a full list of all articles in this special theme, please
+   click here: https://journals.sagepub.com/page/bds/collections/theturntoai
+
+   In his 1976 article `Science and Statistics', the British  the issue concerning simplicity of modelling is that
+statistician George Box famously argues that `since all       whilst simple models may be less prone to error and
+models are wrong, the scientist cannot obtain a               easier to interpret than more complex ones, reducing
+"correct" one by excessive elaboration' (Box, 1976:           model complexity may occur at the expense of
+792). Instead of seeking an unattainable perfect              accuracy.
+model, Box suggests the scientist `seek an economical
+description of natural phenomena' because `the ability           This study considers the issue of using simplicity as a
+to devise simple but evocative models is the signature        response to the complexity of machine learning models
+of the great scientist [while] overelaboration and over-      employed in the financial industry, specifically, in
+parameterisation is often the mark of mediocrity' (792).      quantitative investment management and algorithmic
+Ockham's razor ­ things should not be multiplied with-        trading. It has recently been argued that machine learn-
+out necessity ­ is the principle that Box encourages          ing will transform how people trade securities and
+scientists to stick to. This principle has been influential   manage investments for generations (Lopez de Prado,
+in scientific thinking, particularly in logic and statistics  2018). With the increase in computing power, decrease
+and more recently in machine learning. Whilst many
+scientists inside and outside the confines of academia        Department of Management Politics and Philosophy, Copenhagen
+consider Ockham's razor an effective rule of thumb,           Business School, Frederiksberg, Denmark
+critics question the principle's soundness and argue it
+creates a simplicity bias that prevents scientists from       Corresponding author:
+properly engaging with genuinely complex phenomena            Kristian Bondo Hansen, Department of Management Politics and
+(Bensusan, 1998; Domingos, 1999, 2012). The crux of           Philosophy, Copenhagen Business School, Porcelænshaven 18B,
+                                                              Frederiksberg 2000, Denmark.
+                                                              Email: kbh.mpp@cbs.dk
+
+              Creative Commons Non Commercial CC BY-NC: This article is distributed under the terms of the Creative Commons Attribution-
+              NonCommercial 4.0 License (https://creativecommons.org/licenses/by-nc/4.0/) which permits non-commercial use, reproduction and dis-
+tribution of the work without further permission provided the original work is attributed as specified on the SAGE and Open Access pages (https://us.
+sagepub.com/en-us/nam/open-access-at-sage).
+2                                                           Big Data & Society
+
+in data storage costs, and availability of Big Data,        but several other thorough empirical studies have
+applying machine learning techniques to trading and         deepen the understanding of human­model interac-
+investment management problems has become an                tions and entanglements in the financial markets
+increasingly viable and exercised option in the financial   (such as MacKenzie, 2011; MacKenzie and Spears,
+industry (Arnott et al., 2018; Buchanan, 2019; Dixon        2014a, 2014b; Millo and MacKenzie, 2009; Svetlova,
+and Halperin, 2019; Guida, 2019; Lopez de Prado,            2012, 2013; Wansleben, 2014). One thing that differ-
+2018). Machine learning is a subset of artificial intelli-  entiates the machine learning models examined in this
+gence that teaches machines how to handle data more         study from, for example, the discounted cash flow val-
+effectively. Machine learning techniques appeal to the      uation models examined by Svetlova (2012, 2013) is the
+financial industry because of their capacity to effective-  capacity of the former class of models' to learn and
+ly discover patterns, correlations and anomalies in         optimise without interference from model developers
+large and complex datasets. I argue that machine learn-     and users. By examining how these learning models
+ing techniques enhance financiers' ability to take          shape the ways practitioners perceive and attempt to
+advantage of opportunities, but at the same time pos-       manage them, this study contributes to the sociological
+sess a degree of `unavoidable complexity' (Burrell,         research on the use of models and algorithms in high
+2016: 5), which developers and users of such techniques     finance.
+must find ways to manage and control.
+                                                               To examine the question of how the complexity of
+   Unlike more conventional rule-based algorithms           machine learning models is being managed in the finan-
+that follow established rules, machine-learning algo-       cial industry, I draw on interviews with market partic-
+rithms learn from pre-set optimisation criteria, which      ipants who develop and use machine learning
+offsets the if-then logic of their rule-based counter-      techniques for specific trading and investment manage-
+parts (Bank of England and Financial Conduct                ment purposes. As a theoretical frame, I use the per-
+Authority, 2019: 6; Mullainathan and Spiess, 2017:          spective of `distributed cognition', which originates
+88). The use of rule-based high-frequency trading           from the idea that human cognition is always situated
+(HFT) algorithms has been thoroughly studied in             in `a complex sociocultural world and cannot be unaf-
+the social studies of finance (SSF). Studies cover          fected by it' (Hutchins, 1995a: xii). Distributed cogni-
+topics such as the material political economy of            tion describes `a situation in which one or more
+HFT (MacKenzie, 2017, 2018a, 2018b), regulatory             individuals reach a cognitive outcome either by com-
+challenges associated with trading at speeds that           bining individual knowledge not initially shared with
+exceed human perception (Coombs, 2016; Lenglet,             the others or by interacting with artifacts organized in
+2011), interactions of algorithms (MacKenzie, 2019),        an appropriate way (or both)' (Giere, 2002: 641). Giere
+imitation and herding behaviour (Borch, 2016; Lange,        and Moffatt (2003) argue that `distributed cognitive
+2016), epistemic regimes (Seyfert, 2016), HF trader         systems' enable `the acquisition of knowledge that no
+subjectivities (Borch and Lange, 2017), and market          single person, or a group of people without instru-
+rhythms (Borch et al., 2015). Whilst rule-based trad-       ments, could possibly acquire' (305). In the context of
+ing algorithms have been studied extensively in SSF,        financial markets, Beunza and Stark (2012) have dem-
+little attention has been paid to non-rule-based, adap-     onstrated how traders working at an investment bank's
+tive machine learning models and the people who             merger arbitrage trading desk reduce their `cognitive
+develop and use them for trading and investment             overload' by using financial models and other instru-
+management. As machine learning proliferates rapidly        ments at their disposal (394). Similarly, Hardie and
+in the financial industry, studying how market partic-      MacKenzie (2007; see also MacKenzie and Hardie,
+ipants adopt, assess, and manage these complex tech-        2009) have shown how decision-making in hedge
+niques is of increasing significance to the sociology of    funds is characterised by distributed cognition,
+financial markets.                                          expressed in the way traders rely on colleagues, con-
+                                                            tacts, and technical devices when deciding what and
+   To grasp the transformatory role machine learning        when to buy or sell. In these studies, the instruments
+models allegedly play in financial markets, I argue it is   employed in the systems of distributed cognition
+necessary to examine the multifaceted and dynamic           compensate for traders' bounded rationality, enable
+relationship between models and the people who devel-       knowledge acquisition, and thus, inform human
+op and use them (Svetlova, 2018: 4). Various SSF stud-      decision-making. However, as trading becomes increas-
+ies have explored the reciprocal influence of models,       ingly automated algorithms no longer exclusively
+equations, and algorithms on one hand, and developers       inform human decision-making; they often also deter-
+and users on the other. MacKenzie's work on the per-        mine what, when, and how to trade or invest, and
+formativity of the Black­Scholes options pricing model      execute accordingly.
+is an example of a tone-setting contribution to the field
+(MacKenzie, 2003, 2008; MacKenzie and Millo, 2003),
+Hansen                                                      3
+
+   Even though much trading is conducted by algo-           random things from processing data). In the fourth
+rithms at speeds and a scope that exceed human cog-         section, I discuss the role of the human element, to
+nition, humans are not marginalised by but remain a         use an emic term, in distributed cognitive systems
+crucial cog in contemporary algorithmic trading             that involve machine learning techniques. An empirical
+(Beverungen and Lange, 2018). Whereas ultrafast             example of the automation of Ockham's razor in a
+HFT algorithms enhances traders' ability to seize arbi-     hedge fund's investment management system serves as
+trage opportunities long before any human would have        the backdrop to the discussion about the changing role
+been able to identify them, machine learning expands        of the model user. The final section concludes.
+the scope of data mining and data processing and thus,
+enhances the capacity to trawl markets in search of         Data and methods
+patterns and correlations to exploit. I do not want to
+argue that machine learning extends the mind and thus,      An increasing number of trading and investment man-
+has epistemic agency (Clark and Chalmers, 1998; cf.         agement firms adopt machine learning techniques and
+Giere, 2007), but I contend that machine-learning algo-     practitioners are generally willing to discuss possible
+rithms' ability to learn makes them different and more      applications of such techniques in finance.
+complex cognitive aids than most other technical devi-      Nevertheless, it is difficult to obtain in-depth informa-
+ces used in trading and investment management.As            tion about specific machine learning models.
+Burrell (2016) points out, when a machine-learning          Unsurprisingly, firms are reluctant to share the recipe
+algorithm learns, `it does so without regard for            for the `secret sauce' that gives them their competitive
+human comprehension' (10), which influences the way         edge. Because machine learning models are complex
+practitioners see and attempt to manage such models.        systems comprising numerous lines of code and an
+The analysis demonstrates that users of machine learn-      internal decision logic that changes as models learn
+ing models are concerned that models might learn the        from running on training data (Burrell, 2016: 5), it
+wrong things and thus, become deceitful rather than         would be difficult to extract meaningful information
+informative. They use Ockham's razor as a heuristic         from the source code itself (if available) without also
+to help strike a balance between simplicity and com-        having to obtain information about the context of
+plexity, and interpretability and accuracy. The value of    application, training data, and implementation process.
+Ockham's razor in machine learning model building           It is nevertheless possible to obtain contextual knowl-
+lies not necessarily in the scientific superiority of the   edge about machine learning models by talking to
+simple model, as suggested by Box, but in ensuring          people in the financial industry who develop and use
+the comprehensibility and explainability of the             them, because it makes little sense to talk about
+models that practitioners interact with. The simplicity     machine learning without also considering the specific
+heuristic, as employed by market practitioners, is best     context of application (Weigand, 2019: 95). Thus, my
+understood as a `proxy for comprehensibility'               approach is to treat models not as technical objects
+(Domingos, 1999: 421), which helps secure a certain         decoupled from the organisational, institutional, and
+level of human control of model processes and enables       social context in which they are developed and applied,
+explainability. This emphasis on comprehensibility and      but rather as culture ­ that is, contributing to the socio-
+explainability reflects a more general industry concern     material enactment of practices and values (Seaver,
+about transparency and machine learning (Bracke             2017; see also Shackley, 1998). More specifically, the
+et al., 2019; World Economic Forum, 2019).                  unit of analysis is `distributed, socio-technical
+                                                            system[s]' (Hutchins, 1995b: 265) consisting of market
+   This introduction is followed by five sections. The      participants and the technical artefacts (i.e. machine
+first is a brief outline of the empirical material and my   learning techniques) they develop and employ in
+approach to studying machine-learning model use. This       attempts to tease out and exploit information in vari-
+is followed by a section on applying a specific machine     ous types of datasets.
+learning technique, reinforcement learning, to algorith-
+mic trade execution and the intricacies associated with        To examine these socio-technical systems compris-
+developing such a distributed cognitive system. In the      ing humans and models, I draw from 31 interviews with
+third section, I consider the role of simplicity as a heu-  quants who either have been or are using machine
+ristic for dealing with machine learning model com-         learning techniques for trading and investment man-
+plexity and incomprehensibility. More specifically, I       agement purposes (see Table 1, in Appendix 1). The
+analyse how modellers and model users employ                term `quant' has been used mostly as an abbreviation
+Ockham's razor as a means to cognitively `frame' the        for a quantitative analyst, yet today covers a wide
+model (Beunza and Garud, 2007; Hardie and                   range of roles in finance and thus, no longer refers
+MacKenzie, 2007) and thus, manage the problem of            exclusively to investment bank analysts involved in
+overfitting (i.e. overparametrized models that learn        financial engineering (cf., Derman, 2004). Basically, a
+4                                                             Big Data & Society
+
+quant can be defined as someone who uses `tools and           learning in algorithmic trading and quantitative invest-
+insights from economics, finance, statistics, math, com-      ment management. To complement the empirical mate-
+puter science, and engineering' to analyse and solve          rial obtained through the fieldwork, I read all the
+financial and risk management problems (Pedersen,             practitioners presentations, articles, and reports on
+2009: 6­7). `Quant' is an umbrella term comprising            machine learning in finance that I could obtain.
+roles such as quantitative analysts, researchers, scien-      These additional data sources provide invaluable back-
+tists, developers, engineers and data scientists. Whilst      ground information about the industry in general and,
+each of these roles is different and can vary consider-       more specifically, about attitudes toward applying
+ably from firm to firm, common to the 31 interviews           machine learning to diverse financial problems.
+that constitute the main source of empirical material
+used in this study, is, as mentioned, that they are all       The optimal trade: Reinforcement
+conducted with market participants who are or have            learning for trade execution
+been engaged in applying machine learning techniques
+to financial problems.                                        Machine learning techniques have existed in the finan-
+                                                              cial industry for quite some time. Banks and credit card
+   The two main criteria for selecting interviewees were      companies have used machine learning models for clas-
+(1) expertise within the area of machine learning and/or      sification purposes in fraud detection since the 1990s
+(2) practical experience with regard to applying              and credit scoring since the early 2000s (Buchanan,
+machine learning techniques in finance. Since develop-        2019). In the fields of trading and investment manage-
+ing implementable machine-learning algorithms for             ment, notoriously secretive systematic hedge funds, like
+trading and investment management purposes is                 the Cold War code breaker James Simons' Renaissance
+rarely a one-person endeavour, but rather a task dis-         Technologies, D. E. Shaw, and Two Sigma, are said to
+tributed between a number of people in different roles,       have profited substantially from using machine learn-
+I have prioritised to gather input from a range of            ing models for a number of years (see, e.g. Zuckerman,
+people involved in the practices of leveraging machine        2019). Today, there is no shortage of investment man-
+learning techniques in finance, instead of focussing          agement and trading firms experimenting with artificial
+solely on one group (e.g. data scientists). The majority      intelligence and machine learning. Although only a
+of the interviewees worked in hedge funds or in algo-         fraction of firms may be able to boast of having suc-
+rithmic trading firms where they had different roles at       cessful machine learning systems in production, interest
+different levels in the organisational hierarchy. I           in the technology is undeniably massive and increasing.
+obtained consent from informants to use all quotes
+included in the article. A few interviewees wanted               In general, the machine learning technique choice is
+their identities disclosed, whilst the rest are either pseu-  dependent on the task at hand and dataset available. As
+donymised or anonymised.                                      a quant working in one of the world's leading quantita-
+                                                              tive hedge funds explained, machine learning is `just
+   The interviews are sampled from a body of 182 in-          another mathematical technique used to extract infor-
+depth, semi-structured interviews conducted, during a         mation from a dataset and certain datasets have charac-
+two-year period (2017­2019) by members of the                 teristics that lend themselves better to machine learning
+`Algorithmic Finance: Inquiring into the reshaping of         techniques than others'. In that sense, machine learning
+financial markets' research project of which I am a           comprises just another set of techniques or tools in the
+part. Interviewees worked in hedge funds, asset man-          quant toolbox. Like simpler calculative devices, machine
+agement firms, proprietary algorithmic trading firms,         learning models are technical aids firms use as a way of
+banks, brokers, regulators, exchanges, and technology         compensating for the limited information processing,
+vendors (see Table 2, in Appendix 1). Most of these           calculative, and information storage (memory) capaci-
+firms and financial institutions are located in New           ties of humans. Thus, the task or problem at hand sug-
+York, Chicago, and London, but we also conducted              gests which tool to use; that is, it indicates how the
+interviews in Washington, San Francisco, and a few            distribution of cognition materialises in concrete finan-
+other cities in the US and continental Europe. Most           cial practices (MacKenzie and Hardie, 2009: 47). This
+interviews were conducted in situ, making it possible         distribution of a specific task to a certain type of
+to observe traders, portfolio managers, quants, and           machine learning technique is the main focus of the
+others at work in different organisational setups. The        following analysis. Besides presenting the problem of
+interview data are supplemented by data obtained from         optimal execution and type of algorithm proposed as
+these ad hoc observations and through more detailed           its solution, I discuss challenges associated with devising
+observation studies carried out in trading and invest-        and implementing learning algorithms in a dynamic
+ment management firms. The duration of these obser-           complex system such as financial markets.
+vation studies ranged from one day to two weeks. I also
+attended industry conferences on the use of machine
+Hansen                                                      5
+
+   Within the spectrum of possible applications there       and that is what execution research is doing'. The hedge
+are various examples of adding machine learning to          fund has an entire team exclusively devoted to execution
+existing, proven quantitative strategies. One area          research (i.e. to devising execution algorithms).
+where machine learning techniques have shown consid-
+erable promise is algorithmic trade execution. When            There are two dominant approaches to the algorith-
+brokers, who act as intermediaries between investors        mic execution of large trades: time-weighted average
+and markets, execute large orders on behalf of institu-     price (TWAP) and volume-weighted average price
+tional clients ­ each trade containing blocks of several    (VWAP). The TWAP strategy divides orders into bits
+thousand shares often worth millions of dollars ­ they      and executes them evenly over a specified period of
+do their utmost to impact the market as little as possi-    time; the average price of a security is calculated over
+ble. If the entire order were submitted at once, the        a set period of time and trades are executed as close to
+market would move instantaneously and result in             that average price as possible. The VWAP approach
+what financiers and financial economists refer to as        also splits the position into child orders, but uses
+`slippage'. Slippage is the undesired discrepancy           volume instead of time as the criterion for calculating
+between the expected trade price when the order is sub-     the average price of each child order. The prices at
+mitted and the actual price at which it is executed         which the most volume is traded weighs more in the
+(Frino and Oetomo, 2005). For example, say an inves-        VWAP calculation of average price (Law, 2018). The
+tor wants to buy 100,000 shares of Apple and hope to        common objective of both the TWAP and VWAP is to
+purchase them at a market price of 230 USD per share.       provide the best possible solution to the optimal exe-
+If the entire buy order were submitted to the market,       cution problem.
+Apple sellers would ask for a higher price and instead
+of executing the trade at the expected price of                Machine learning is well suited to solving optimisa-
+23,000,000 USD, the effective price would be signifi-       tion problems, such as the optimal execution problem.
+cantly higher. To reduce the cost of market impact as       Reinforcement learning ­ a form of machine learning in
+much as possible, many brokers use algorithms that          which algorithms employ trial and error to identify
+slice and dice orders into smaller lots and submit          solutions to problems (Osinski and Budek, 2018) ­
+them to the market at certain intervals over a set          has shown significant promise when applied to the
+period of time (Dixon and Halperin, 2019: 4).               problem of optimised trade execution (Dixon and
+                                                            Halperin, 2019; Kearns and Nevmyvaka, 2013; Li
+   The emphasis on developing sophisticated execution       and Lau, 2019). In a game-like situation, the agent is
+algorithms has increased with the rise in HFT. The risk     either penalised or rewarded when performing an
+of being front runned by predatory HFT algorithms           action. The objective is for the model to maximise its
+(Lewis, 2014) has arguably made the optimal execution       total reward (Li and Lau, 2019: 2). The model learns
+problem more pertinent to institutional investors and       the most effective way to maximise its reward by being
+the brokers who bring their orders to the market. A         rewarded (penalised) for making the right (wrong) deci-
+main purpose of execution algorithms has thus become        sions. Whilst the model developer defines the criteria
+to disguise orders from HFT algorithms, yet our inter-      for what should be considered right and wrong actions,
+views with HF traders suggest this is a tremendously        the model figures out for itself how to solve the task at
+difficult thing to do (corroborated by HF traders           hand. Reinforcement learning is deemed an
+quoted in MacKenzie, 2018b: 1654­1655). Whilst finan-       effective way to utilise a `machine's creativity'
+cial economists are divided on the question of whether      (Osinski and Budek, 2018) and unlike humans, the
+HFT actually impacts institutional execution costs          algorithms can learn and thus, gain experience from
+(Brogaard et al., 2014; Kervel and Menkveld, 2019),         playing numerous parallel decision-making games
+practitioners are concerned with and try to account for     simultaneously. It is thus a technique that expands
+the possible presence of predatory HFT algorithms           the realm of possible ways to optimise market action
+when they execute large orders. When I asked the            by performing cognitive tasks at a scope that exceeds
+hedge fund quant whose definition of machine learning       human capabilities. In this case, the task distributed to
+I quoted earlier in this section about their approach to    a reinforcement learning algorithm is to optimise trade
+aggressive HFT `taker' algorithms (MacKenzie, 2018a),       execution.
+he explained that they basically tried to devise execution
+algorithms capable of making the small, so-called `child       Matt Le Tissier (pseudonym), who had about a dec-
+orders' appear as random as possible when they are sub-     ade's worth of experience in devising machine-learning
+mitted to the market. `You try to randomise your orders     algorithms that execute large institutional orders in an
+so that they do not reveal your big order,' he explained,   optimal fashion, explained how reinforcement learning
+and further noted that `in essence, it all comes down to    could improve a VWAP strategy:
+having as little market impact as possible for your trade,
+                                                                Our problem is to take a large order and split it over
+                                                                time in order to ideally minimise market impact, but
+6                                                             Big Data & Society
+
+    also achieve some kind of improvement over time, if       models' complexity and thus, ensure that they do not
+    you can. The baseline assumption would be VWAP,           become uncontrollable and incomprehensible, quants
+    right? Take a VWAP strategy where you are trading         use Ockham's razor as a way of `framing' their model.
+    uniformly over volume time. That is fine, but not good    Framing is constructing ways to select, categorise, and
+    enough. People want some improvement over that. The       interpret data or, in this case, an automated data proc-
+    RL [reinforcement learning algorithm] essentially         essing tool (Beunza and Garud, 2007; Hardie and
+    applies an adaptation over the baseline strategy, but     MacKenzie, 2007: 391). In the following section, I ana-
+    it does that by providing the optimization parameter,     lyse and discuss ways quants use simplicity as a framing
+    which controls how much it is going to shift the overall  tool in model development. I argue that Ockham's razor
+    schedule forward and backward.                            help them reduce the risk of producing overfitted models
+                                                              and enables them to better control the complexity of the
+Thus, the reinforcement learning-informed execution           machine learning techniques they employ.
+algorithm is an adaptation of a generic VWAP strate-
+gy. Unlike the uniformity of the VWAP's trading pat-          The overfitting problem
+tern (one slice of the parent order at a time at fixed
+intervals), the reinforcement learning algorithm figures          `[T]he noise in the data is clouding our vision.' (Black,
+out when is the best time to trade. This alters the sched-        1986: 541)
+ule for when child orders will trade, insofar as it makes
+for more optimal execution. The execution strategy            Financial markets are intricate systems full of informa-
+adaptations, which the model performs automatically,          tion to be extracted and exploited, but they are also
+may also entail adjustments of order sizes and switch-        brimming with noise. Noise, Black (1986) argues, is
+ing between order types. Again, the purpose of this           `what makes our observations imperfect' (529). It can
+algorithmic manoeuvring is for the trade to leave the         be difficult to distinguish information from noise and
+smallest possible footprint in the market.                    occasionally people act on noise as if it was informa-
+                                                              tion. Mistaking noise for information is not limited to
+   Although the reinforcement learning adaptation of          humans; from time to time, machine learning models
+the VWAP strategy allegedly provides better execution,        also have their vision clouded by noise. Many such
+Matt stressed that applying the technique in financial        models tend to have a difficult time discriminating
+markets can be very complicated. One of the main              strong correlations from spurious ones. Consequently,
+challenges modellers face is making sure that the             there is a risk of making inferences about possible rela-
+model is not derailed by shifts in the market regime.         tionships in the market based on completely arbitrary
+A market regime is basically the state or behaviour of a      and coincidental correlations between factors in the
+market at a given point in time. Regime changes occur         data. One of the problems emerging from this predic-
+when, for example, volatility spikes or liquidity dries up    ament is what modellers refer to as the overfitting
+(Ang and Timmermann, 2012). Many market-internal              problem.
+and -external factors can cause changes in a market
+regime, but the point is that it can be difficult for            Although I am mainly interested in `overfitting' as
+both human and non-human trading agents to operate            an emic term used by market participants to ascribe
+in changing market regimes. If a model has many               meaning to specific concerns about the relation
+parameters, as machine learning models can have, it           between model performance and model accuracy, I
+might be capable of performing well on one dataset,           acknowledge it is a technical term that requires some
+but if there is even the slightest change in market           definitional clarification. A technical way to under-
+regime, the model risks adapting to these changes in          stand overfitting is to distinguish between prediction
+an undesirable way. Whilst the model might optimise           errors caused by bias versus variance in the model.
+order execution, its many variables simultaneously            Bias is when models `consistently learn the same
+combined with the dynamic and complex nature of               wrong thing' and variance is `the tendency to learn
+financial markets produce obstacles and challenges            random things irrespective of the real signal'
+that quants need to deal with. Thus, distributing a           (Domingos, 2012: 81). Whilst bias produces underfit-
+task to an automated trading agent ­ in this case the         ting, variance causes overfitting. A model is underfit if
+reinforcement learning execution algorithm ­ involves         it allows for too much behaviour that is not supported
+considering how to appropriately (i.e. optimally) orga-       by the data (van der Aalst et al., 2010). Developing
+nise the machines used as aids in a given distributed         models can thus be considered an act of finding the
+cognitive system (Giere, 2002).                               right balance between under- and overfitting. That
+                                                              being said, none of the interviewees mentioned under-
+   Devising adaptive models capable of performing con-        fitting as an issue they faced in their work, whilst
+sistently in changing market regimes is a major and very
+tedious challenge. To manage their machine learning
+Hansen                                                         7
+
+almost all of them expressed concern about the risk of         brokerage firm, where he experimented with applying
+overfitting. In simple terms, overfitting is using models      machine learning techniques to different financial prob-
+that `violate parsimony ­ that is, that include more           lems, including the optimal execution problem. He aptly
+terms than are necessary or use more complicated               summarised the problem of overfitting and explained
+approaches than are necessary' (Hawkins, 2004: 1).             how it could lead to self-deception on the part of
+According to this definition, overfitting is a violation       model developers and users if they were not careful.
+of Ockham's razor. One sign a model is overfit is a
+significant disparity between the model's in-sample                A big mistake lots of people make is that they always
+and out-of-sample performance. Testing a model is                  want to use something really complex to solve a prob-
+generally referred to as backtesting, which is carried             lem that does not need it. You always want to default
+out in-sample and out-of-sample. Essentially, the in-              the model with the least complexity. You do not want
+sample phase is a model's learning or training stage,              to be fitting to an artefact in the dataset. You just want
+whilst the out-of-sample phase involves testing the                to make sure that what you are seeing is real and you
+model on data not used in the training phase. Unlike               are not actually kidding yourself with any kind of pre-
+a model backtest that is indicative of overfitting, a suc-         dictive power.
+cessful backtest is one in which the out-of-sample per-
+formance is consistent with the in-sample performance          Just like it can be difficult for complex machine learn-
+(Varian, 2014: 6).                                             ing models to distinguish information from noise,
+                                                               quants can be inclined to act on erroneous model
+   Overfitting is an inaccuracy problem, but also one of       output as if it were information. Several interviewees
+deception. An overfitted model acts on `idiosyncratic          raised concerns about being fooled by the backtest per-
+noise' (Mullainathan and Spiess, 2017: 91) or `random          formance of excessively complex models and losing
+quirks' (Domingos, 2012: 81) in the data as if it were         track of what they were doing. In response to concerns
+valid information, and as a result, identifies correlations    about the complexity of machine learning models,
+that do not exist. If a model's complexity is high ­ that is,  many quants highlighted simplicity as an increasingly
+if it has a large number of parameters ­ then the risk of      important modelling principle. As a way of framing the
+overfitting also tends to be high. As Arnott et al. (2018)     model development process, simplicity sets boundaries
+argue, `the greater the complexity, and the greater the        and, to paraphrase Alan, helps ensure the correlations
+reliance on non-intuitive relationships, the greater the       detected are in fact real and not merely dataset arte-
+likely slippage between backtest simulations and live          facts. Preferring the simplest possible model as the
+results' (14). Based on views of the quants, it is apparent    default option does not mean simple models are neces-
+that their preference for simplicity in machine learning       sarily better than complex ones. It merely emphasises
+modelling is closely associated with their concerns            the importance of assuring that modellers are capable
+about models fitting on noise. Simplicity (i.e. Ockham's       of comprehending and controlling the process through
+razor) functions as a safeguard against relying too heavily    which they devise machine learning models.
+on non-intuitive relationships that might be purely spu-
+rious correlations discovered by an overfitted, and thus,         The importance of simplicity in modelling was fur-
+inaccurate model. As a heuristic, Ockham's razor allows        ther emphasised by another quant, Brian Peterson,
+quants to frame the model so that its complexity becomes       who had many years of experience applying machine
+manageable. It helps quants control model complexity           learning to financial and risk management problems.
+and the process of adding features to models (i.e.             Brian now leveraged his expertise in the Chicago-
+adding complexity). Whilst machine learning techniques         based algorithmic trading firm Braverock Investments
+help compensate for the bounded rationality of analysts,       and as a lecturer at the University of Washington (com-
+traders, or portfolio managers ­ by processing data in         putational finance and risk management) and
+ways, and at a pace and scope that exceed human capac-         University of Illinois (financial engineering). Brian
+ities ­ simplicity helps quants mitigate the risk of being     explained that he too resorted to the simple model as
+deceived by overly complex model processes.                    the default option.
+
+   For developers, let alone users, of machine learning            I always start with the simplest model that I think will
+models, it can be difficult not to be swayed by what at            be minimally informative, and then use that as a bench-
+first glance appears to be a high-performing model.                mark. We will, for example, take a logistic regression
+However, what looks like predictive power is often in              model and use it as our benchmark model, and then do
+fact overfitting. Being sceptical about a model's output           experiments based on [the following questions]: Does
+rather than nai¨ vely trusting it arguably helps to mitigate       adding this factor help? Does using a more sophisticat-
+the risk of being deceived by the model. This is how Alan          ed model help? The more sophistication I add to the
+Smith (pseudonym), a machine learning specialist, diag-            model, the more model risk I add to the strategy. [. . .]
+nosed the problem. Alan worked in Matt's team at the
+8                                                               Big Data & Society
+
+    We always try to start with the simplest model we think     increasingly preoccupied with questions about compre-
+    will work and move very, very carefully to more com-        hensibility and explainability (Bracke et al., 2019).
+    plex models.                                                Firms want to be able to know, explain, and commu-
+                                                                nicate what their models are doing, especially if some-
+To Brian, simplicity is not itself a goal. Rather, it is a      thing goes wrong (World Economic Forum, 2019).
+point of departure, a way of directing an iterative             Investors can, for example, quickly lose faith in and
+model development process, with two aims: (1) devising          abandon an asset manager who cannot convincingly
+a model that solves the problem at hand in the most             explain their model in periods of weak performance
+optimal way possible and (2) ensuring the model does            (Kollo, 2019: 5). Thus, Ockham's razor functions as
+not become unnecessarily complex. By gradually                  enabling explainability rather than guaranteeing
+adding and occasionally subtracting factors that                accuracy.
+increase a model's overall complexity, it becomes
+easier to strike a balance between sufficient and                  The problem concerning the comprehensibility and
+excess complexity. Thus, a simplicity preference also           explainability of machine learning models was
+becomes a risk management tool or pragmatic safety              addressed, in relation to accountability, by Ernest
+valve. If factors are added to the model, model risk            Baver, senior research scientist at Hutchin Hill
+increases. In other words, model sophistication comes           Capital. Ernest explained how the sheer complexity of
+at a price and Brian's reflections illustrate the need to       machine learning models was hindering the ability
+consider and judge whether the additional risk is               to attribute a proper cause in the case of a model
+worthwhile.                                                     misstep.
+
+   To prevent adding more than manageable model                     If you use a more intuitive model and something does
+risk without compromising model accuracy, Brian                     not work right, then you have a simple way to do attri-
+aimed for parsimony in modelling.                                   bution analysis. You can actually figure out what went
+                                                                    wrong. . . If you are using complicated nonlinear
+    It is very difficult to beat a parsimonious model. All          models, it is harder to say what went wrong. There is
+    other things being equal, I always prefer the model that        no simple way to decompose a deep learning structure
+    has fewer parameters to the model that has more                 into simple blocks.
+    parameters, because the model with fewer parameters
+    is far less likely to break out-of-sample. But that is not  Note that a notion of an intuitive model here denotes a
+    always possible. Sometimes I need a large feature space     distinction between a simple, comprehensible model
+    to describe the data that is in front of me. However,       and a complicated, non-linear deep learning one. Just
+    given the choice, if I have two otherwise equivalent        like simplicity, intuition serves as a proxy for compre-
+    models, if I cannot statistically distinguish between       hensibility. The limit to quants' appetite for model
+    the models and the predictions that come out of             complexity is exceeded if it is not possible for them to
+    those models, I will always choose the simpler one,         `come up with an intuitive picture of what this thing
+    because otherwise the chance that I am going to fit         [the model] is doing', Ernest further explained. He
+    on noise is really, really high.                            admitted feeling a little `uncomfortable' thinking
+                                                                about the possibility of not being able to fully explain
+All other things being equal, Brian preferred simple            the behaviour of a very complex model if something
+models to more complex ones. However, as Brian                  bad should occur. Nevertheless, Ernest's fund used
+notes, all other things are not always equal.                   machine learning to try to optimise trade execution,
+Sometimes, simplicity is not a viable option.                   but he emphasised that they always stuck to and
+Although Ockham's razor most often functions as a               never deviated from `simplicity and common sense' as
+good rule of thumb, there seems to be situations                the main principles in selecting, testing, and implement-
+when a problem's intricacy requires more complex sol-           ing such models.
+utions. The reality is that models must most often be
+quite complex to sufficiently capture the complexity               Several other interviewees used the distinction
+and dynamic nature of financial markets.                        between intuitive and non-intuitive models as a way
+                                                                of framing the models they applied. Some emphasised
+   As noted by Domingos (2012), simplicity is valuable          the importance of having an `intuitive feel' for the
+in machine learning modelling because `simplicity is a          model, which basically means they are aware of what
+virtue in its own right, not because of a hypothetical          the model is doing. Having an intuitive understanding
+connection with accuracy' (86). Simplicity is `a goal in        of the model's operations also means knowing when
+itself' insofar as it is considered a `proxy for compre-        and how to intervene if the model suddenly begins to
+hensibility' (Domingos, 1999: 421). As the complexity           operate in discord with the modeller's original intent.
+of models used in finance increases, quants become              An intuitive feel for the model thus sustains a
+Hansen                                                      9
+
+`qualitative overlay' (Svetlova, 2012), which allows for    is basically to determine the fund's direction.
+judgment calls from traders, portfolio managers,            Automating the investment committee function thus
+quants, and others. However, machine-learning algo-         eliminates human bias from the strategy- and
+rithms and, to some extent, automation, redefine the        decision-making process. `There is no human layer on
+role of the qualitative overlay or, to use another term,    top,' insisted Tom. In other words, the qualitative
+human element in quantitative trading and investment        human overlay is replaced by a mechanised layer of
+practices. Whilst the human element remains crucial in      machine learning.
+the process of determining how and to what technical
+instrument a task should be distributed (i.e. the orga-        Modellers use various techniques to offset or miti-
+nisation of distributed cognition), the decision-making     gate the risk of overfitting. One of these techniques is
+itself is increasingly performed by machines. In the fol-   regularisation. Regularisation is a machine learning
+lowing section, I present and discuss two perspectives      component that discourages selecting a more complex
+of the role of simplicity preference and human judg-        model. Only if the complex model significantly outper-
+ment in machine learning-driven, automated invest-          forms the simple model (determined by some prefixed
+ment management.                                            value) does the machine learning system switch to the
+                                                            more complex one (Arnott et al., 2018: 13­14). The
+Automating Ockham's razor or                                meta-layer on the hedge fund's machine learning
+reimagining the human element                               system can be regarded as a sophisticated regularisa-
+                                                            tion tool. The system is built in accordance with a sci-
+    Ockham's razor is our friend! We realised that we had   entific ideal which says simpler, more economic
+    to teach the machine to be the scientist and to prefer  descriptions of a phenomenon are preferable to more
+    simpler theories. We look at all theories. We look at   complex ones. However, when Ockham's razor is auto-
+    how much machine learning went in and how much          mated, it is no longer a framing mechanism utilised by
+    overfitting the algorithms can do and then judge        quants in the model development process: it reduces the
+    them accordingly.                                       heuristic to an algorithmic operation, not contingent
+                                                            on any intervention by human judgment. Making
+These are the words of chief scientist Tom Cleverly         Ockham's razor a fixed principle assumes the relation-
+(pseudonym) of a US-based hedge fund with a strong          ship between simplicity and accuracy, which Domingos
+commitment to machine learning and automation. In           (2012) describes as `hypothetical' (86). Although auto-
+the previous section, simplicity is regarded as a framing   mating Ockham's razor does leverage the procedural
+mechanism used in the modelling process and thus, is        qualities of the principle, it simultaneously eliminates
+something that takes place `outside' the model              the possibility that quants may consider if the practical
+(Svetlova and Dirksen, 2014: 572). However, in this         concern (i.e. the specific problem in a given market
+hedge fund's case, Ockham's razor is written into the       context) in fact requires a more complex technical
+machine learning system itself. Tom's rationale for         solution.
+implementing simplicity preference in the system is
+that if Ockham's razor, as proposed by Box, is the             In general, the objective of using machine learning in
+hallmark of the great scientist, then a good model          finance is to discover reliable patterns and structures in
+must be capable of applying that principle. According       the noisy, adaptive, and deeply entangled reality of
+to Tom, this built-in simplicity preference constitutes     financial markets. Because financial markets are any-
+`meta machine learning', that is, a layer of machine        thing but simple, the simplest model is not always the
+learning operating on top of a signal detection machine     optimal solution when dealing with very intricate prob-
+learning model. Whilst the basic model processes            lems. Instead of perceiving Ockham's razor as a truth
+market data in search of signals to trade on, the           claim, seeking simplicity in modelling may rather be a
+meta-layer ensures only simple and robust strategies        means for enabling quants to activate their judgment
+are pursued. The purpose of automating Ockham's             and expertise when working on models. It is a means to
+razor is basically to prevent the system from overfitting   direct and control the model development process; it is
+and thereby producing unreliable signals. Tom further       not an end. As Domingos (1999) argues, modellers
+emphasised that the meta-machine learning layer auto-       should `seek to constrain induction using domain
+mates the actual investment decision process, which in      knowledge, and decouple discovering the most accurate
+most hedge funds take place in an investment commit-        (and probably quite complex) model from extracting
+tee. Normally, the investment committee is composed         comprehensible approximations to it' (421). Thus, the
+of a group of high-level people from the firm and its job   quant's domain knowledge is considered a decisive
+                                                            factor in constraining complexity and certainly has
+                                                            not been made redundant by automation. As
+                                                            Beverungen and Lange (2018) argue in their study of
+                                                            distributed cognition and automation in HFT, a crucial
+10                                                                Big Data & Society
+
+part of being an HF trader is to `establish control,              Whilst Mahmood argues the human element remains
+awareness and consciousness of what is going on'                  indispensable in machine-driven investment manage-
+when their algorithms trade in the markets (84).                  ment, his logic also turns the human­model relation-
+Something similar can be said about machine learning              ship on its head. Normally, the financial model informs
+quants, who use simplicity to control and thus manage             the decision-making of the trader or portfolio manager
+complexity when devising models.                                  who makes the final decision `through the application
+                                                                  of a qualitative overlay' or a `judgment call' (Svetlova,
+   Although the human element ­ the individual                    2012: 430). However, instead of seeing the model as a
+market participant's domain knowledge and judgment                tool that informs human decision-making, the machine
+­ has not been rendered obsolete by machine learning,             learning model is better understood as a device to
+quants are forced to exercise their reasoned judgment             which much of the data processing, signal identifica-
+differently. This alleged shift in how quants are sup-            tion, and trade execution is distributed. Therefore,
+posed to utilise their expert judgment was addressed by           the crucial importance of the human overlay lies less
+Mahmood Noorani, the founder and CEO of the                       in making the final decision to buy or sell this or that
+London-based analytics provider Quant Insight.                    security than in ensuring a largely automated invest-
+Having worked in trading and portfolio management                 ment process is properly organised. As discussed in
+since the 1990s, Mahmood experienced first-hand the               this article, a central part of what constitutes a properly
+proliferation of increasingly sophisticated algorithms            organised automated investment or trading process is
+and models in the financial industry. Although he                 to manage model complexity and thus, sustain a suffi-
+embraced the opportunities created by recent leaps in             cient level of comprehensibility and control. In other
+artificial intelligence and machine learning research, his        words, quants are increasingly becoming organisers,
+view on applying learning algorithms in investment                facilitators, and assessors of distributed cognitive sys-
+management was marked by a profound faith in                      tems in which machines, instead of humans, make and
+expert judgment. According to Mahmmod, the non-                   execute the investment and trading decisions.
+static nature of financial markets combined with the
+scope and adaptability of the most sophisticated                  Conclusion
+models used in the industry only made `the human
+overlay' more indispensable.                                      This article's main objective was to delve into some of
+                                                                  the challenges associated with applying machine learn-
+    The problem is that you cannot have a controlled              ing techniques in financial securities trading and invest-
+    repeated experiment in finance . . . If you are going to      ment management. Specifically, the goal was to
+    build machines to trade markets, one thing you still          investigate how quants strive to maintain a certain
+    have to have is domain expertise, because the big             level of comprehensibility and control in response to
+    issue on the quantitative side is the so-called overfitting   the model complexity resulting from the proliferation
+    issue. If you build a machine that goes and takes a vast      of machine learning techniques in the financial indus-
+    amount of data and try to understand an asset price,          try. I used the theoretical perspective of distributed
+    you can get these spurious associations where rainfall        cognition to capture the human­model dynamic and
+    in Brazil seems to be explaining, with a 1-week lag, the      examine ways cognitive tasks are distributed to
+    movement of the S&P 500. That is just wrong. You              machine learning-powered financial models. This theo-
+    have to have a human overlay to understand causality.         retical framing allowed for an analysis of the organisa-
+    A couple of years back, we were trying to build a model       tion of distributed cognitive systems where machine
+    of crude oil prices . . . [T]he question was: `should we      learning techniques are employed as technical aids.
+    have global inflation expectations as one of the explan-      The study contributes to research on the relationship
+    atory variables for crude oil?' We decided not to,            between and interaction of humans and models in
+    because it should actually go the other way around.           finance and beyond by examining how this relationship
+    Changes in crude oil prices shift inflation activity.         and interaction dynamic is shaped by applying emerg-
+    Changes in inflation expectations do not shift crude          ing technologies ­ in this case machine-learning algo-
+    oil prices. You need to have a human, who understands         rithms used for investment management and trading.
+    how the relationships work. I do not think we are any-
+    where close to the point where the machine is going to           The article examines how quants attempt to manage
+    understand that causality . . . [T]here still is a place for  the inevitable complexity of machine-learning algo-
+    the human element, but it is in guiding and training the      rithms by resorting to simplicity as a virtuous rule of
+    machine and choosing the right data, rather than going        thumb in model development and model implementa-
+    straight to the investment decision.                          tion processes. Quants consider simplicity or Ockham's
+                                                                  razor a heuristic that helps them manage and control
+                                                                  machine learning model complexity. Applying
+Hansen                                                                              11
+
+Ockham's razor in their modelling practices, quants             There is a need for further studies of the ways auto-
+seek to ensure their models are comprehensible, inter-       mation and the extended use of machine learning tech-
+pretable, and thus, explainable. Hence, Ockham's razor       niques shape model use practices in trading and
+helps frame the modelling process in a way that makes        investment management and, perhaps, to reconceptu-
+it more foreseeable and provides the quant with a cer-       alise judgment as an action undertaken by socio-
+tain degree of control, which is also a way of fortifying    technical assemblages rather than by an individual
+accountability (Goodman and Flaxman, 2017).                  aided by machines. Another potential avenue for fur-
+Moreover, the study suggests comprehensibility and           ther research presents itself in study of the subjective
+explainability become increasingly important factors         factors, the values shaping practices and decision-
+in quantitative investment and algorithmic trading for       making in machine learning-driven quant finance. As
+the simple reason that the most sophisticated models         Kuhn (1977) pointed out more than 40 years ago,
+used in finance ­ such as multi-layer artificial neural      decision-making in scientific practice is dependent on
+networks ­ comprise elements that cannot be fully            a `mixture of objective and subjective factors' (106; cf.,
+comprehended and thus, explained. Rather than                Laudan, 1984). Considerations around theory or model
+being able to account for every detail in learning           accuracy, simplicity, comprehensibility, etc. ­ such as
+models, comprehension is a matter of understanding           those presented in this article ­ are presumably always
+the logic and being able to interpret model output.          influenced by `non-epistemic values' (Douglas, 2000).
+The ability to interpret and explain complex models          The applied science conducted by machine learning
+is particularly important when faced with a model            quants (i.e. the application of theories and techniques
+mishap.                                                      from computer science, math, physics, etc. to financial
+                                                             problems) hinges on collaborative efforts (Rolin, 2015),
+   Besides securing explainability, the simplicity prefer-   negotiations between teams of quants on one side, and
+ence functions as a safeguard against the risk of models     traders or portfolio managers, firms' fiduciary respon-
+learning from noise in the data rather than informa-         sibilities, etc. on the other side. All these internal and
+tion. Quants' concerns about the risk of models over-        external factors set the scene where the practices of
+fitting on noise is the primary reason they consider         model development and model use are at play, and
+simplicity a virtue. Simpler models with fewer param-        make these practices heavily value-laden.
+eters are less likely to overfit and thus produce incor-
+rect predictions. The quants' preoccupation with             Acknowledgements
+Ockham's razor should not be dismissed as blind reli-
+ance on a contested yet resilient scientific principle, but  Thanks to Daniel Souleles and Christian Borch who read and
+rather, as an expression of the crucial importance           commented on early drafts of the manuscript. I am also grate-
+human judgment still has in machine-driven finance.          ful to Big Data & Society Managing Editor, Matthew Zook
+By demonstrating how quants exercise judgment                and the three anonymous reviewers for their insightful com-
+when dealing with complex machine learning models,           ments and for a constructive review process.
+the article contributes to pertinent academic discus-
+sions of the human role in the increasingly automated        Declaration of conflicting interests
+world of high finance. In electronic markets, trading
+automation has reshaped the work of traders; they            The author(s) declared no potential conflicts of interest with
+seldom trade manually, but rather observe algorithm          respect to the research, authorship, and/or publication of this
+trading and intervene if an algorithm does not act as        article.
+intended. Similarly, machine learning is changing the
+role of the quant. The quant's job is to ensure models       Funding
+are maximally capable of determining how, what, and
+when to trade. Machine learning quants train and sus-        The author(s) disclosed receipt of the following financial sup-
+tain automated decision-makers. In other words, they         port for the research, authorship, and/or publication of this
+are responsible for the organisation and facilitation of     article: This project has received funding from the European
+socio-technical systems of distributed cognition.            Research Council (ERC) under the European Union's
+                                                             Horizon 2020 research and innovation programme (grant
+   Hence, the domain knowledge possessed by an indi-         agreement No 725706).
+vidual expert is not made redundant by the propaga-
+tion of adaptive machine-learning algorithms, but is         ORCID iD               https://orcid.org/0000-0002-9536-
+used for guiding and ensuring stable, accurate, and
+transparent model performance. It is arguably not in         Kristian Bondo Hansen
+spite of but because of the presence of learning algo-       6050
+rithms that a human element is necessary in quantita-
+tive finance.
+12                                                               Big Data & Society
+
+References                                                       Dixon, MF and Halperin I (2019) The Four Horsemen of
+                                                                     Machine Learning in Finance (September 15, 2019).
+Ang A and Timmermann A (2012) Regime changes and                     Available at SSRN: https://ssrn.com/abstract=3453564
+    financial markets. Annual Review of Financial Economics          or http://dx.doi.org/10.2139/ssrn.3453564
+    4(1): 313­337.
+                                                                 Domingos P (1999) The role of Occam's razor in knowledge
+Arnott RD, Harvey CR and Markowitz H (2018) A back-                  discovery. Data Mining and Knowledge Discovery 3(4):
+    testing protocol in the era of machine learning. SSRN            409­425.
+    Scholarly Paper Nr. ID 3275654. Available at: https://
+    papers.ssrn.com/abstract=3275654 (accessed 10 October        Domingos P (2012) A few useful things to know about
+    2019).                                                           machine learning. Communications of the ACM 55(10):
+                                                                     78­87.
+Bank of England and Financial Conduct Authority (2019)
+    Machine learning in UK financial services. London, UK.       Douglas H (2000) Inductive risk and values in science.
+                                                                     Philosophy of Science 67(4): 559­579.
+Bensusan H (1998) God doesn't always shave with Occam's
+    razor ­ Learning when and how to prune. In: Nedellec C       Frino A and Oetomo T (2005) Slippage in futures markets:
+    and Rouveirol C (eds) Machine Learning: ECML-98.                 Evidence from the Sydney futures exchange. Journal of
+    Berlin: Springer, pp. 119­124.                                   Futures Markets 25(12): 1129­1146.
+
+Beunza D and Garud R (2007) Calculators, lemmings or             Giere RN (2002) Discussion note: Distributed cognition in
+    frame-makers? The intermediary role of securities ana-           epistemic cultures. Philosophy of Science 69(4): 637­644.
+    lysts. The Sociological Review 55(2): 13­39.
+                                                                 Giere RN (2007) Distributed cognition without distributed
+Beunza D and Stark D (2012) From dissonance to resonance:            knowing. Social Epistemology 21(3): 313­320.
+    Cognitive interdependence in quantitative finance.
+    Economy and Society 41(3): 383­417.                          Giere RN and Moffatt B (2003) Distributed cognition: Where
+                                                                     the cognitive and the social merge. Social Studies of
+Beverungen A and Lange A-C (2018) Cognition in high-                 Science 33(2): 301­310.
+    frequency trading: The costs of consciousness and the
+    limits of automation. Theory, Culture & Society 35(6):       Goodman B and Flaxman S (2017) European Union regula-
+    75­95.                                                           tions on algorithmic decision-making and a "right to
+                                                                     explanation". AI Magazine 38(3): 50­57.
+Black F (1986) Noise. The Journal of Finance 41(3): 529­543.
+Borch C (2016) High-frequency trading, algorithmic finance       Guida T (2019) Big Data and Machine Learning in
+                                                                     Quantitative Investment. West Sussex: John Wiley & Sons.
+    and the flash crash: Reflections on eventalization.
+    Economy and Society 45(3­4): 350­378.                        Hardie I and Mackenzie D (2007) Constructing the market
+Borch C, Hansen KB and Lange A-C (2015) Markets, bodies,             frame: Distributed cognition and distributed framing in
+    and rhythms: A rhythmanalysis of financial markets from          financial markets. New Political Economy 12(3): 389­403.
+    open-outcry trading to high-frequency trading.
+    Environment and Planning D: Society and Space 33(6):         Hawkins DM (2004) The problem of overfitting. Journal of
+    1080­1097.                                                       Chemical Information and Computer Sciences 44(1): 1­12.
+Borch C and Lange A-C (2016) High-frequency trader sub-
+    jectivity: Emotional attachment and discipline in an era of  Hutchins E (1995a) Cognition in the Wild. Cambridge, MA:
+    algorithms. Socio-Economic Review 15(2): 283­306. DOI:           The MIT Press.
+    10.1093/ser/mww013
+Box GEP (1976) Science and statistics. Journal of the            Hutchins E (1995b) How a cockpit remembers its speeds.
+    American Statistical Association 71(356): 791­799.               Cognitive Science 19(3): 265­288.
+Bracke P, Datta A, Jung C, et al. (2019) Machine Learning
+    Explainability in Finance: An Application to Default Risk    Kearns M and Nevmyvaka Y (2013) Machine learning for
+    Analysis. Bank of England Staff Working Paper 816: 1­43.         market microstructure and high-frequency trading. In:
+    DOI: 10.2139/ssrn.3435104.                                       Easley D, Lopez de Prado M and O'Hara M (eds) High-
+Brogaard J, Hendershott T, Hunt S, et al. (2014) High-fre-           Frequency Trading: New Realities for Traders, Markets
+    quency trading and the execution costs of institutional          and Regulators. London: Risk Books.
+    investors. Financial Review 49(2): 345­369.
+Buchanan BG (2019) Artificial Intelligence in Finance.           Kervel VV and Menkveld AJ (2019) High-frequency trading
+    London: The Alan Turing Institute.                               around large institutional orders. The Journal of Finance
+Burrell J (2016) How the machine `thinks': Understanding             74(3): 1091­1137.
+    opacity in machine learning algorithms. Big Data &
+    Society 3(1): 2053951715622512.                              Kollo M (2019) Do algorithms dream about artificial alphas?
+Clark A and Chalmers D (1998) The extended mind. Analysis            In: Big Data and Machine Learning in Quantitative
+    58(1): 7­19.                                                     Investment. West Sussex: John Wiley & Sons, pp. 1­13.
+Coombs N (2016) What is an algorithm? Financial regulation
+    in the era of high-frequency trading. Economy and Society    Kuhn T (1977) Objectivity, value judgment, and theory
+    45(2): 278­302.                                                  choice. In: The Essential Tension: Selected Studies is
+Derman E (2004) My Life as a Quant. Hoboken, NJ: John                Scientific Tradition and Change. Chicago, IL: University
+    Wiley & Sons, Inc.                                               of Chicago Press, pp. 102­118.
+
+                                                                 Lange A-C (2016) Organizational ignorance: An ethnograph-
+                                                                     ic study of high-frequency trading. Economy and Society
+                                                                     45(2): 230­250.
+
+                                                                 Laudan L (1984) Science and Values: The Aims of Science and
+                                                                     Their Role in Scientific Debate. Berkeley: University of
+                                                                     California Press.
+
+                                                                 Law J (2018) A Dictionary of Finance and Banking. Available
+                                                                     at: https://www.oxfordreference.com/view/10.1093/acref/
+Hansen                                                          13
+
+    9780198789741.001.0001/acref-9780198789741 (accessed        Mullainathan S and Spiess J (2017) Machine learning: An
+    21 October 2019).                                               applied econometric approach. Journal of Economic
+Lenglet M (2011) Conflicting codes and codings how algo-            Perspectives 31(2): 87­106.
+    rithmic trading is reshaping financial regulation. Theory,
+    Culture & Society 28(6): 44­66.                             Osinski B and Budek K (2018) What is reinforcement learn-
+Lewis M (2014) Flash Boys: A Wall Street Revolt. New York,          ing? The Complete Guide, 5: July. Available at: https://
+    NY: W. W. Norton & Company, Inc.                                deepsense.ai/what-is-reinforcement-learning-the-com
+Li H and Lau T (2019) Reinforcement learning: Prediction,           plete-guide/ (accessed 19 September 2019).
+    control and value function approximation. Working
+    paper. Available at: https://arxiv.org/pdf/1908.10771.pdf   Pedersen LH (2009) When everyone runs for the exit. The
+    (accessed 1 October 2019).                                      International Journal of Central Banking. Available at:
+Lopez de Prado M (2018) Advances in Financial Machine               http://www.nber.org/papers/w15297 (accessed 29
+    Learning. Hoboken, NJ: Wiley.                                   October 2014).
+MacKenzie D (2003) An equation and its worlds bricolage,
+    exemplars, disunity and performativity in financial eco-    Rolin K (2015) Values in science: The case of scientific col-
+    nomics. Social Studies of Science 33(6): 831­868.               laboration. Philosophy of Science 82(2): 157­177.
+MacKenzie D (2008) An Engine, Not a Camera: How
+    Financial Models Shape Markets. Cambridge, MA: MIT          Seaver N (2017) Algorithms as culture: Some tactics for the
+    Press.                                                          ethnography of algorithmic systems. Big Data & Society
+MacKenzie D (2011) The credit crisis as a problem in the            4(2): 2053951717738104.
+    sociology of knowledge. American Journal of Sociology
+    116(6): 1778­1841.                                          Seyfert R (2016) Bugs, predations or manipulations?
+MacKenzie D (2017) A material political economy:                    Incompatible epistemic regimes of high-frequency trading.
+    Automated trading desk and price prediction in high-            Economy and Society 45(2): 251­277.
+    frequency trading. Social Studies of Science 47(2):
+    172­194.                                                    Shackley S (1998) Introduction to special section on the use
+MacKenzie D (2018a) `Making', `taking' and the material             of models in appraisal and policy-making. Impact
+    political economy of algorithmic trading. Economy and           Assessment and Project Appraisal 16(2): 81­89.
+    Society 47(4): 501­523.
+MacKenzie D (2018b) Material signals: A historical sociology    Svetlova E (2012) On the performative power of financial
+    of high-frequency trading. American Journal of Sociology        models. Economy and Society 41(3): 418­434.
+    123(6): 1635­1683.
+MacKenzie D (2019) How algorithms interact: Goffman's           Svetlova E (2013) De-idealization by commentary: The case
+    `interaction order' in automated trading. Theory, Culture       of financial valuation models. Synthese 190(2): 321­337.
+    & Society 36(2): 39­59.
+MacKenzie D and Hardie I (2009) Assembling an economic          Svetlova E (2018) Financial Models and Society: Villains or
+    actor. In: MacKenzie D (ed.) Material Markets: How              Scapegoats? Northampton, MA: Edward Elgar Publishing
+    Economic Agents are Constructed. Oxford: Oxford                 Limited.
+    University Press, pp. 37­62.
+MacKenzie D and Millo Y (2003) Constructing a market,           Svetlova E and Dirksen V (2014) Models at work ­ Models in
+    performing theory: The historical sociology of a financial      decision making. Science in Context 27(4): 561­577.
+    derivatives exchange. American Journal of Sociology
+    109(1): 107­145.                                            van der Aalst WMP, Rubin VA, Verbeek HMW, et al. (2008)
+MacKenzie D and Spears T (2014a) `A device for being                Process mining: A two-step approach to balance between
+    able to book P&L': The organizational embedding                 underfitting and overfitting. Software & Systems Modeling
+    of the Gaussian copula. Social Studies of Science 44(3):        9(1): 87­111.
+    418­440.
+MacKenzie D and Spears T (2014b) `The formula that killed       Varian HR (2014) Big data: New tricks for econometrics.
+    Wall Street': The Gaussian copula and modelling practices       Journal of Economic Perspectives 28(2): 3­28.
+    in investment banking. Social Studies of Science 44(3):
+    393­417.                                                    Wansleben L (2014) Consistent forecasting vs. anchoring of
+Millo Y and MacKenzie D (2009) The usefulness of inaccu-            market stories: Two cultures of modeling and model use in
+    rate models: Towards an understanding of the emergence          a bank. Science in Context 27(4): 605­630.
+    of financial risk management. Accounting, Organizations
+    and Society 34(5): 638­653.                                 Weigand A (2019) Machine learning in empirical asset pric-
+                                                                    ing. Financial Markets and Portfolio Management 33(1):
+                                                                    93­104.
+
+                                                                World Economic Forum (2019) Navigating Uncharted
+                                                                    Waters: A roadmap to responsible innovation with AI in
+                                                                    financial services. The Future of Financial Services series
+                                                                    prepared in collaboration with Deloitte, October.
+
+                                                                Zuckerman G (2019) The Man Who Solved the Market: How
+                                                                    Jim Simons Launched the Quant Revolution. London:
+                                                                    Penguin Random House.
+14                                                                                                      Big Data & Society
+
+Appendix 1
+
+Table 1. List of interviewees.
+
+Interview ID         Type of firm                     Role                               Location       Date
+
+C002                 Investment bank                  Developer                          London         6 November 2017
+C005                 Hedge fund                       Machine learning researcher        London         7 November 2017
+C006                 Algorithmic trading firm         Machine learning engineer          London         22 November 2017
+D006 (Ernest         Hedge fund (Hutchin              Sr. research scientist             New York       12 December 2017
+
+   Baver)               Hill Capital)                 Head of computer trading           New York       6 December 2017
+D012                 Hedge fund                       Trading algorithm engineer         Chicago        25 October 2017
+D024                 Hedge fund                       Fund manager                       Chicago        16 October 2017
+D032                 Algorithmic trading firm         Chief scientist and CTO            San Francisco  22 January 2018
+D033 (Tom            Hedge fund
+                                                      Quantitative trading analyst       Chicago        24 January 2018
+   Cleverly)         Algorithmic trading firm         Head of market risk                London         31 August 2018
+D038                 Algorithmic trading firm         CTO                                London         31 August and
+BC005                Algorithmic trading firm
+BC007                                                 Infrastructure engineer            London            28 November 2018
+                                                      Quantitative portfolio manager     London         31 August 2018
+BC008                Algorithmic trading firm         Machine learning quant             Amsterdam      30 January 2018
+K007                 Pension fund                     Machine learning quant             New York       12 April 2018
+K009                 Clearing bank                    Quant trader and machine           Spain/London   29 May 2018
+K012                 Analytics vendor                                                                   31 May 2018
+K013                 Independent consultant/             l earning specialist/former     Paris
+                                                         hedge fund quant analyst        London         19 June 2018
+                        former hedge fund             Quant analyst                      London         25 June 2018
+                                                      Researcher                         London         26 June 2018
+K017                 Hedge fund                       Head of research                                  5 September 2018
+K018                 Hedge fund                       Global head of product             London
+K019                 Analytics vendor                    management and head of EMEA     London         6 September 2018
+K024                 Brokerage firm                   Director of investment strategies  London         20 September 2018
+                                                      CSO                                London         11 October 2018
+K026                 Hedge fund                       Deputy head of research            London         2 November 2018
+K027                 Technology vendor                Quantitative researcher                           22 November 2018
+K029                 Hedge fund                       CEO                                London
+K031                 Hedge fund                                                          London         20 December 2018
+K038 (Mahmood        Analytics vendor                 Sr. quantitative analyst           London         5 March 2019
+                                                      Fund manager                       London         28 March 2019
+   Noorani)             (Quant Insight)               E-trading risk quant                              26 September 2018
+K039                 Hedge fund                       Quantitative researcher and        London
+K040                 Hedge fund                                                                         6 June 2019
+K041                 Investment bank                     machine learning quant          Chicago
+BK001 (Alan Smith)   Brokerage firm                   Head of quantitative trading                      20 October 2017 and
+                                                                                                           23 May 2018
+BK002 (Matt Le       Brokerage firm                   Algorithmic trading lead
+   Tissier)
+                     Algorithmic trading firm
+G002, D029              (Braverock Investments)
+   (Brian Peterson)
+
+Table 2. Total interviews.                                                                              Number
+
+Type                                                                                                    61
+                                                                                                        12
+Trading firms (high-frequency trading in particular)                                                    19
+Asset management firms                                                                                  19
+Hedge fund management firms                                                                             10
+Banks                                                                                                   23
+Broker, broker­dealer firms                                                                             10
+Exchanges and other trading venues                                                                      15
+Regulators                                                                                              13
+Data, technology and analytics vendors                                                                  182
+Other
+Total
+
