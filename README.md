@@ -93,12 +93,106 @@ python3 src/models/train_base.py
 python3 src/models/tune_optuna.py
 ```
 
-## Metodología
+## Cómo funciona el proyecto (de principio a fin)
 
-1. **Ingeniería del dato:** Extracción de 6 fuentes (Yahoo Finance, FRED, Google Trends, AAII, Refinitiv), alineación a frecuencia semanal, limpieza, feature engineering
-2. **Modelado:** XGBoost y LightGBM entrenados con walk-forward expanding window (778 splits), optimizados con Optuna (75 trials bayesianos)
-3. **Optimización de cartera:** Predicciones ML como retornos esperados en el optimizador de Markowitz (SLSQP, long-only, max 40% por activo)
-4. **Interpretabilidad:** SHAP (TreeSHAP) para identificar variables predictivas — NFCI es el driver principal (16.5%)
+### El problema
+
+Quieres invertir 100€ en 10 ETFs (fondos que replican índices). Cada semana decides qué porcentaje poner en cada uno. El método clásico (Markowitz, 1952) usa la media histórica para decidir — pero falla porque las correlaciones cambian en crisis. Nuestro enfoque: usar ML para **predecir** los retornos de la semana siguiente y dar esas predicciones al optimizador.
+
+### Fase 1 — Extracción (`src/extractors/`)
+
+8 scripts descargan datos de 6 fuentes:
+- **Yahoo Finance:** precios diarios de SPY, QQQ, AGG, GLD... (10 ETFs)
+- **FRED** (banco central de EEUU): VIX, tipos de interés, desempleo, CPI...
+- **Google Trends:** búsquedas de "recession", "inflation", "bear market"...
+- **AAII:** encuesta semanal de sentimiento de inversores
+- **Refinitiv:** 17.181 titulares de noticias financieras
+
+Todo esto se guarda en `data/raw/` (datos crudos tal cual vienen de las APIs).
+
+### Fase 2 — Transformación (`src/transformers/`)
+
+6 scripts convierten los datos crudos en el dataset final:
+1. **align_weekly.py:** Todo tiene frecuencias distintas (diario, semanal, mensual) → lo alineamos a **viernes semanal**
+2. **clean_data.py:** Rellena huecos (forward-fill), elimina duplicados entre dimensiones
+3. **feature_engineering.py:** De los precios crudos calcula 109 features con significado financiero:
+   - Por cada ETF (×10): log-return, volatilidad 4 y 12 semanas, momentum 4 y 12 semanas, drawdown = **60 features**
+   - Macro: spread 10Y-2Y, cambio CPI, desempleo, sentimiento consumidor = **4 features**
+   - Riesgo: VIX nivel/cambio, spread high yield, NFCI = **4 features**
+   - Liquidez: balance Fed, reverse repo, depósitos, TGA = **4 features**
+   - Sentimiento: AAII bull-bear + 7 Google Trends = **15 features**
+   - NLP: sentimiento VADER por ETF = **22 features**
+4. **build_master_dataset.py:** Junta todo + crea los **targets** (retorno de la semana SIGUIENTE, shift -1)
+
+**Resultado:** `master_weekly_raw.csv` — 987 semanas × 119 columnas.
+
+### Fase 3 — EDA (`src/eda/`)
+
+5 scripts generan ~20 figuras exploratorias que van en la sección de ingeniería del dato:
+- Evolución de precios, distribución de retornos (colas pesadas → Markowitz falla)
+- VIX y crisis, correlación SPY-AGG (se rompe en crisis → justifica ML)
+- Estacionariedad (test ADF), outliers, complementariedad entre dimensiones
+
+### Fase 4 — Modelado (`src/models/`) — El corazón
+
+El flujo es por capas:
+
+**Capa 1 — Infraestructura:**
+- `data_loader.py`: Carga el CSV y clasifica las 109 features en 6 dimensiones
+- `walk_forward.py`: Genera 778 splits de entrenamiento/test. En cada semana t: entrena con semanas [1..t-2], embargo de 1 semana, predice semana t
+- `benchmarks.py`: Calcula las 3 carteras de referencia (60/40, equal weight, Markowitz clásico)
+
+**Capa 2 — Entrenamiento base (`train_base.py`):**
+- Entrena XGBoost y LightGBM con parámetros por defecto
+- Para cada uno de los 10 ETFs: 778 modelos (uno por semana)
+- Cada modelo predice el retorno de 1 ETF para 1 semana
+- Las 10 predicciones van al optimizador de Markowitz → pesos de cartera
+- Resultado: Sharpe 1.154 (XGB) y 1.000 (LGB) — ya superan al 60/40 (0.847)
+
+**Capa 3 — Optuna (`tune_optuna.py`):**
+- Busca los mejores hiperparámetros con 75 trials bayesianos
+- Encuentra: lr=0.022, depth=7, min_child_weight=20 para XGB
+- Resultado: **Sharpe 1.397** (XGB Tuned) — el resultado definitivo
+
+**Capa 4 — Reporte (`train_final.py`):**
+- NO reentrena — carga las predicciones ya calculadas
+- Reconstruye los retornos de cartera, calcula benchmarks
+- Imprime las 10 tablas y diagnósticos del reporte
+- Guarda todo en `data/results/final/`
+
+**Capa 5 — Interpretabilidad (`shap_analysis.py`):**
+- Entrena 10 modelos XGBoost (80/20 split) y calcula TreeSHAP
+- Genera 8 figuras: importancia global, por dimensión, beeswarm por ETF, heatmap, temporal, waterfall
+- Hallazgo clave: **NFCI (condiciones financieras) es la variable #1** (16.5% del poder predictivo)
+
+**Capa 6 — Backtesting extra (`backtesting_extra.py`):**
+- Information Coefficient: IC = 0.089 (excelente en finanzas)
+- Subperíodos: XGB gana en los 5 períodos vs 60/40
+- Turnover: 37%/semana, coste estimado 0.97%/año, Sharpe neto 1.276
+- Monte Carlo: p-value = 0.0000 (ninguna de 10.000 carteras aleatorias alcanza 1.397)
+
+### Las 35 figuras (`docs/figures/`)
+
+- **EDA (20 figuras):** evolución ETFs, distribuciones, VIX, correlaciones, outliers, estacionariedad, sentimiento, Google Trends, NLP...
+- **SHAP (8 figuras):** importancia global top 20, donut por dimensión, beeswarm SPY/AGG/GLD, heatmap ETFs, evolución temporal, waterfall crisis SVB
+- **Portfolio (4 figuras):** frontera eficiente con 5.000 carteras aleatorias, equity curves 100€→526€, subperíodos, turnover
+- **Backtesting (3 figuras):** histograma Monte Carlo, barras subperíodos, serie temporal turnover
+
+### Experimentos que no funcionaron (`src/experiments/`)
+
+1. **+12 features nuevas** (WEI, MOVE, STLFSI4...): Sharpe bajó a 1.203 → más features = más ruido
+2. **Feature selection SHAP** (60 features): Sharpe bajó a 1.271 → las features "inútiles" contribuyen colectivamente
+3. **Wavelet denoising:** Sharpe colapsó a 0.392 → eliminó la señal junto con el ruido
+4. **Optuna v2** (100 trials más): Confirmó que v1 ya encontró el óptimo
+
+**Conclusión:** 109 features con los params de Optuna v1 es el óptimo. Documentar lo que NO funciona es tan valioso como lo que sí.
+
+## Metodología (resumen)
+
+1. **Ingeniería del dato:** Extracción de 6 fuentes, alineación semanal, limpieza, 109 features en 6 dimensiones
+2. **Modelado:** XGBoost y LightGBM con walk-forward expanding window (778 splits), optimizados con Optuna (75 trials)
+3. **Optimización de cartera:** Predicciones ML → optimizador de Markowitz (SLSQP, long-only, max 40% por activo)
+4. **Interpretabilidad:** SHAP (TreeSHAP) — NFCI es el driver principal (16.5%)
 5. **Validación:** IC = 0.089, Dir. Accuracy = 56.8%, Monte Carlo p-value = 0.0000
 
 ## Herramientas
