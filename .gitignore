@@ -1,7 +1,27 @@
-venv/
-.env
+# Python
 __pycache__/
-data/interim/
-data/processed/
 *.pyc
-.DS_Store
+*.pyo
+
+# Virtual environment
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Datos intermedios (regenerables con src/extractors/ y src/transformers/)
+data/raw/
+data/interim/
+
+# Backups temporales
+data/results_backup*/
+
+# Credenciales
+.env
+
+# OS
+*.DS_Store
+
+# Logs
+*.log

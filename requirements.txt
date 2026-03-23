@@ -1,20 +1,33 @@
-pandas
-numpy
-yfinance
-fredapi
-pytrends
-requests
-beautifulsoup4
-selenium
-refinitiv-data
-xgboost
-lightgbm
-scikit-learn
-matplotlib
-seaborn
-plotly
-scipy
-statsmodels
-python-dotenv
-openpyxl
-jupyter
+# TFG - Optimización de Carteras con ML
+# Python 3.12+
+
+# Core ML
+xgboost>=3.0
+lightgbm>=4.0
+scikit-learn>=1.8
+optuna>=4.0
+shap>=0.50
+
+# Data processing
+pandas>=2.0
+numpy>=2.0
+scipy>=1.10
+
+# Visualization
+matplotlib>=3.8
+tqdm>=4.60
+
+# Data extraction
+yfinance>=0.2
+fredapi>=0.5
+pytrends>=4.9
+python-dotenv>=1.0
+
+# NLP sentiment
+vaderSentiment>=3.3
+
+# Excel export
+openpyxl>=3.1
+
+# Wavelet (experimento documentado)
+PyWavelets>=1.4
