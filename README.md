@@ -28,35 +28,35 @@ Sistema de optimización dinámica de carteras que combina predicciones de retor
 TFG-OPTIMIZATION-ML-1/
 ├── README.md
 ├── requirements.txt
-├── .gitignore
+├── .env.example              # Variables de entorno necesarias (FRED, Refinitiv)
 ├── src/
-│   ├── models/                  # Pipeline principal de modelado
-│   │   ├── data_loader.py       # Carga del dataset maestro
-│   │   ├── walk_forward.py      # Generador de splits walk-forward
-│   │   ├── benchmarks.py        # 60/40, Equal Weight, Markowitz
-│   │   ├── train_base.py        # Entrenamiento con hiperparámetros por defecto
-│   │   ├── tune_optuna.py       # Optimización de hiperparámetros (75 trials)
-│   │   ├── train_final.py       # ★ Script principal — genera reporte completo
-│   │   ├── diagnostics.py       # Diagnósticos visuales (confusion matrix, etc.)
-│   │   ├── shap_analysis.py     # Análisis SHAP (8 figuras interpretabilidad)
-│   │   └── backtesting_extra.py # IC, subperíodos, turnover, Monte Carlo
-│   ├── extractors/              # Scripts de extracción de datos (FRED, Yahoo, etc.)
-│   ├── transformers/            # Pipeline ETL (alineación, limpieza, feature eng.)
-│   ├── eda/                     # Análisis exploratorio de datos
-│   ├── experiments/             # Experimentos documentados (wavelet, +12 features)
-│   └── utils/                   # Utilidades (generación Excel, etc.)
+│   ├── models/               # Pipeline principal de modelado
+│   │   ├── data_loader.py    # Carga del dataset maestro
+│   │   ├── walk_forward.py   # Generador de splits walk-forward
+│   │   ├── benchmarks.py     # 60/40, Equal Weight, Markowitz
+│   │   ├── train_base.py     # Entrenamiento con hiperparámetros por defecto
+│   │   ├── tune_optuna.py    # Optimización de hiperparámetros (75 trials)
+│   │   ├── train_final.py    # ★ Script principal — genera reporte completo
+│   │   ├── diagnostics.py    # Diagnósticos (confusion matrix, report card)
+│   │   ├── shap_analysis.py  # Análisis SHAP (8 figuras interpretabilidad)
+│   │   └── backtesting_extra.py  # IC, subperíodos, turnover, Monte Carlo
+│   ├── extractors/           # Extracción de datos (FRED, Yahoo, Refinitiv, Google Trends)
+│   ├── transformers/         # Pipeline ETL (alineación semanal, limpieza, feature eng.)
+│   ├── eda/                  # Análisis exploratorio de datos
+│   ├── experiments/          # Experimentos documentados (wavelet, +12 features, optuna v2)
+│   └── utils/                # Utilidades (generación Excel)
 ├── data/
-│   ├── processed/               # Dataset definitivo
+│   ├── raw/                  # Datos originales de las 6 fuentes
+│   ├── processed/            # Dataset definitivo
 │   │   └── master_weekly_raw.csv    # 987 semanas × 119 columnas
-│   └── results/                 # Resultados y métricas
-│       ├── extra/               # Backtesting adicional (IC, Monte Carlo, etc.)
-│       ├── final/               # Resultados definitivos para la memoria
-│       ├── *_tuned_*.csv        # Predicciones y pesos del modelo tuned
+│   └── results/              # Resultados del modelado
+│       ├── extra/            # Backtesting adicional (IC, Monte Carlo, etc.)
+│       ├── *_tuned_*.csv     # Predicciones y pesos del modelo tuned
 │       └── optuna_best_params_*.json  # Hiperparámetros óptimos
-├── docs/
-│   ├── figures/                 # 30+ figuras (300 DPI, estilo Tufte/Okabe-Ito)
-│   └── memoria/                 # Documento Word de la memoria
-└── info_entregas/               # Documentos de referencia UFV
+└── docs/
+    ├── figures/              # ~30 figuras (300 DPI, estilo Tufte/Okabe-Ito)
+    ├── memoria/              # Documento Word de la memoria
+    └── reference_material/   # Papers y apuntes de referencia
 ```
 
 ## Datos
@@ -158,7 +158,6 @@ El flujo es por capas:
 - NO reentrena — carga las predicciones ya calculadas
 - Reconstruye los retornos de cartera, calcula benchmarks
 - Imprime las 10 tablas y diagnósticos del reporte
-- Guarda todo en `data/results/final/`
 
 **Capa 5 — Interpretabilidad (`shap_analysis.py`):**
 - Entrena 10 modelos XGBoost (80/20 split) y calcula TreeSHAP
@@ -171,12 +170,12 @@ El flujo es por capas:
 - Turnover: 37%/semana, coste estimado 0.97%/año, Sharpe neto 1.276
 - Monte Carlo: p-value = 0.0000 (ninguna de 10.000 carteras aleatorias alcanza 1.397)
 
-### Las 35 figuras (`docs/figures/`)
+### Las figuras (`docs/figures/`)
 
-- **EDA (20 figuras):** evolución ETFs, distribuciones, VIX, correlaciones, outliers, estacionariedad, sentimiento, Google Trends, NLP...
+- **EDA (~20 figuras):** evolución ETFs, distribuciones, VIX, correlaciones, outliers, estacionariedad, sentimiento, Google Trends, NLP...
 - **SHAP (8 figuras):** importancia global top 20, donut por dimensión, beeswarm SPY/AGG/GLD, heatmap ETFs, evolución temporal, waterfall crisis SVB
-- **Portfolio (4 figuras):** frontera eficiente con 5.000 carteras aleatorias, equity curves 100€→526€, subperíodos, turnover
-- **Backtesting (3 figuras):** histograma Monte Carlo, barras subperíodos, serie temporal turnover
+- **Portfolio (4 figuras):** frontera eficiente con 5.000 carteras aleatorias, equity curves 100€→526€, pesos del portafolio, subperíodos
+- **Backtesting (2 figuras):** histograma Monte Carlo, serie temporal turnover
 
 ### Experimentos que no funcionaron (`src/experiments/`)
 

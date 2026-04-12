@@ -11,17 +11,24 @@ venv/
 *.ipynb
 
 # Datos intermedios (regenerables con src/extractors/ y src/transformers/)
-data/raw/
 data/interim/
 
 # Backups temporales
 data/results_backup*/
+*_backup.*
 
 # Credenciales
 .env
 
 # OS
 *.DS_Store
+Thumbs.db
 
 # Logs
 *.log
+
+# Archivos sueltos que no son parte del proyecto
+Rúbricas.pdf
+Entrega*.docx
+*.jpeg
+Ingenieria_del_Dato.pdf

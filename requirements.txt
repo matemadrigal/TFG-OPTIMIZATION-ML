@@ -15,6 +15,7 @@ scipy>=1.10
 
 # Visualization
 matplotlib>=3.8
+seaborn>=0.13
 tqdm>=4.60
 
 # Data extraction
@@ -22,12 +23,19 @@ yfinance>=0.2
 fredapi>=0.5
 pytrends>=4.9
 python-dotenv>=1.0
+refinitiv-data>=1.6
 
 # NLP sentiment
-vaderSentiment>=3.3
+nltk>=3.8
+
+# Statistical analysis
+statsmodels>=0.14
 
 # Excel export
 openpyxl>=3.1
 
-# Wavelet (experimento documentado)
+# Image processing (fix_figures.py)
+Pillow>=10.0
+
+# Wavelet (experimento documentado en src/experiments/)
 PyWavelets>=1.4
